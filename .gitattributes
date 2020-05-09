@@ -1,0 +1,6 @@
+*.bat git-encoding=utf-8 working-tree-encoding=cp866
+*.dfm git-encoding=utf-8 working-tree-encoding=windows-1251
+*.dpk git-encoding=utf-8 working-tree-encoding=windows-1251
+*.dpr git-encoding=utf-8 working-tree-encoding=windows-1251
+*.inc git-encoding=utf-8 working-tree-encoding=windows-1251
+*.pas git-encoding=utf-8 working-tree-encoding=windows-1251
