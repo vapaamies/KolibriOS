@@ -4,7 +4,7 @@ uses
   KolibriOS;
 
 const
-  AppPath = PPChar(32);
+  AppPath = PPKolibriChar(32);
 
 type
   THeader = packed record
@@ -27,7 +27,7 @@ type
     Header: THeader;
   end;
 
-procedure ExtractFileDirectory(Source, Dest: PChar); stdcall;
+procedure ExtractFileDirectory(Source, Dest: PKolibriChar); stdcall;
 asm
         PUSH   ESI
         PUSH   EDI
@@ -65,7 +65,7 @@ begin
   TargaFile := LoadFile('Lena.tga', FileSize);
 
   with TargaFile^ do
-    Image := Pointer(PChar(TargaFile) + SizeOf(Header) + Header.IDLength);
+    Image := Pointer(PKolibriChar(TargaFile) + SizeOf(Header) + Header.IDLength);
 
   with GetScreenSize do
   begin

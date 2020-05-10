@@ -5,9 +5,9 @@ uses
 
 var
   hConsole: Pointer;
-  ConsoleInit:            procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PChar); stdcall;
+  ConsoleInit:            procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
   ConsoleExit:            procedure(bCloseWindow: Cardinal); stdcall;
-  Printf:                 function(const Format: PChar): Integer; cdecl varargs;
+  Printf:                 function(const Format: PKolibriChar): Integer; cdecl varargs;
   GetConsoleCursorPos:    procedure(X, Y: PInteger); stdcall;
   SetConsoleCursorPos:    procedure(X, Y: Integer); stdcall;
   kbhit:                  function: Boolean;

@@ -4,7 +4,7 @@ uses
   KolibriOS;
 
 const
-  AppPath = PPChar(32);
+  AppPath = PPKolibriChar(32);
 
   Picture1 = 'Flower(4bpp).bmp';
   Picture2 = 'Mario(1bpp).bmp';
@@ -47,7 +47,7 @@ type
     Palette: array[0..0] of TRGBQuad;
   end;
 
-procedure ExtractFileDirectory(Src, Dst: PChar); stdcall;
+procedure ExtractFileDirectory(Src, Dst: PKolibriChar); stdcall;
 asm
         PUSH   ESI
         PUSH   EDI

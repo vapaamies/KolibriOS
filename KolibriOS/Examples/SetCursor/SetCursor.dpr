@@ -4,7 +4,7 @@ uses
   KolibriOS;
 
 const
-  AppPath = PPChar(32);
+  AppPath = PPKolibriChar(32);
 
   ARROW_BUTTON = 2;
   POINT_BUTTON = 3;
@@ -39,7 +39,7 @@ type
     BitmapInfoHeader: TBitmapInfoHeader;
   end;
 
-procedure ExtractFileDirectory(Src, Dst: PChar); stdcall;
+procedure ExtractFileDirectory(Src, Dst: PKolibriChar); stdcall;
 asm
         PUSH   ESI
         PUSH   EDI

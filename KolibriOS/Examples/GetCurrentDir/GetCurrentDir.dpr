@@ -4,16 +4,16 @@ uses
   KolibriOS;
 
 const
-  AppPath = PPChar(32);
-  CmdLine = PPChar(28);
+  AppPath = PPKolibriChar(32);
+  CmdLine = PPKolibriChar(28);
 
   BUFFER_SIZE = 256;
 
 var
   hConsole: Pointer;
-  ConsoleInit:       procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PChar); stdcall;
+  ConsoleInit:       procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
   ConsoleExit:       procedure(bCloseWindow: Cardinal); stdcall;
-  printf:            function(const Format: PChar): Integer; cdecl varargs;
+  printf:            function(const Format: PKolibriChar): Integer; CDecl varargs;
 
   Buffer: array[0..BUFFER_SIZE - 1] of Char;
 

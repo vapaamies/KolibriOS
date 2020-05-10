@@ -8,10 +8,15 @@ Unit KolibriOS;
 Interface
 (* -------------------------------------------------------- *)
 Type
+  KolibriChar = AnsiChar;
+  PKolibriChar = PAnsiChar;
+  PPKolibriChar = PPAnsiChar;
 
-  Dword = LongWord;
-
-  Qword = UInt64;
+{$IF CompilerVersion < 15}
+  QuadWord = Int64;
+{$ELSE}
+  QuadWord = UInt64;
+{$IFEND}
 
   TSize = Packed Record
     Height: Word;
@@ -33,8 +38,8 @@ Type
   TBox = Packed Record
     Left:   LongInt;
     Top:    LongInt;
-    Width:  Dword;
-    Height: Dword;
+    Width:  LongWord;
+    Height: LongWord;
   End;
 
   TSystemDate = Packed Record
@@ -52,21 +57,21 @@ Type
   End;
 
   TThreadInfo = Packed Record
-    CpuUsage:     Dword;
+    CpuUsage:     LongWord;
     WinStackPos:  Word;
     reserved0:    Word;
     reserved1:    Word;
-    Name:         Packed Array[0..10] Of Char;
+    Name:         Packed Array[0..10] Of KolibriChar;
     reserved2:    Byte;
-    MemAddress:   Dword;
-    MemUsage:     Dword;
-    Identifier:   Dword;
+    MemAddress:   LongWord;
+    MemUsage:     LongWord;
+    Identifier:   LongWord;
     Window:       TRect;
     ThreadState:  Word;
     reserved3:    Word;
     Client:       TRect;
     WindowState:  Byte;
-    EventMask:    Dword;
+    EventMask:    LongWord;
     KeyboardMode: Byte;
     reserved4:    Packed Array[0..947] Of Byte;
   End;
@@ -77,9 +82,9 @@ Type
 
   TKeyboardInput = Packed Record
     Flag: TKeyboardInputFlag;
-    Code: Char;
+    Code: KolibriChar;
     Case TKeyboardInputMode Of
-      kmASCII: (Scan: Char);
+      kmASCII: (Scan: KolibriChar);
       kmSCAN:  (
                 Case TKeyboardInputFlag Of 
                   kfCode:   ();
@@ -96,30 +101,30 @@ Type
   TKernelVersion = Packed Record
     A, B, C, D: Byte;
     reserved:   Byte;
-    Revision:   Dword;
+    Revision:   LongWord;
   End;
 
   TRAMInfo = Packed Record
-    AvailablePages:    Dword;
-    FreePages:         Dword;
-    PageFaults:        Dword;
-    KernelHeapSize:    Dword;
-    KernelHeapFree:    Dword;
-    Blocks:            Dword;
-    FreeBlocks:        Dword;
-    MaxFreeBlock:      Dword;
-    MaxAllocatedBlock: Dword;
+    AvailablePages:    LongWord;
+    FreePages:         LongWord;
+    PageFaults:        LongWord;
+    KernelHeapSize:    LongWord;
+    KernelHeapFree:    LongWord;
+    Blocks:            LongWord;
+    FreeBlocks:        LongWord;
+    MaxFreeBlock:      LongWord;
+    MaxAllocatedBlock: LongWord;
   End;
 
-  TKeyboardLayout = Packed Array[0..127] Of Char;
+  TKeyboardLayout = Packed Array[0..127] Of KolibriChar;
 
   TCtrlDriver = Packed Record
-    Handle:         Dword;
-    Func:           Dword;
+    Handle:         LongWord;
+    Func:           LongWord;
     InputData:      Pointer;
-    InputDataSize:  Dword;
+    InputDataSize:  LongWord;
     OutputData:     Pointer;
-    OutputDataSize: Dword;
+    OutputDataSize: LongWord;
   End;
 
   TFileDate = Packed Record
@@ -136,21 +141,21 @@ Type
   End;
 
   TFileAttributes = Packed Record
-    Attributes:   Dword;
-    Flags:        Dword;
+    Attributes:   LongWord;
+    Flags:        LongWord;
     CreationTime: TFileTime;
     CreationDate: TFileDate;
     AccessTime:   TFileTime;
     AccessDate:   TFileDate;
     ModifyTime:   TFileTime;
     ModifyDate:   TFileDate;
-    SizeLo:       Dword;
-    SizeHi:       Dword;
+    SizeLo:       LongWord;
+    SizeHi:       LongWord;
   End;
 
   TFileInformation = Packed Record
     FileAttributes: TFileAttributes;
-    FileName:       Array[0..255] Of Char;
+    FileName:       Array[0..255] Of KolibriChar;
     reserved:       Array[0..7] Of Byte;
   End;
   
@@ -161,32 +166,32 @@ Type
   End;
   
   TFolderInformation = Packed Record
-    Version:         Dword;
-    BlockCount:      Dword;
-    FileCount:       Dword;
+    Version:         LongWord;
+    BlockCount:      LongWord;
+    FileCount:       LongWord;
     reserved:        Array[0..19] Of Byte;
     FileInformation: Array[0..0] Of TFileInformation;
   End;
   
   TFolderInformationW = Packed Record
-    Version:         Dword;
-    BlockCount:      Dword;
-    FileCount:       Dword;
+    Version:         LongWord;
+    BlockCount:      LongWord;
+    FileCount:       LongWord;
     reserved:        Array[0..19] Of Byte;
     FileInformation: Array[0..0] Of TFileInformationW;
   End;
   
   TStandardColors = Packed Record
-    Frames:         Dword;
-    Grab:           Dword;
-    Work3DDark:     Dword;
-    Work3DLight:    Dword;
-    GrabText:       Dword;
-    Work:           Dword;
-    WorkButton:     Dword;
-    WorkButtonText: Dword;
-    WorkText:       Dword;
-    WorkGraph:      Dword;
+    Frames:         LongWord;
+    Grab:           LongWord;
+    Work3DDark:     LongWord;
+    Work3DLight:    LongWord;
+    GrabText:       LongWord;
+    Work:           LongWord;
+    WorkButton:     LongWord;
+    WorkButtonText: LongWord;
+    WorkText:       LongWord;
+    WorkGraph:      LongWord;
   End;
 
   TSockAddr = Packed Record
@@ -195,51 +200,51 @@ Type
   End;
 
   TOptStruct = Packed Record
-    Level:     Dword;
-    OptName:   Dword;
-    OptLength: Dword;
+    Level:     LongWord;
+    OptName:   LongWord;
+    OptLength: LongWord;
     Options:   Packed Array[0..0] Of Byte
   End;
 
   TThreadContext = Packed Record
-    EIP:    Dword;
-    EFlags: Dword;
-    EAX:    Dword;
-    ECX:    Dword;
-    EDX:    Dword;
-    EBX:    Dword;
-    ESP:    Dword;
-    EBP:    Dword;
-    ESI:    Dword;
-    EDI:    Dword;
+    EIP:    LongWord;
+    EFlags: LongWord;
+    EAX:    LongWord;
+    ECX:    LongWord;
+    EDX:    LongWord;
+    EBX:    LongWord;
+    ESP:    LongWord;
+    EBP:    LongWord;
+    ESI:    LongWord;
+    EDI:    LongWord;
   End;
 
   TSignalBuffer = Packed Record
-    ID:   Dword;
+    ID:   LongWord;
     Data: Packed Array[0..19] Of Byte;
   End;
 
   TIPCMessage = Packed Record
-    ID:     Dword;
-    Length: Dword;
+    ID:     LongWord;
+    Length: LongWord;
     Data:   Packed Array[0..0] Of Byte;
   End;
 
   TIPCBuffer = Packed Record
-    Lock:        Dword;
-    CurrentSize: Dword;
+    Lock:        LongWord;
+    CurrentSize: LongWord;
     Data:        Packed Array[0..0] Of TIPCMessage;
   End;
 
   TDebugMessage = Packed Record
-    Code: Dword;
-    ID:   Dword;
-    Data: Dword;
+    Code: LongWord;
+    ID:   LongWord;
+    Data: LongWord;
   End;
 
   TDebugBuffer = Packed Record
-    TotalSize:   Dword;
-    CurrentSize: Dword;
+    TotalSize:   LongWord;
+    CurrentSize: LongWord;
     Buffer:      Packed Array[0..0] Of TDebugMessage;
   End;
 
@@ -329,205 +334,205 @@ Const
 
 (* -------------------------------------------------------- *)
 {-1}      Procedure TerminateThread; StdCall;
-{0}       Procedure DrawWindow(Left, Top, Right, Bottom: Integer; Caption: PChar; BackColor, Style, CapStyle: Dword); StdCall;
-{1}       Procedure SetPixel(X, Y: Integer; Color: Dword); StdCall;
+{0}       Procedure DrawWindow(Left, Top, Right, Bottom: Integer; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); StdCall;
+{1}       Procedure SetPixel(X, Y: Integer; Color: LongWord); StdCall;
 {2}       Function  GetKey: TKeyboardInput; StdCall;
 {3}       Function  GetSystemTime: TSystemTime; StdCall;
-{4}       Procedure DrawText(X, Y: Integer; Text: PChar; ForeColor, BackColor, Flags, Count: Dword); StdCall;
-{5}       Procedure Sleep(Time: Dword); StdCall;
+{4}       Procedure DrawText(X, Y: Integer; Text: PKolibriChar; ForeColor, BackColor, Flags, Count: LongWord); StdCall;
+{5}       Procedure Sleep(Time: LongWord); StdCall;
 {6}       {UNDEFINED}
-{7}       Procedure DrawImage(Const Image; X, Y: Integer; Width, Height: Dword); StdCall;
-{8}       Procedure DrawButton(Left, Top, Right, Bottom: Integer; BackColor, Style, ID: Dword); StdCall;
-{8}       Procedure DeleteButton(ID: Dword); StdCall;
-{9}       Function  GetThreadInfo(Slot: Dword; Var Buffer: TThreadInfo): Dword; StdCall;
-{10}      Function  WaitEvent: Dword; StdCall;
-{11}      Function  CheckEvent: Dword; StdCall;
+{7}       Procedure DrawImage(Const Image; X, Y: Integer; Width, Height: LongWord); StdCall;
+{8}       Procedure DrawButton(Left, Top, Right, Bottom: Integer; BackColor, Style, ID: LongWord); StdCall;
+{8}       Procedure DeleteButton(ID: LongWord); StdCall;
+{9}       Function  GetThreadInfo(Slot: LongWord; Var Buffer: TThreadInfo): LongWord; StdCall;
+{10}      Function  WaitEvent: LongWord; StdCall;
+{11}      Function  CheckEvent: LongWord; StdCall;
 {12.1}    Procedure BeginDraw; StdCall;
 {12.2}    Procedure EndDraw; StdCall;
-{13}      Procedure DrawRectangle(X, Y: Integer; Width, Height: Dword; Color: Dword); StdCall;
+{13}      Procedure DrawRectangle(X, Y: Integer; Width, Height: LongWord; Color: LongWord); StdCall;
 {14}      Function  GetScreenMax: TPoint; StdCall;
-{15.1}    Procedure SetBackgroundSize(Width, Height: Dword); StdCall;
-{15.2}    Procedure SetBackgroundPixel(X, Y: Integer; Color: Dword); StdCall;
+{15.1}    Procedure SetBackgroundSize(Width, Height: LongWord); StdCall;
+{15.2}    Procedure SetBackgroundPixel(X, Y: Integer; Color: LongWord); StdCall;
 {15.3}    Procedure DrawBackground; StdCall;
-{15.4}    Procedure SetBackgroundDrawMode(DrawMode: Dword); StdCall;
-{15.5}    Procedure DrawBackgroundImage(Const Image; X, Y: Integer; Width, Height: Dword); StdCall;
+{15.4}    Procedure SetBackgroundDrawMode(DrawMode: LongWord); StdCall;
+{15.5}    Procedure DrawBackgroundImage(Const Image; X, Y: Integer; Width, Height: LongWord); StdCall;
 {15.6}    Function  MapBackground: Pointer; StdCall;
 {15.7}    Function  UnMapBackground(Background: Pointer): Integer; StdCall;
 {15.8}    Function  GetLastDrawnBackgroundRect: TRect; StdCall;
 {15.9}    Procedure UpdateBackgroundRect(Left, Top, Right, Bottom: Integer); StdCall;
-{16}      Function  FlushFloppyCache(FloppyNumber: Dword): Dword; StdCall;
+{16}      Function  FlushFloppyCache(FloppyNumber: LongWord): LongWord; StdCall;
 {17}      Function  GetButton: TButtonInput; StdCall;
-{18.1}    Procedure DeactivateWindow(Slot: Dword); StdCall;
-{18.2}    Procedure TerminateThreadBySlot(Slot: Dword); StdCall;
-{18.3}    Procedure ActivateWindow(Slot: Dword); StdCall;
-{18.4}    Function  GetIdleTime: Dword; StdCall;
-{18.5}    Function  GetCPUClock: Dword; StdCall;
-{18.6}    Function  SaveRamDisk(Path: PChar): Dword; StdCall;
-{18.7}    Function  GetActiveWindow: Dword; StdCall;
+{18.1}    Procedure DeactivateWindow(Slot: LongWord); StdCall;
+{18.2}    Procedure TerminateThreadBySlot(Slot: LongWord); StdCall;
+{18.3}    Procedure ActivateWindow(Slot: LongWord); StdCall;
+{18.4}    Function  GetIdleTime: LongWord; StdCall;
+{18.5}    Function  GetCPUClock: LongWord; StdCall;
+{18.6}    Function  SaveRamDisk(Path: PKolibriChar): LongWord; StdCall;
+{18.7}    Function  GetActiveWindow: LongWord; StdCall;
 {18.8.1}  Function  GetSpeakerState: Integer; StdCall;
 {18.8.2}  Procedure SwitchSpeakerState; StdCall;
-{18.9}    Function  SystemShutdown(Param: Dword): Integer; StdCall;
+{18.9}    Function  SystemShutdown(Param: LongWord): Integer; StdCall;
 {18.10}   Procedure MinimizeActiveWindow; StdCall;
 {18.11}   Procedure GetDiskSystemInfo(Var Buffer); StdCall;
 {18.12}   {UNDEFINED}
 {18.13}   Procedure GetKernelVersion(Var Buffer: TKernelVersion); StdCall;
 {18.14}   Function  WaitRetrace: Integer; StdCall;
 {18.15}   Function  CenterMousePointer: Integer; StdCall;
-{18.16}   Function  GetFreeMemory: Dword; StdCall;
-{18.17}   Function  GetAvailableMemory: Dword; StdCall;
-{18.18}   Function  TerminateThreadById(ID: Dword): Integer; StdCall;
-{18.19.0} Function  GetMouseSpeed: Dword; StdCall;
-{18.19.1} Procedure SetMouseSpeed(Speed: Dword); StdCall;
-{18.19.2} Function  GetMouseSensitivity: Dword; StdCall;
-{18.19.3} Procedure SetMouseSensitivity(Sensitivity: Dword); StdCall;
+{18.16}   Function  GetFreeMemory: LongWord; StdCall;
+{18.17}   Function  GetAvailableMemory: LongWord; StdCall;
+{18.18}   Function  TerminateThreadById(ID: LongWord): Integer; StdCall;
+{18.19.0} Function  GetMouseSpeed: LongWord; StdCall;
+{18.19.1} Procedure SetMouseSpeed(Speed: LongWord); StdCall;
+{18.19.2} Function  GetMouseSensitivity: LongWord; StdCall;
+{18.19.3} Procedure SetMouseSensitivity(Sensitivity: LongWord); StdCall;
 {18.19.4} Procedure SetMousePos(X, Y: Integer); StdCall;
-{18.19.5} Procedure SetMouseButtons(State: Dword); StdCall;
-{18.19.6} Function  GetDoubleClickTime: Dword; StdCall;
-{18.19.7} Procedure SetDoubleClickTime(Time: Dword); StdCall;
+{18.19.5} Procedure SetMouseButtons(State: LongWord); StdCall;
+{18.19.6} Function  GetDoubleClickTime: LongWord; StdCall;
+{18.19.7} Procedure SetDoubleClickTime(Time: LongWord); StdCall;
 {18.20}   Function  GetRAMInfo(Var Buffer: TRAMInfo): Integer; StdCall;
-{18.21}   Function  GetSlotById(ID: Dword): Dword; StdCall;
-{18.22.0} Function  MinimizeWindowBySlot(Slot: Dword): Integer; StdCall;
-{18.22.1} Function  MinimizeWindowByID(ID: Dword): Integer; StdCall;
-{18.22.2} Function  RestoreWindowBySlot(Slot: Dword): Integer; StdCall;
-{18.22.3} Function  RestoreWindowByID(ID: Dword): Integer; StdCall;
-{18.23}   Function  MinimizeAllWindows: Dword; StdCall;
-{18.24}   Procedure SetScreenLimits(Width, Height: Dword); StdCall;
-{18.25.1} Function  GetWindowZOrder(ID: Dword): Dword; StdCall;
-{18.25.2} Function  SetWindowZOrder(ID, ZOrder: Dword): Integer; StdCall;
+{18.21}   Function  GetSlotById(ID: LongWord): LongWord; StdCall;
+{18.22.0} Function  MinimizeWindowBySlot(Slot: LongWord): Integer; StdCall;
+{18.22.1} Function  MinimizeWindowByID(ID: LongWord): Integer; StdCall;
+{18.22.2} Function  RestoreWindowBySlot(Slot: LongWord): Integer; StdCall;
+{18.22.3} Function  RestoreWindowByID(ID: LongWord): Integer; StdCall;
+{18.23}   Function  MinimizeAllWindows: LongWord; StdCall;
+{18.24}   Procedure SetScreenLimits(Width, Height: LongWord); StdCall;
+{18.25.1} Function  GetWindowZOrder(ID: LongWord): LongWord; StdCall;
+{18.25.2} Function  SetWindowZOrder(ID, ZOrder: LongWord): Integer; StdCall;
 {19}      {UNDEFINED}
 {20.1}    Function  ResetMidi: Integer; StdCall;
 {20.2}    Function  OutputMidi(Data: Byte): Integer; StdCall;
-{21.1}    Function  SetMidiBase(Port: Dword): Integer; StdCall;
-{21.2}    Function  SetKeyboardLayout(Flags: Dword; Var Table: TKeyboardLayout): Integer; StdCall;
-{21.2}    Function  SetKeyboardLayoutCountry(Country: Dword): Integer; StdCall;
+{21.1}    Function  SetMidiBase(Port: LongWord): Integer; StdCall;
+{21.2}    Function  SetKeyboardLayout(Flags: LongWord; Var Table: TKeyboardLayout): Integer; StdCall;
+{21.2}    Function  SetKeyboardLayoutCountry(Country: LongWord): Integer; StdCall;
 {21.3}    {UNDEFINED}
 {21.4}    {UNDEFINED}
-{21.5}    Function  SetSystemLanguage(SystemLanguage: Dword): Integer; StdCall;
+{21.5}    Function  SetSystemLanguage(SystemLanguage: LongWord): Integer; StdCall;
 {21.6}    {UNDEFINED}
 {21.7}    {UNDEFINED}
 {21.8}    {UNDEFINED}
 {21.9}    {UNDEFINED}
 {21.10}   {UNDEFINED}
-{21.11}   Function  SetHDAccess(Value: Dword): Integer; StdCall;
-{21.12}   Function  SetPCIAccess(Value: Dword): Integer; StdCall;
+{21.11}   Function  SetHDAccess(Value: LongWord): Integer; StdCall;
+{21.12}   Function  SetPCIAccess(Value: LongWord): Integer; StdCall;
 {22.0}    Function  SetSystemTime(Time: TSystemTime): Integer; StdCall;
 {22.1}    Function  SetSystemDate(Date: TSystemDate): Integer; StdCall;
-{22.2}    Function  SetDayOfWeek(DayOfWeek: Dword): Integer; StdCall;
+{22.2}    Function  SetDayOfWeek(DayOfWeek: LongWord): Integer; StdCall;
 {22.3}    Function  SetAlarm(Time: TSystemTime): Integer; StdCall;
-{23}      Function  WaitEventByTime(Time: Dword): Dword; StdCall;
-{24.4}    Procedure OpenCDTray(Drive: Dword); StdCall;
-{24.5}    Procedure CloseCDTray(Drive: Dword); StdCall;
-{25}      Procedure DrawBackgroundLayerImage(Const Image; X, Y: Integer; Width, Height: Dword); StdCall;
-{26.1}    Function  GetMidiBase: Dword; StdCall;
-{26.2}    Procedure GetKeyboardLayout(Flags: Dword; Var Table: TKeyboardLayout); StdCall;
-{26.2}    Function  GetKeyboardLayoutCountry: Dword; StdCall;
+{23}      Function  WaitEventByTime(Time: LongWord): LongWord; StdCall;
+{24.4}    Procedure OpenCDTray(Drive: LongWord); StdCall;
+{24.5}    Procedure CloseCDTray(Drive: LongWord); StdCall;
+{25}      Procedure DrawBackgroundLayerImage(Const Image; X, Y: Integer; Width, Height: LongWord); StdCall;
+{26.1}    Function  GetMidiBase: LongWord; StdCall;
+{26.2}    Procedure GetKeyboardLayout(Flags: LongWord; Var Table: TKeyboardLayout); StdCall;
+{26.2}    Function  GetKeyboardLayoutCountry: LongWord; StdCall;
 {26.3}    {UNDEFINED}
 {26.4}    {UNDEFINED}
-{26.5}    Function  GetSystemLanguage: Dword; StdCall;
+{26.5}    Function  GetSystemLanguage: LongWord; StdCall;
 {26.6}    {UNDEFINED}
 {26.7}    {UNDEFINED}
 {26.8}    {UNDEFINED}
-{26.9}    Function  GetTickCount: Dword; StdCall;
-{26.10}   Function  GetTickCount64: Qword; StdCall;
-{26.11}   Function  IsHDAccessAllowed: Dword; StdCall;
-{26.12}   Function  IsPCIAccessAllowed: Dword; StdCall;
+{26.9}    Function  GetTickCount: LongWord; StdCall;
+{26.10}   Function  GetTickCount64: QuadWord; StdCall;
+{26.11}   Function  IsHDAccessAllowed: LongWord; StdCall;
+{26.12}   Function  IsPCIAccessAllowed: LongWord; StdCall;
 {27}      {UNDEFINED}
 {28}      {UNDEFINED}
 {29}      Function  GetSystemDate: TSystemDate; StdCall;
-{30.1}    Procedure SetCurrentDirectory(Path: PChar); StdCall;
-{30.2}    Function  GetCurrentDirectory(Buffer: PChar; Count: Dword): Dword; StdCall;
+{30.1}    Procedure SetCurrentDirectory(Path: PKolibriChar); StdCall;
+{30.2}    Function  GetCurrentDirectory(Buffer: PKolibriChar; Count: LongWord): LongWord; StdCall;
 {31}      {UNDEFINED}
 {32}      {UNDEFINED}
 {33}      {UNDEFINED}
-{34}      Function  GetPointOwner(X, Y: Integer): Dword; StdCall;
-{35}      Function  GetPixel(X, Y: Integer): Dword; StdCall;
-{36}      Procedure GetScreenImage(Var Buffer; X, Y: Integer; Width, Height: Dword); StdCall;
+{34}      Function  GetPointOwner(X, Y: Integer): LongWord; StdCall;
+{35}      Function  GetPixel(X, Y: Integer): LongWord; StdCall;
+{36}      Procedure GetScreenImage(Var Buffer; X, Y: Integer; Width, Height: LongWord); StdCall;
 {37.0}    Function  GetMousePos: TPoint; StdCall;
 {37.1}    Function  GetWindowMousePos: TPoint; StdCall;
-{37.2}    Function  GetMouseButtons: Dword; StdCall;
-{37.3}    Function  GetMouseEvents: Dword; StdCall;
-{37.4}    Function  LoadCursorFromFile(Path: PChar): Dword; StdCall;
-{37.4}    Function  LoadCursorFromMemory(Const Buffer): Dword; StdCall;
-{37.4}    Function  LoadCursorIndirect(Const Buffer; HotSpotX, HotSpotY: ShortInt): Dword; StdCall;
-{37.5}    Function  SetCursor(Handle: Dword): Dword; StdCall;
-{37.6}    Function  DeleteCursor(Handle: Dword): Dword; StdCall;
+{37.2}    Function  GetMouseButtons: LongWord; StdCall;
+{37.3}    Function  GetMouseEvents: LongWord; StdCall;
+{37.4}    Function  LoadCursorFromFile(Path: PKolibriChar): LongWord; StdCall;
+{37.4}    Function  LoadCursorFromMemory(Const Buffer): LongWord; StdCall;
+{37.4}    Function  LoadCursorIndirect(Const Buffer; HotSpotX, HotSpotY: ShortInt): LongWord; StdCall;
+{37.5}    Function  SetCursor(Handle: LongWord): LongWord; StdCall;
+{37.6}    Function  DeleteCursor(Handle: LongWord): LongWord; StdCall;
 {37.7}    Function  GetMouseScroll: TPoint; StdCall;
-{38}      Procedure DrawLine(X1, Y1, X2, Y2: Integer; Color: Dword); StdCall;
+{38}      Procedure DrawLine(X1, Y1, X2, Y2: Integer; Color: LongWord); StdCall;
 {39.1}    Function  GetBackgroundSize: TSize; StdCall;
-{39.2}    Function  GetBackgroundPixel(X, Y: Integer): Dword; StdCall;
+{39.2}    Function  GetBackgroundPixel(X, Y: Integer): LongWord; StdCall;
 {39.3}    {UNDEFINED}
-{39.4}    Function  GetBackgroundDrawMode: Dword; StdCall;
-{40}      Function  SetEventMask(Mask: Dword): Dword; StdCall;
+{39.4}    Function  GetBackgroundDrawMode: LongWord; StdCall;
+{40}      Function  SetEventMask(Mask: LongWord): LongWord; StdCall;
 {41}      {UNDEFINED}
 {42}      {UNDEFINED}
-{43}      Function  InPort(Port: Dword; Var Data: Byte): Dword; StdCall;
-{43}      Function  OutPort(Port: Dword; Data: Byte): Dword; StdCall;
+{43}      Function  InPort(Port: LongWord; Var Data: Byte): LongWord; StdCall;
+{43}      Function  OutPort(Port: LongWord; Data: Byte): LongWord; StdCall;
 {44}      {UNDEFINED}
 {45}      {UNDEFINED}
-{46}      Function  ReservePorts(First, Last: Dword): Dword; StdCall;
-{46}      Function  FreePorts(First, Last: Dword): Dword; StdCall;
+{46}      Function  ReservePorts(First, Last: LongWord): LongWord; StdCall;
+{46}      Function  FreePorts(First, Last: LongWord): LongWord; StdCall;
 {47}      {DrawNumber}
 {48.0}    Procedure ApplyStyleSettings; StdCall;
-{48.1}    Procedure SetButtonStyle(ButtonStyle: Dword); StdCall;
-{48.2}    Procedure SetStandardColors(Var ColorTable: TStandardColors; Size: Dword); StdCall;
-{48.3}    Procedure GetStandardColors(Var ColorTable: TStandardColors; Size: Dword); StdCall;
-{48.4}    Function  GetSkinHeight: Dword; StdCall;
+{48.1}    Procedure SetButtonStyle(ButtonStyle: LongWord); StdCall;
+{48.2}    Procedure SetStandardColors(Var ColorTable: TStandardColors; Size: LongWord); StdCall;
+{48.3}    Procedure GetStandardColors(Var ColorTable: TStandardColors; Size: LongWord); StdCall;
+{48.4}    Function  GetSkinHeight: LongWord; StdCall;
 {48.5}    Function  GetScreenWorkingArea: TRect; StdCall;
 {48.6}    Procedure SetScreenWorkingArea(Left, Top, Right, Bottom: Integer); StdCall;
 {48.7}    Function  GetSkinMargins: TRect; StdCall;
-{48.8}    Function  SetSkin(Path: PChar): Integer; StdCall;
+{48.8}    Function  SetSkin(Path: PKolibriChar): Integer; StdCall;
 {48.9}    Function  GetFontSmoothing: Integer; StdCall;
 {48.10}   Procedure SetFontSmoothing(Smoothing: Integer); StdCall;
-{48.11}   Function  GetFontHeight: Dword; StdCall;
-{48.12}   Procedure SetFontHeight(Height: Dword); StdCall;
+{48.11}   Function  GetFontHeight: LongWord; StdCall;
+{48.12}   Procedure SetFontHeight(Height: LongWord); StdCall;
 {49}      {Advanced Power Management}
 {50.0}    Procedure SetWindowShape(Const Data); StdCall;
-{50.1}    Procedure SetWindowScale(Scale: Dword); StdCall;
-{51.1}    Function  ThreadCreate(Entry, Stack: Pointer): Dword; StdCall;
+{50.1}    Procedure SetWindowScale(Scale: LongWord); StdCall;
+{51.1}    Function  ThreadCreate(Entry, Stack: Pointer): LongWord; StdCall;
 {52}      {UNDEFINED}
 {53}      {UNDEFINED}
 {54.0}    Function  GetClipboardSlotCount: Integer; StdCall;
-{54.1}    Function  GetClipboardData(Slot: Dword): Pointer; StdCall;
-{54.2}    Function  SetClipboardData(Const Src; Count: Dword): Integer; StdCall;
+{54.1}    Function  GetClipboardData(Slot: LongWord): Pointer; StdCall;
+{54.2}    Function  SetClipboardData(Const Src; Count: LongWord): Integer; StdCall;
 {54.3}    Function  DeleteClipboardLastSlot: Integer; StdCall;
 {54.4}    Function  ResetClipboard: Integer; StdCall;
-{55}      Function  SpeakerPlay(Const Data): Dword; StdCall;
+{55}      Function  SpeakerPlay(Const Data): LongWord; StdCall;
 {56}      {UNDEFINED}
 {57}      {PCI BIOS}
 {58}      {UNDEFINED}
 {59}      {UNDEFINED}
-{60.1}    Function  IPCSetBuffer(Const Buffer: TIPCBuffer; Size: Dword): Integer; StdCall;
-{60.2}    Function  IPCSendMessage(ID: Dword; Var Msg: TIPCMessage; Size: Dword): Integer; StdCall;
+{60.1}    Function  IPCSetBuffer(Const Buffer: TIPCBuffer; Size: LongWord): Integer; StdCall;
+{60.2}    Function  IPCSendMessage(ID: LongWord; Var Msg: TIPCMessage; Size: LongWord): Integer; StdCall;
 {61.1}    Function  GetScreenSize: TSize; StdCall;
-{61.2}    Function  GetScreenBitsPerPixel: Dword; StdCall;
-{61.3}    Function  GetScreenBytesPerScanLine: Dword; StdCall;
-{62.0}    Function  GetPCIVersion: Dword; StdCall;
-{62.1}    Function  GetLastPCIBus: Dword; StdCall;
-{62.2}    Function  GetPCIAddressingMode: Dword; StdCall;
+{61.2}    Function  GetScreenBitsPerPixel: LongWord; StdCall;
+{61.3}    Function  GetScreenBytesPerScanLine: LongWord; StdCall;
+{62.0}    Function  GetPCIVersion: LongWord; StdCall;
+{62.1}    Function  GetLastPCIBus: LongWord; StdCall;
+{62.2}    Function  GetPCIAddressingMode: LongWord; StdCall;
 {62.3}    {UNDEFINED}
 {62.4}    Function  ReadPCIByte(Bus, Device, Func, Reg: Byte): Byte; StdCall;
 {62.5}    Function  ReadPCIWord(Bus, Device, Func, Reg: Byte): Word; StdCall;
-{62.6}    Function  ReadPCIDword(Bus, Device, Func, Reg: Byte): Dword; StdCall;
+{62.6}    Function  ReadPCILongWord(Bus, Device, Func, Reg: Byte): LongWord; StdCall;
 {62.7}    {UNDEFINED}
-{62.8}    Function  WritePCIByte(Bus, Device, Func, Reg: Byte; Data: Byte): Dword; StdCall;
-{62.9}    Function  WritePCIWord(Bus, Device, Func, Reg: Byte; Data: Word): Dword; StdCall;
-{62.10}   Function  WritePCIDword(Bus, Device, Func, Reg: Byte; Data: Dword): Dword; StdCall;
+{62.8}    Function  WritePCIByte(Bus, Device, Func, Reg: Byte; Data: Byte): LongWord; StdCall;
+{62.9}    Function  WritePCIWord(Bus, Device, Func, Reg: Byte; Data: Word): LongWord; StdCall;
+{62.10}   Function  WritePCILongWord(Bus, Device, Func, Reg: Byte; Data: LongWord): LongWord; StdCall;
 {63.1}    Procedure BoardWriteByte(Data: Byte); StdCall;
-{63.2}    Function  BoardReadByte(Var Data: Byte): Dword; StdCall;
-{64}      Function  ReallocAppMemory(Count: Dword): Integer; StdCall;
-{65}      Procedure DrawImageEx(Const Image; Left, Top: Integer; Width, Height: Dword; BPP: Dword; Const Palette: Pointer; Padding: Dword); StdCall;
-{66.1}    Procedure SetKeyboardInputMode(Mode: Dword); StdCall;
-{66.2}    Function  GetKeyboardInputMode: Dword; StdCall;
-{66.3}    Function  GetControlKeyState: Dword; StdCall;
-{66.4}    Function  SetHotKey(ScanCode, Control: Dword): Integer; StdCall;
-{66.5}    Function  ResetHotKey(ScanCode, Control: Dword): Integer; StdCall;
+{63.2}    Function  BoardReadByte(Var Data: Byte): LongWord; StdCall;
+{64}      Function  ReallocAppMemory(Count: LongWord): Integer; StdCall;
+{65}      Procedure DrawImageEx(Const Image; Left, Top: Integer; Width, Height: LongWord; BPP: LongWord; Const Palette: Pointer; Padding: LongWord); StdCall;
+{66.1}    Procedure SetKeyboardInputMode(Mode: LongWord); StdCall;
+{66.2}    Function  GetKeyboardInputMode: LongWord; StdCall;
+{66.3}    Function  GetControlKeyState: LongWord; StdCall;
+{66.4}    Function  SetHotKey(ScanCode, Control: LongWord): Integer; StdCall;
+{66.5}    Function  ResetHotKey(ScanCode, Control: LongWord): Integer; StdCall;
 {66.6}    Procedure KeyboardLock; StdCall;
 {66.7}    Procedure KeyboardUnlock; StdCall;
 {67}      Procedure SetWindowPos(Left, Top, Right, Bottom: Integer); StdCall;
-{68.0}    Function  GetTaskSwitchCount: Dword; StdCall;
+{68.0}    Function  GetTaskSwitchCount: LongWord; StdCall;
 {68.1}    Procedure SwitchThread; StdCall;
-{68.2.0}  Function  EnableRDPMC: Dword; StdCall;
-{68.2.1}  Function  IsCacheEnabled: Dword; StdCall;
+{68.2.0}  Function  EnableRDPMC: LongWord; StdCall;
+{68.2.1}  Function  IsCacheEnabled: LongWord; StdCall;
 {68.2.2}  Procedure EnableCache; StdCall;
 {68.2.3}  Procedure DisableCache; StdCall;
 {68.3}    {ReadMSR}
@@ -538,50 +543,50 @@ Const
 {68.8}    {UNDEFINED}
 {68.9}    {UNDEFINED}
 {68.10}   {UNDEFINED}
-{68.11}   Function  HeapCreate: Dword; StdCall;
-{68.12}   Function  HeapAllocate(Bytes: Dword): Pointer; StdCall;
-{68.13}   Function  HeapFree(MemPtr: Pointer): Dword; StdCall;
+{68.11}   Function  HeapCreate: LongWord; StdCall;
+{68.12}   Function  HeapAllocate(Bytes: LongWord): Pointer; StdCall;
+{68.13}   Function  HeapFree(MemPtr: Pointer): LongWord; StdCall;
 {68.14}   Procedure WaitSignal(Var Buffer: TSignalBuffer); StdCall;
 {68.15}   {UNDEFINED}
-{68.16}   Function  GetDriver(Name: PChar): Dword; StdCall;
-{68.17}   Function  ControlDriver(Var CtrlStructure: TCtrlDriver): Dword; StdCall;
+{68.16}   Function  GetDriver(Name: PKolibriChar): LongWord; StdCall;
+{68.17}   Function  ControlDriver(Var CtrlStructure: TCtrlDriver): LongWord; StdCall;
 {68.18}   {UNDEFINED}
-{68.19}   Function  LoadLibrary(Path: PChar): Pointer; StdCall;
-{68.20}   Function  HeapReallocate(MemPtr: Pointer; Bytes: Dword): Pointer; StdCall;
-{68.21}   Function  LoadDriver(Name, CmdLine: PChar): Dword; StdCall;
-{68.22}   Function  SharedMemoryOpen(Name: PChar; Bytes: Dword; Flags: Dword): Pointer; StdCall;
-{68.23}   Function  SharedMemoryClose(Name: PChar): Dword; StdCall;
-{68.24}   Function  SetExceptionHandler(Handler: Pointer; Mask: Dword; Var OldMask: Dword): Pointer; StdCall;
-{68.25}   Function  SetExceptionActivity(Signal, Activity: Dword): Integer; StdCall;
-{68.26}   Procedure ReleaseMemoryPages(MemPtr: Pointer; Offset, Size: Dword); StdCall;
-{68.27}   Function  LoadFile(Path: PChar; Var Size: Dword): Pointer; StdCall;
+{68.19}   Function  LoadLibrary(Path: PKolibriChar): Pointer; StdCall;
+{68.20}   Function  HeapReallocate(MemPtr: Pointer; Bytes: LongWord): Pointer; StdCall;
+{68.21}   Function  LoadDriver(Name, CmdLine: PKolibriChar): LongWord; StdCall;
+{68.22}   Function  SharedMemoryOpen(Name: PKolibriChar; Bytes: LongWord; Flags: LongWord): Pointer; StdCall;
+{68.23}   Function  SharedMemoryClose(Name: PKolibriChar): LongWord; StdCall;
+{68.24}   Function  SetExceptionHandler(Handler: Pointer; Mask: LongWord; Var OldMask: LongWord): Pointer; StdCall;
+{68.25}   Function  SetExceptionActivity(Signal, Activity: LongWord): Integer; StdCall;
+{68.26}   Procedure ReleaseMemoryPages(MemPtr: Pointer; Offset, Size: LongWord); StdCall;
+{68.27}   Function  LoadFile(Path: PKolibriChar; Var Size: LongWord): Pointer; StdCall;
 {69.0}    Procedure SetDebugBuffer(Const Buffer: TDebugBuffer); StdCall;
-{69.1}    Procedure GetThreadContext(ID: Dword; Var Context: TThreadContext); StdCall;
-{69.2}    Procedure SetThreadContext(ID: Dword; Const Context: TThreadContext); StdCall;
-{69.3}    Procedure DetachThread(ID: Dword); StdCall;
-{69.4}    Procedure SuspendThread(ID: Dword); StdCall;
-{69.5}    Procedure ResumeThread(ID: Dword); StdCall;
-{69.6}    Function  ReadProcessMemory(ID, Count: Dword; Const Src; Var Dst): Integer; StdCall;
-{69.7}    Function  WriteProcessMemory(ID, Count: Dword; Const Src; Var Dst): Integer; StdCall;
-{69.8}    Procedure DebugTerminate(ID: Dword); StdCall;
-{69.9}    Function  SetBreakPoint(ID: Dword; Index, Flags: Byte; Address: Pointer): Integer; StdCall;
-{69.9}    Function  ResetBreakPoint(ID: Dword; Index, Flags: Byte; Address: Pointer): Integer; StdCall;
-{70.0}    Function  ReadFile(Path: PChar; Var Buffer; Count, LoPos, HiPos: Cardinal; Var BytesRead: Dword): Integer; StdCall;
-{70.1}    Function  ReadFolder(Path: PChar; Var Buffer; Count, Start, Flags: Cardinal; Var BlocksRead: Dword): Integer; StdCall;
-{70.2}    Function  CreateFile(Path: PChar): Integer; StdCall;
-{70.3}    Function  WriteFile(Path: PChar; Const Buffer; Count, LoPos, HiPos: Cardinal; Var BytesWritten: Dword): Integer; StdCall;
-{70.4}    Function  ResizeFile(Path: PChar; LoSize, HiSize: Cardinal): Integer; StdCall;
-{70.5}    Function  GetFileAttributes(Path: PChar; Var Buffer: TFileAttributes): Integer; StdCall;
-{70.6}    Function  SetFileAttributes(Path: PChar; Var Buffer: TFileAttributes): Integer; StdCall;
-{70.7}    Function  RunFile(Path, CmdLine: PChar): Integer; StdCall;
-{70.7}    Function  DebugFile(Path, CmdLine: PChar): Integer; StdCall;
-{70.8}    Function  DeleteFile(Path: PChar): Integer; StdCall;
-{70.9}    Function  CreateFolder(Path: PChar): Integer; StdCall;
-{71.1}    Procedure SetWindowCaption(Caption: PChar); StdCall;
-{72.1.2}  Function  SendActiveWindowKey(KeyCode: Dword): Integer; StdCall;
-{72.1.3}  Function  SendActiveWindowButton(ButtonID: Dword): Integer; StdCall;
-{73}      Procedure Blit(Const Src; SrcX, SrcY: Integer; SrcW, SrcH: Dword; DstX, DstY: Integer; DstW, DstH: Dword; Stride, Flags: Dword); StdCall;
-{74.-1}   Function  GetActiveNetworkDevices: Dword; StdCall;
+{69.1}    Procedure GetThreadContext(ID: LongWord; Var Context: TThreadContext); StdCall;
+{69.2}    Procedure SetThreadContext(ID: LongWord; Const Context: TThreadContext); StdCall;
+{69.3}    Procedure DetachThread(ID: LongWord); StdCall;
+{69.4}    Procedure SuspendThread(ID: LongWord); StdCall;
+{69.5}    Procedure ResumeThread(ID: LongWord); StdCall;
+{69.6}    Function  ReadProcessMemory(ID, Count: LongWord; Const Src; Var Dst): Integer; StdCall;
+{69.7}    Function  WriteProcessMemory(ID, Count: LongWord; Const Src; Var Dst): Integer; StdCall;
+{69.8}    Procedure DebugTerminate(ID: LongWord); StdCall;
+{69.9}    Function  SetBreakPoint(ID: LongWord; Index, Flags: Byte; Address: Pointer): Integer; StdCall;
+{69.9}    Function  ResetBreakPoint(ID: LongWord; Index, Flags: Byte; Address: Pointer): Integer; StdCall;
+{70.0}    Function  ReadFile(Path: PKolibriChar; Var Buffer; Count, LoPos, HiPos: Cardinal; Var BytesRead: LongWord): Integer; StdCall;
+{70.1}    Function  ReadFolder(Path: PKolibriChar; Var Buffer; Count, Start, Flags: Cardinal; Var BlocksRead: LongWord): Integer; StdCall;
+{70.2}    Function  CreateFile(Path: PKolibriChar): Integer; StdCall;
+{70.3}    Function  WriteFile(Path: PKolibriChar; Const Buffer; Count, LoPos, HiPos: Cardinal; Var BytesWritten: LongWord): Integer; StdCall;
+{70.4}    Function  ResizeFile(Path: PKolibriChar; LoSize, HiSize: Cardinal): Integer; StdCall;
+{70.5}    Function  GetFileAttributes(Path: PKolibriChar; Var Buffer: TFileAttributes): Integer; StdCall;
+{70.6}    Function  SetFileAttributes(Path: PKolibriChar; Var Buffer: TFileAttributes): Integer; StdCall;
+{70.7}    Function  RunFile(Path, CmdLine: PKolibriChar): Integer; StdCall;
+{70.7}    Function  DebugFile(Path, CmdLine: PKolibriChar): Integer; StdCall;
+{70.8}    Function  DeleteFile(Path: PKolibriChar): Integer; StdCall;
+{70.9}    Function  CreateFolder(Path: PKolibriChar): Integer; StdCall;
+{71.1}    Procedure SetWindowCaption(Caption: PKolibriChar); StdCall;
+{72.1.2}  Function  SendActiveWindowKey(KeyCode: LongWord): Integer; StdCall;
+{72.1.3}  Function  SendActiveWindowButton(ButtonID: LongWord): Integer; StdCall;
+{73}      Procedure Blit(Const Src; SrcX, SrcY: Integer; SrcW, SrcH: LongWord; DstX, DstY: Integer; DstW, DstH: LongWord; Stride, Flags: LongWord); StdCall;
+{74.-1}   Function  GetActiveNetworkDevices: LongWord; StdCall;
 {74.0}    Function  GetNetworkDeviceType(Device: Byte): Integer; StdCall;
 {74.1}    Function  GetNetworkDeviceName(Device: Byte; Var Buffer): Integer; StdCall;
 {74.2}    Function  ResetNetworkDevice(Device: Byte): Integer; StdCall;
@@ -593,47 +598,47 @@ Const
 {74.8}    Function  GetSentBytes(Device: Byte): Integer; StdCall;
 {74.9}    Function  GetReceivedBytes(Device: Byte): Integer; StdCall;
 {74.10}   Function  GetLinkStatus(Device: Byte): Integer; StdCall;
-{75.0}    Function  OpenSocket(Domain, Kind, Protocol: Dword): Dword; StdCall;
-{75.1}    Function  CloseSocket(Socket: Dword): Integer; StdCall;
-{75.2}    Function  SocketBind(Socket: Dword; Var SockAddr: TSockAddr): Integer; StdCall;
-{75.3}    Function  SocketListen(Socket: Dword; Var BackLog): Integer; StdCall;
-{75.4}    Function  SocketConnect(Socket: Dword; Var SockAddr: TSockAddr): Integer; StdCall;
-{75.5}    Function  SocketAccept(Socket: Dword; Var SockAddr: TSockAddr): Dword; StdCall;
-{75.6}    Function  SocketSend(Socket: Dword; Const Buffer; Size, Flags: Dword): Integer; StdCall;
-{75.7}    Function  SocketReceive(Socket: Dword; Var Buffer; Size, Flags: Dword): Integer; StdCall;
-{75.8}    Function  SetSocketOptions(Socket: Dword; Var OptStruct: TOptStruct): Integer; StdCall;
-{75.9}    Function  GetSocketOptions(Socket: Dword; Var OptStruct: TOptStruct): Integer; StdCall;
-{75.10}   Function  GetSocketPair(Var Socket1, Socket2: Dword): Integer; StdCall;
-{76.0.0}  Function  GetMAC(Device: Byte): Dword; StdCall;
-{76.1.0}  Function  GetIPv4SentPackets(Device: Byte): Dword; StdCall;
-{76.1.1}  Function  GetIPv4ReceivedPackets(Device: Byte): Dword; StdCall;
-{76.1.2}  Function  GetIPv4IP(Device: Byte): Dword; StdCall;
-{76.1.3}  Function  SetIPv4IP(Device: Byte; IP: Dword): Dword; StdCall;
-{76.1.4}  Function  GetIPv4DNS(Device: Byte): Dword; StdCall;
-{76.1.5}  Function  SetIPv4DNS(Device: Byte; DNS: Dword): Dword; StdCall;
-{76.1.6}  Function  GetIPv4Subnet(Device: Byte): Dword; StdCall;
-{76.1.7}  Function  SetIPv4Subnet(Device: Byte; Subnet: Dword): Dword; StdCall;
-{76.1.8}  Function  GetIPv4Gateway(Device: Byte): Dword; StdCall;
-{76.1.9}  Function  SetIPv4Gateway(Device: Byte; Gateway: Dword): Dword; StdCall;
-{76.2.0}  Function  GetICMPSentPackets(Device: Byte): Dword; StdCall;
-{76.2.1}  Function  GetICMPReceivedPackets(Device: Byte): Dword; StdCall;
-{76.3.0}  Function  GetUDPSentPackets(Device: Byte): Dword; StdCall;
-{76.3.1}  Function  GetUDPReceivedPackets(Device: Byte): Dword; StdCall;
-{76.4.0}  Function  GetTCPSentPackets(Device: Byte): Dword; StdCall;
-{76.4.1}  Function  GetTCPReceivedPackets(Device: Byte): Dword; StdCall;
-{76.5.0}  Function  GetARPSentPackets(Device: Byte): Dword; StdCall;
-{76.5.1}  Function  GetARPReceivedPackets(Device: Byte): Dword; StdCall;
-{76.5.2}  Function  GetARPEntrys(Device: Byte): Dword; StdCall;
-{76.5.3}  Function  GetARPEntry(Device: Byte; Entry: Dword; Var Buffer): Dword; StdCall;
-{76.5.4}  Function  AddARPEntry(Device: Byte; Const Buffer): Dword; StdCall;
-{76.5.5}  Function  RemoveARPEntry(Device: Byte; Entry: Dword): Dword; StdCall;
-{76.5.6}  Function  SendARPAnnounce(Device: Byte): Dword; StdCall;
-{76.5.7}  Function  GetARPConflicts(Device: Byte): Dword; StdCall;
-{77.0}    Function  CreateFutex(Futex: Pointer): Dword; StdCall;
-{77.1}    Function  DestroyFutex(Handle: Dword): Dword; StdCall;
-{77.2}    Function  WaitFutex(Handle, Value, Time: Dword): Dword; StdCall;
-{77.3}    Function  WakeFutex(Handle, Waiters: Dword): Dword; StdCall;
-          Function  GetProcAddress(hLib: Pointer; ProcName: PChar): Pointer; StdCall;
+{75.0}    Function  OpenSocket(Domain, Kind, Protocol: LongWord): LongWord; StdCall;
+{75.1}    Function  CloseSocket(Socket: LongWord): Integer; StdCall;
+{75.2}    Function  SocketBind(Socket: LongWord; Var SockAddr: TSockAddr): Integer; StdCall;
+{75.3}    Function  SocketListen(Socket: LongWord; Var BackLog): Integer; StdCall;
+{75.4}    Function  SocketConnect(Socket: LongWord; Var SockAddr: TSockAddr): Integer; StdCall;
+{75.5}    Function  SocketAccept(Socket: LongWord; Var SockAddr: TSockAddr): LongWord; StdCall;
+{75.6}    Function  SocketSend(Socket: LongWord; Const Buffer; Size, Flags: LongWord): Integer; StdCall;
+{75.7}    Function  SocketReceive(Socket: LongWord; Var Buffer; Size, Flags: LongWord): Integer; StdCall;
+{75.8}    Function  SetSocketOptions(Socket: LongWord; Var OptStruct: TOptStruct): Integer; StdCall;
+{75.9}    Function  GetSocketOptions(Socket: LongWord; Var OptStruct: TOptStruct): Integer; StdCall;
+{75.10}   Function  GetSocketPair(Var Socket1, Socket2: LongWord): Integer; StdCall;
+{76.0.0}  Function  GetMAC(Device: Byte): LongWord; StdCall;
+{76.1.0}  Function  GetIPv4SentPackets(Device: Byte): LongWord; StdCall;
+{76.1.1}  Function  GetIPv4ReceivedPackets(Device: Byte): LongWord; StdCall;
+{76.1.2}  Function  GetIPv4IP(Device: Byte): LongWord; StdCall;
+{76.1.3}  Function  SetIPv4IP(Device: Byte; IP: LongWord): LongWord; StdCall;
+{76.1.4}  Function  GetIPv4DNS(Device: Byte): LongWord; StdCall;
+{76.1.5}  Function  SetIPv4DNS(Device: Byte; DNS: LongWord): LongWord; StdCall;
+{76.1.6}  Function  GetIPv4Subnet(Device: Byte): LongWord; StdCall;
+{76.1.7}  Function  SetIPv4Subnet(Device: Byte; Subnet: LongWord): LongWord; StdCall;
+{76.1.8}  Function  GetIPv4Gateway(Device: Byte): LongWord; StdCall;
+{76.1.9}  Function  SetIPv4Gateway(Device: Byte; Gateway: LongWord): LongWord; StdCall;
+{76.2.0}  Function  GetICMPSentPackets(Device: Byte): LongWord; StdCall;
+{76.2.1}  Function  GetICMPReceivedPackets(Device: Byte): LongWord; StdCall;
+{76.3.0}  Function  GetUDPSentPackets(Device: Byte): LongWord; StdCall;
+{76.3.1}  Function  GetUDPReceivedPackets(Device: Byte): LongWord; StdCall;
+{76.4.0}  Function  GetTCPSentPackets(Device: Byte): LongWord; StdCall;
+{76.4.1}  Function  GetTCPReceivedPackets(Device: Byte): LongWord; StdCall;
+{76.5.0}  Function  GetARPSentPackets(Device: Byte): LongWord; StdCall;
+{76.5.1}  Function  GetARPReceivedPackets(Device: Byte): LongWord; StdCall;
+{76.5.2}  Function  GetARPEntrys(Device: Byte): LongWord; StdCall;
+{76.5.3}  Function  GetARPEntry(Device: Byte; Entry: LongWord; Var Buffer): LongWord; StdCall;
+{76.5.4}  Function  AddARPEntry(Device: Byte; Const Buffer): LongWord; StdCall;
+{76.5.5}  Function  RemoveARPEntry(Device: Byte; Entry: LongWord): LongWord; StdCall;
+{76.5.6}  Function  SendARPAnnounce(Device: Byte): LongWord; StdCall;
+{76.5.7}  Function  GetARPConflicts(Device: Byte): LongWord; StdCall;
+{77.0}    Function  CreateFutex(Futex: Pointer): LongWord; StdCall;
+{77.1}    Function  DestroyFutex(Handle: LongWord): LongWord; StdCall;
+{77.2}    Function  WaitFutex(Handle, Value, Time: LongWord): LongWord; StdCall;
+{77.3}    Function  WakeFutex(Handle, Waiters: LongWord): LongWord; StdCall;
+          Function  GetProcAddress(hLib: Pointer; ProcName: PKolibriChar): Pointer; StdCall;
 (* -------------------------------------------------------- *)
 Implementation
 (* -------------------------------------------------------- *)
@@ -643,7 +648,7 @@ Implementation
                   int    64
           End;
 (* -------------------------------------------------------- *)
-{0}       Procedure DrawWindow(Left, Top, Right, Bottom: Integer; Caption: PChar; BackColor, Style, CapStyle: Dword); StdCall;
+{0}       Procedure DrawWindow(Left, Top, Right, Bottom: Integer; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); StdCall;
           Asm
                   push   ebx
                   push   edi
@@ -665,7 +670,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{1}       Procedure SetPixel(X, Y: Integer; Color: Dword); StdCall;
+{1}       Procedure SetPixel(X, Y: Integer; Color: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 1
@@ -688,7 +693,7 @@ Implementation
                   int    64
           End;
 (* -------------------------------------------------------- *)
-{4}       Procedure DrawText(X, Y: Integer; Text: PChar; ForeColor, BackColor, Flags, Count: Dword); StdCall;
+{4}       Procedure DrawText(X, Y: Integer; Text: PKolibriChar; ForeColor, BackColor, Flags, Count: LongWord); StdCall;
           Asm
                   push   ebx
                   push   edi
@@ -708,7 +713,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{5}       Procedure Sleep(Time: Dword); StdCall;
+{5}       Procedure Sleep(Time: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 5
@@ -719,7 +724,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {6}       {UNDEFINED}
 (* -------------------------------------------------------- *)
-{7}       Procedure DrawImage(Const Image; X, Y: Integer; Width, Height: Dword); StdCall;
+{7}       Procedure DrawImage(Const Image; X, Y: Integer; Width, Height: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 7
@@ -734,7 +739,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{8}       Procedure DrawButton(Left, Top, Right, Bottom: Integer; BackColor, Style, ID: Dword); StdCall;
+{8}       Procedure DrawButton(Left, Top, Right, Bottom: Integer; BackColor, Style, ID: LongWord); StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -753,7 +758,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{8}       Procedure DeleteButton(ID: Dword); StdCall;
+{8}       Procedure DeleteButton(ID: LongWord); StdCall;
           Asm
                   mov    eax, 8
                   mov    edx, ID
@@ -761,7 +766,7 @@ Implementation
                   int    64
           End;
 (* -------------------------------------------------------- *)
-{9}       Function  GetThreadInfo(Slot: Dword; Var Buffer: TThreadInfo): Dword; StdCall;
+{9}       Function  GetThreadInfo(Slot: LongWord; Var Buffer: TThreadInfo): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 9
@@ -771,13 +776,13 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{10}      Function  WaitEvent: Dword; StdCall;
+{10}      Function  WaitEvent: LongWord; StdCall;
           Asm
                   mov    eax, 10
                   int    64
           End;
 (* -------------------------------------------------------- *)
-{11}      Function  CheckEvent: Dword; StdCall;
+{11}      Function  CheckEvent: LongWord; StdCall;
           Asm
                   mov    eax, 11
                   int    64
@@ -801,7 +806,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{13}      Procedure DrawRectangle(X, Y: Integer; Width, Height: Dword; Color: Dword); StdCall;
+{13}      Procedure DrawRectangle(X, Y: Integer; Width, Height: LongWord; Color: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 13
@@ -822,7 +827,7 @@ Implementation
                   int    64
           End;
 (* -------------------------------------------------------- *)
-{15.1}    Procedure SetBackgroundSize(Width, Height: Dword); StdCall;
+{15.1}    Procedure SetBackgroundSize(Width, Height: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 15
@@ -833,7 +838,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{15.2}    Procedure SetBackgroundPixel(X, Y: Integer; Color: Dword); StdCall;
+{15.2}    Procedure SetBackgroundPixel(X, Y: Integer; Color: LongWord); StdCall;
           Asm
                   push   ebx
           // at first need to know Background.Width
@@ -865,7 +870,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{15.4}    Procedure SetBackgroundDrawMode(DrawMode: Dword); StdCall;
+{15.4}    Procedure SetBackgroundDrawMode(DrawMode: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 15
@@ -875,7 +880,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{15.5}    Procedure DrawBackgroundImage(Const Image; X, Y: Integer; Width, Height: Dword); StdCall;
+{15.5}    Procedure DrawBackgroundImage(Const Image; X, Y: Integer; Width, Height: LongWord); StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -960,7 +965,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{16}      Function  FlushFloppyCache(FloppyNumber: Dword): Dword; StdCall;
+{16}      Function  FlushFloppyCache(FloppyNumber: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 15
@@ -975,7 +980,7 @@ Implementation
                   int    64
           End;
 (* -------------------------------------------------------- *)
-{18.1}    Procedure DeactivateWindow(Slot: Dword); StdCall;
+{18.1}    Procedure DeactivateWindow(Slot: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -985,7 +990,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.2}    Procedure TerminateThreadBySlot(Slot: Dword); StdCall;
+{18.2}    Procedure TerminateThreadBySlot(Slot: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -995,7 +1000,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.3}    Procedure ActivateWindow(Slot: Dword); StdCall;
+{18.3}    Procedure ActivateWindow(Slot: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1005,7 +1010,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.4}    Function  GetIdleTime: Dword; StdCall;
+{18.4}    Function  GetIdleTime: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1014,7 +1019,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.5}    Function  GetCPUClock: Dword; StdCall;
+{18.5}    Function  GetCPUClock: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1023,7 +1028,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.6}    Function  SaveRamDisk(Path: PChar): Dword; StdCall;
+{18.6}    Function  SaveRamDisk(Path: PKolibriChar): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1033,7 +1038,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.7}    Function  GetActiveWindow: Dword; StdCall;
+{18.7}    Function  GetActiveWindow: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1062,7 +1067,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.9}    Function  SystemShutdown(Param: Dword): Integer; StdCall;
+{18.9}    Function  SystemShutdown(Param: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1121,7 +1126,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.16}   Function  GetFreeMemory: Dword; StdCall;
+{18.16}   Function  GetFreeMemory: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1130,7 +1135,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.17}   Function  GetAvailableMemory: Dword; StdCall;
+{18.17}   Function  GetAvailableMemory: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1139,7 +1144,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.18}   Function  TerminateThreadById(ID: Dword): Integer; StdCall;
+{18.18}   Function  TerminateThreadById(ID: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1149,7 +1154,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.19.0} Function  GetMouseSpeed: Dword; StdCall;
+{18.19.0} Function  GetMouseSpeed: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1159,7 +1164,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.19.1} Procedure SetMouseSpeed(Speed: Dword); StdCall;
+{18.19.1} Procedure SetMouseSpeed(Speed: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1170,7 +1175,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.19.2} Function  GetMouseSensitivity: Dword; StdCall;
+{18.19.2} Function  GetMouseSensitivity: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1180,7 +1185,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.19.3} Procedure SetMouseSensitivity(Sensitivity: Dword); StdCall;
+{18.19.3} Procedure SetMouseSensitivity(Sensitivity: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1204,7 +1209,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.19.5} Procedure SetMouseButtons(State: Dword); StdCall;
+{18.19.5} Procedure SetMouseButtons(State: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1215,7 +1220,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.19.6} Function  GetDoubleClickTime: Dword; StdCall;
+{18.19.6} Function  GetDoubleClickTime: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1225,7 +1230,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.19.7} Procedure SetDoubleClickTime(Time: Dword); StdCall;
+{18.19.7} Procedure SetDoubleClickTime(Time: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1246,7 +1251,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.21}   Function  GetSlotById(ID: Dword): Dword; StdCall;
+{18.21}   Function  GetSlotById(ID: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1256,7 +1261,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.22.0} Function  MinimizeWindowBySlot(Slot: Dword): Integer; StdCall;
+{18.22.0} Function  MinimizeWindowBySlot(Slot: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1267,7 +1272,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.22.1} Function  MinimizeWindowByID(ID: Dword): Integer; StdCall;
+{18.22.1} Function  MinimizeWindowByID(ID: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1278,7 +1283,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.22.2} Function  RestoreWindowBySlot(Slot: Dword): Integer; StdCall;
+{18.22.2} Function  RestoreWindowBySlot(Slot: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1289,7 +1294,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.22.3} Function  RestoreWindowByID(ID: Dword): Integer; StdCall;
+{18.22.3} Function  RestoreWindowByID(ID: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1300,7 +1305,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.23}   Function  MinimizeAllWindows: Dword; StdCall;
+{18.23}   Function  MinimizeAllWindows: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1309,7 +1314,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.24}   Procedure SetScreenLimits(Width, Height: Dword); StdCall;
+{18.24}   Procedure SetScreenLimits(Width, Height: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1320,7 +1325,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.25.1} Function  GetWindowZOrder(ID: Dword): Dword; StdCall;
+{18.25.1} Function  GetWindowZOrder(ID: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1331,7 +1336,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.25.2} Function  SetWindowZOrder(ID, ZOrder: Dword): Integer; StdCall;
+{18.25.2} Function  SetWindowZOrder(ID, ZOrder: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -1366,7 +1371,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{21.1}    Function  SetMidiBase(Port: Dword): Integer; StdCall;
+{21.1}    Function  SetMidiBase(Port: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 21
@@ -1376,7 +1381,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{21.2}    Function  SetKeyboardLayout(Flags: Dword; Var Table: TKeyboardLayout): Integer; StdCall;
+{21.2}    Function  SetKeyboardLayout(Flags: LongWord; Var Table: TKeyboardLayout): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 21
@@ -1387,7 +1392,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{21.2}    Function  SetKeyboardLayoutCountry(Country: Dword): Integer; StdCall;
+{21.2}    Function  SetKeyboardLayoutCountry(Country: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 21
@@ -1402,7 +1407,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {21.4}    {UNDEFINED}
 (* -------------------------------------------------------- *)
-{21.5}    Function  SetSystemLanguage(SystemLanguage: Dword): Integer; StdCall;
+{21.5}    Function  SetSystemLanguage(SystemLanguage: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 21
@@ -1422,7 +1427,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {21.10}   {UNDEFINED}
 (* -------------------------------------------------------- *)
-{21.11}   Function  SetHDAccess(Value: Dword): Integer; StdCall;
+{21.11}   Function  SetHDAccess(Value: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 21
@@ -1432,7 +1437,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{21.12}   Function  SetPCIAccess(Value: Dword): Integer; StdCall;
+{21.12}   Function  SetPCIAccess(Value: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 21
@@ -1462,7 +1467,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{22.2}    Function  SetDayOfWeek(DayOfWeek: Dword): Integer; StdCall;
+{22.2}    Function  SetDayOfWeek(DayOfWeek: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 22
@@ -1482,7 +1487,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{23}      Function  WaitEventByTime(Time: Dword): Dword; StdCall;
+{23}      Function  WaitEventByTime(Time: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 23
@@ -1491,7 +1496,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{24.4}    Procedure OpenCDTray(Drive: Dword); StdCall;
+{24.4}    Procedure OpenCDTray(Drive: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 24
@@ -1501,7 +1506,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{24.5}    Procedure CloseCDTray(Drive: Dword); StdCall;
+{24.5}    Procedure CloseCDTray(Drive: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 24
@@ -1511,7 +1516,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{25}      Procedure DrawBackgroundLayerImage(Const Image; X, Y: Integer; Width, Height: Dword); StdCall;
+{25}      Procedure DrawBackgroundLayerImage(Const Image; X, Y: Integer; Width, Height: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 25
@@ -1526,7 +1531,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{26.1}    Function  GetMidiBase: Dword; StdCall;
+{26.1}    Function  GetMidiBase: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 26
@@ -1535,7 +1540,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{26.2}    Procedure GetKeyboardLayout(Flags: Dword; Var Table: TKeyboardLayout); StdCall;
+{26.2}    Procedure GetKeyboardLayout(Flags: LongWord; Var Table: TKeyboardLayout); StdCall;
           Asm
                   push   ebx
                   mov    eax, 26
@@ -1546,7 +1551,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{26.2}    Function  GetKeyboardLayoutCountry: Dword; StdCall;
+{26.2}    Function  GetKeyboardLayoutCountry: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 26
@@ -1560,7 +1565,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {26.4}    {UNDEFINED}
 (* -------------------------------------------------------- *)
-{26.5}    Function  GetSystemLanguage: Dword; StdCall;
+{26.5}    Function  GetSystemLanguage: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 26
@@ -1575,7 +1580,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {26.8}    {UNDEFINED}
 (* -------------------------------------------------------- *)
-{26.9}    Function  GetTickCount: Dword; StdCall;
+{26.9}    Function  GetTickCount: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 26
@@ -1584,7 +1589,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{26.10}   Function  GetTickCount64: Qword; StdCall;
+{26.10}   Function  GetTickCount64: QuadWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 26
@@ -1593,7 +1598,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{26.11}   Function  IsHDAccessAllowed: Dword; StdCall;
+{26.11}   Function  IsHDAccessAllowed: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 26
@@ -1602,7 +1607,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{26.12}   Function  IsPCIAccessAllowed: Dword; StdCall;
+{26.12}   Function  IsPCIAccessAllowed: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 26
@@ -1621,7 +1626,7 @@ Implementation
                   int    64
           End;
 (* -------------------------------------------------------- *)
-{30.1}    Procedure SetCurrentDirectory(Path: PChar); StdCall;
+{30.1}    Procedure SetCurrentDirectory(Path: PKolibriChar); StdCall;
           Asm
                   push   ebx
                   mov    eax, 30
@@ -1631,7 +1636,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{30.2}    Function  GetCurrentDirectory(Buffer: PChar; Count: Dword): Dword; StdCall;
+{30.2}    Function  GetCurrentDirectory(Buffer: PKolibriChar; Count: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 30
@@ -1648,7 +1653,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {33}      {UNDEFINED}
 (* -------------------------------------------------------- *)
-{34}      Function  GetPointOwner(X, Y: Integer): Dword; StdCall;
+{34}      Function  GetPointOwner(X, Y: Integer): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 34
@@ -1658,7 +1663,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{35}      Function  GetPixel(X, Y: Integer): Dword; StdCall;
+{35}      Function  GetPixel(X, Y: Integer): LongWord; StdCall;
           Asm
                   push   ebx
           // at first need to know Screen.Width
@@ -1677,7 +1682,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{36}      Procedure GetScreenImage(Var Buffer; X, Y: Integer; Width, Height: Dword); StdCall;
+{36}      Procedure GetScreenImage(Var Buffer; X, Y: Integer; Width, Height: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 36
@@ -1710,7 +1715,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{37.2}    Function  GetMouseButtons: Dword; StdCall;
+{37.2}    Function  GetMouseButtons: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 37
@@ -1719,7 +1724,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{37.3}    Function  GetMouseEvents: Dword; StdCall;
+{37.3}    Function  GetMouseEvents: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 37
@@ -1728,7 +1733,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{37.4}    Function  LoadCursorFromFile(Path: PChar): Dword; StdCall;
+{37.4}    Function  LoadCursorFromFile(Path: PKolibriChar): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 37
@@ -1739,7 +1744,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{37.4}    Function  LoadCursorFromMemory(Const Buffer): Dword; StdCall;
+{37.4}    Function  LoadCursorFromMemory(Const Buffer): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 37
@@ -1750,7 +1755,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{37.4}    Function  LoadCursorIndirect(Const Buffer; HotSpotX, HotSpotY: ShortInt): Dword; StdCall;
+{37.4}    Function  LoadCursorIndirect(Const Buffer; HotSpotX, HotSpotY: ShortInt): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 37
@@ -1764,7 +1769,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{37.5}    Function  SetCursor(Handle: Dword): Dword; StdCall;
+{37.5}    Function  SetCursor(Handle: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 37
@@ -1774,7 +1779,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{37.6}    Function  DeleteCursor(Handle: Dword): Dword; StdCall;
+{37.6}    Function  DeleteCursor(Handle: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 37
@@ -1793,7 +1798,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{38}      Procedure DrawLine(X1, Y1, X2, Y2: Integer; Color: Dword); StdCall;
+{38}      Procedure DrawLine(X1, Y1, X2, Y2: Integer; Color: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 38
@@ -1817,7 +1822,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{39.2}    Function  GetBackgroundPixel(X, Y: Integer): Dword; StdCall;
+{39.2}    Function  GetBackgroundPixel(X, Y: Integer): LongWord; StdCall;
           Asm
                   push   ebx
           // at first need to know Background.Width
@@ -1841,7 +1846,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {39.3}    {UNDEFINED}
 (* -------------------------------------------------------- *)
-{39.4}    Function  GetBackgroundDrawMode: Dword; StdCall;
+{39.4}    Function  GetBackgroundDrawMode: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 39
@@ -1850,7 +1855,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{40}      Function  SetEventMask(Mask: Dword): Dword; StdCall;
+{40}      Function  SetEventMask(Mask: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 40
@@ -1863,7 +1868,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {42}      {UNDEFINED}
 (* -------------------------------------------------------- *)
-{43}      Function  InPort(Port: Dword; Var Data: Byte): Dword; StdCall;
+{43}      Function  InPort(Port: LongWord; Var Data: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 43
@@ -1875,7 +1880,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{43}      Function  OutPort(Port: Dword; Data: Byte): Dword; StdCall;
+{43}      Function  OutPort(Port: LongWord; Data: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 43
@@ -1889,7 +1894,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {45}      {UNDEFINED}
 (* -------------------------------------------------------- *)
-{46}      Function  ReservePorts(First, Last: Dword): Dword; StdCall;
+{46}      Function  ReservePorts(First, Last: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 46
@@ -1900,7 +1905,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{46}      Function  FreePorts(First, Last: Dword): Dword; StdCall;
+{46}      Function  FreePorts(First, Last: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 46
@@ -1922,7 +1927,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{48.1}    Procedure SetButtonStyle(ButtonStyle: Dword); StdCall;
+{48.1}    Procedure SetButtonStyle(ButtonStyle: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 48
@@ -1932,7 +1937,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{48.2}    Procedure SetStandardColors(Var ColorTable: TStandardColors; Size: Dword); StdCall;
+{48.2}    Procedure SetStandardColors(Var ColorTable: TStandardColors; Size: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 48
@@ -1943,7 +1948,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{48.3}    Procedure GetStandardColors(Var ColorTable: TStandardColors; Size: Dword); StdCall;
+{48.3}    Procedure GetStandardColors(Var ColorTable: TStandardColors; Size: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 48
@@ -1954,7 +1959,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{48.4}    Function  GetSkinHeight: Dword; StdCall;
+{48.4}    Function  GetSkinHeight: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 48
@@ -2018,7 +2023,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{48.8}    Function  SetSkin(Path: PChar): Integer; StdCall;
+{48.8}    Function  SetSkin(Path: PKolibriChar): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 48
@@ -2047,7 +2052,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{48.11}   Function  GetFontHeight: Dword; StdCall;
+{48.11}   Function  GetFontHeight: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 48
@@ -2056,7 +2061,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{48.12}   Procedure SetFontHeight(Height: Dword); StdCall;
+{48.12}   Procedure SetFontHeight(Height: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 48
@@ -2078,7 +2083,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{50.1}    Procedure SetWindowScale(Scale: Dword); StdCall;
+{50.1}    Procedure SetWindowScale(Scale: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 50
@@ -2088,7 +2093,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{51.1}    Function  ThreadCreate(Entry, Stack: Pointer): Dword; StdCall;
+{51.1}    Function  ThreadCreate(Entry, Stack: Pointer): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 51
@@ -2112,7 +2117,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{54.1}    Function  GetClipboardData(Slot: Dword): Pointer; StdCall;
+{54.1}    Function  GetClipboardData(Slot: LongWord): Pointer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 54
@@ -2122,7 +2127,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{54.2}    Function  SetClipboardData(Const Src; Count: Dword): Integer; StdCall;
+{54.2}    Function  SetClipboardData(Const Src; Count: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 54
@@ -2151,7 +2156,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{55}      Function  SpeakerPlay(Const Data): Dword; StdCall;
+{55}      Function  SpeakerPlay(Const Data): LongWord; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -2171,7 +2176,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {59}      {UNDEFINED}
 (* -------------------------------------------------------- *)
-{60.1}    Function  IPCSetBuffer(Const Buffer: TIPCBuffer; Size: Dword): Integer; StdCall;
+{60.1}    Function  IPCSetBuffer(Const Buffer: TIPCBuffer; Size: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 60
@@ -2182,7 +2187,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{60.2}    Function  IPCSendMessage(ID: Dword; Var Msg: TIPCMessage; Size: Dword): Integer; StdCall;
+{60.2}    Function  IPCSendMessage(ID: LongWord; Var Msg: TIPCMessage; Size: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -2205,7 +2210,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{61.2}    Function  GetScreenBitsPerPixel: Dword; StdCall;
+{61.2}    Function  GetScreenBitsPerPixel: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 61
@@ -2214,7 +2219,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{61.3}    Function  GetScreenBytesPerScanLine: Dword; StdCall;
+{61.3}    Function  GetScreenBytesPerScanLine: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 61
@@ -2223,7 +2228,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{62.0}    Function  GetPCIVersion: Dword; StdCall;
+{62.0}    Function  GetPCIVersion: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 62
@@ -2232,7 +2237,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{62.1}    Function  GetLastPCIBus: Dword; StdCall;
+{62.1}    Function  GetLastPCIBus: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 62
@@ -2241,7 +2246,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{62.2}    Function  GetPCIAddressingMode: Dword; StdCall;
+{62.2}    Function  GetPCIAddressingMode: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 62
@@ -2280,7 +2285,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{62.6}    Function  ReadPCIDword(Bus, Device, Func, Reg: Byte): Dword; StdCall;
+{62.6}    Function  ReadPCILongWord(Bus, Device, Func, Reg: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 62
@@ -2296,7 +2301,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {62.7}    {UNDEFINED}
 (* -------------------------------------------------------- *)
-{62.8}    Function  WritePCIByte(Bus, Device, Func, Reg: Byte; Data: Byte): Dword; StdCall;
+{62.8}    Function  WritePCIByte(Bus, Device, Func, Reg: Byte; Data: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 62
@@ -2311,7 +2316,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{62.9}    Function  WritePCIWord(Bus, Device, Func, Reg: Byte; Data: Word): Dword; StdCall;
+{62.9}    Function  WritePCIWord(Bus, Device, Func, Reg: Byte; Data: Word): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 62
@@ -2326,7 +2331,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{62.10}   Function  WritePCIDword(Bus, Device, Func, Reg: Byte; Data: Dword): Dword; StdCall;
+{62.10}   Function  WritePCILongWord(Bus, Device, Func, Reg: Byte; Data: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 62
@@ -2351,7 +2356,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{63.2}    Function  BoardReadByte(Var Data: Byte): Dword; StdCall;
+{63.2}    Function  BoardReadByte(Var Data: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 63
@@ -2363,7 +2368,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{64}      Function  ReallocAppMemory(Count: Dword): Integer; StdCall;
+{64}      Function  ReallocAppMemory(Count: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 64
@@ -2373,7 +2378,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{65}      Procedure DrawImageEx(Const Image; Left, Top: Integer; Width, Height: Dword; BPP: Dword; Const Palette: Pointer; Padding: Dword); StdCall;
+{65}      Procedure DrawImageEx(Const Image; Left, Top: Integer; Width, Height: LongWord; BPP: LongWord; Const Palette: Pointer; Padding: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 65
@@ -2391,7 +2396,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{66.1}    Procedure SetKeyboardInputMode(Mode: Dword); StdCall;
+{66.1}    Procedure SetKeyboardInputMode(Mode: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 66
@@ -2401,7 +2406,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{66.2}    Function  GetKeyboardInputMode: Dword; StdCall;
+{66.2}    Function  GetKeyboardInputMode: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 66
@@ -2410,7 +2415,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{66.3}    Function  GetControlKeyState: Dword; StdCall;
+{66.3}    Function  GetControlKeyState: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 66
@@ -2419,7 +2424,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{66.4}    Function  SetHotKey(ScanCode, Control: Dword): Integer; StdCall;
+{66.4}    Function  SetHotKey(ScanCode, Control: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 66
@@ -2430,7 +2435,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{66.5}    Function  ResetHotKey(ScanCode, Control: Dword): Integer; StdCall;
+{66.5}    Function  ResetHotKey(ScanCode, Control: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 66
@@ -2473,7 +2478,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.0}    Function  GetTaskSwitchCount: Dword; StdCall;
+{68.0}    Function  GetTaskSwitchCount: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2491,7 +2496,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.2.0}  Function  EnableRDPMC: Dword; StdCall;
+{68.2.0}  Function  EnableRDPMC: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2501,7 +2506,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.2.1}  Function  IsCacheEnabled: Dword; StdCall;
+{68.2.1}  Function  IsCacheEnabled: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2547,7 +2552,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {68.10}   {UNDEFINED}
 (* -------------------------------------------------------- *)
-{68.11}   Function  HeapCreate: Dword; StdCall;
+{68.11}   Function  HeapCreate: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2556,7 +2561,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.12}   Function  HeapAllocate(Bytes: Dword): Pointer; StdCall;
+{68.12}   Function  HeapAllocate(Bytes: LongWord): Pointer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2566,7 +2571,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.13}   Function  HeapFree(MemPtr: Pointer): Dword; StdCall;
+{68.13}   Function  HeapFree(MemPtr: Pointer): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2588,7 +2593,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {68.15}   {UNDEFINED}
 (* -------------------------------------------------------- *)
-{68.16}   Function  GetDriver(Name: PChar): Dword; StdCall;
+{68.16}   Function  GetDriver(Name: PKolibriChar): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2598,7 +2603,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.17}   Function  ControlDriver(Var CtrlStructure: TCtrlDriver): Dword; StdCall;
+{68.17}   Function  ControlDriver(Var CtrlStructure: TCtrlDriver): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2610,7 +2615,7 @@ Implementation
 (* -------------------------------------------------------- *)
 {68.18}   {UNDEFINED}
 (* -------------------------------------------------------- *)
-{68.19}   Function  LoadLibrary(Path: PChar): Pointer; StdCall;
+{68.19}   Function  LoadLibrary(Path: PKolibriChar): Pointer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2620,7 +2625,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.20}   Function  HeapReallocate(MemPtr: Pointer; Bytes: Dword): Pointer; StdCall;
+{68.20}   Function  HeapReallocate(MemPtr: Pointer; Bytes: LongWord): Pointer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2631,7 +2636,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.21}   Function  LoadDriver(Name, CmdLine: PChar): Dword; StdCall;
+{68.21}   Function  LoadDriver(Name, CmdLine: PKolibriChar): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2642,7 +2647,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.22}   Function  SharedMemoryOpen(Name: PChar; Bytes: Dword; Flags: Dword): Pointer; StdCall;
+{68.22}   Function  SharedMemoryOpen(Name: PKolibriChar; Bytes: LongWord; Flags: LongWord): Pointer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -2656,7 +2661,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.23}   Function  SharedMemoryClose(Name: PChar): Dword; StdCall;
+{68.23}   Function  SharedMemoryClose(Name: PKolibriChar): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2666,7 +2671,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.24}   Function  SetExceptionHandler(Handler: Pointer; Mask: Dword; Var OldMask: Dword): Pointer; StdCall;
+{68.24}   Function  SetExceptionHandler(Handler: Pointer; Mask: LongWord; Var OldMask: LongWord): Pointer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2679,7 +2684,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.25}   Function  SetExceptionActivity(Signal, Activity: Dword): Integer; StdCall;
+{68.25}   Function  SetExceptionActivity(Signal, Activity: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2690,7 +2695,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.26}   Procedure ReleaseMemoryPages(MemPtr: Pointer; Offset, Size: Dword); StdCall;
+{68.26}   Procedure ReleaseMemoryPages(MemPtr: Pointer; Offset, Size: LongWord); StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -2704,7 +2709,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{68.27}   Function  LoadFile(Path: PChar; Var Size: Dword): Pointer; StdCall;
+{68.27}   Function  LoadFile(Path: PKolibriChar; Var Size: LongWord): Pointer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 68
@@ -2726,7 +2731,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.1}    Procedure GetThreadContext(ID: Dword; Var Context: TThreadContext); StdCall;
+{69.1}    Procedure GetThreadContext(ID: LongWord; Var Context: TThreadContext); StdCall;
           Const SIZEOF_TTHREADCONTEXT = SizeOf(TThreadContext);
           Asm
                   push   ebx
@@ -2741,7 +2746,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.2}    Procedure SetThreadContext(ID: Dword; Const Context: TThreadContext); StdCall;
+{69.2}    Procedure SetThreadContext(ID: LongWord; Const Context: TThreadContext); StdCall;
           Const SIZEOF_TTHREADCONTEXT = SizeOf(TThreadContext);
           Asm
                   push   ebx
@@ -2756,7 +2761,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.3}    Procedure DetachThread(ID: Dword); StdCall;
+{69.3}    Procedure DetachThread(ID: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 69
@@ -2766,7 +2771,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.4}    Procedure SuspendThread(ID: Dword); StdCall;
+{69.4}    Procedure SuspendThread(ID: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 69
@@ -2776,7 +2781,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.5}    Procedure ResumeThread(ID: Dword); StdCall;
+{69.5}    Procedure ResumeThread(ID: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 69
@@ -2786,7 +2791,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.6}    Function  ReadProcessMemory(ID, Count: Dword; Const Src; Var Dst): Integer; StdCall;
+{69.6}    Function  ReadProcessMemory(ID, Count: LongWord; Const Src; Var Dst): Integer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -2803,7 +2808,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.7}    Function  WriteProcessMemory(ID, Count: Dword; Const Src; Var Dst): Integer; StdCall;
+{69.7}    Function  WriteProcessMemory(ID, Count: LongWord; Const Src; Var Dst): Integer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -2820,7 +2825,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.8}    Procedure DebugTerminate(ID: Dword); StdCall;
+{69.8}    Procedure DebugTerminate(ID: LongWord); StdCall;
           Asm
                   push   ebx
                   mov    eax, 69
@@ -2830,7 +2835,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.9}    Function  SetBreakPoint(ID: Dword; Index, Flags: Byte; Address: Pointer): Integer; StdCall;
+{69.9}    Function  SetBreakPoint(ID: LongWord; Index, Flags: Byte; Address: Pointer): Integer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -2845,7 +2850,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{69.9}    Function  ResetBreakPoint(ID: Dword; Index, Flags: Byte; Address: Pointer): Integer; StdCall;
+{69.9}    Function  ResetBreakPoint(ID: LongWord; Index, Flags: Byte; Address: Pointer): Integer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -2861,7 +2866,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.0}    Function  ReadFile(Path: PChar; Var Buffer; Count, LoPos, HiPos: Cardinal; Var BytesRead: Dword): Integer; StdCall;
+{70.0}    Function  ReadFile(Path: PKolibriChar; Var Buffer; Count, LoPos, HiPos: Cardinal; Var BytesRead: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -2881,7 +2886,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.1}    Function  ReadFolder(Path: PChar; Var Buffer; Count, Start, Flags: Cardinal; Var BlocksRead: Dword): Integer; StdCall;
+{70.1}    Function  ReadFolder(Path: PKolibriChar; Var Buffer; Count, Start, Flags: Cardinal; Var BlocksRead: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -2901,7 +2906,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.2}    Function  CreateFile(Path: PChar): Integer; StdCall;
+{70.2}    Function  CreateFile(Path: PKolibriChar): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -2919,7 +2924,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.3}    Function  WriteFile(Path: PChar; Const Buffer; Count, LoPos, HiPos: Cardinal; Var BytesWritten: Dword): Integer; StdCall;
+{70.3}    Function  WriteFile(Path: PKolibriChar; Const Buffer; Count, LoPos, HiPos: Cardinal; Var BytesWritten: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -2939,7 +2944,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.4}    Function  ResizeFile(Path: PChar; LoSize, HiSize: Cardinal): Integer; StdCall;
+{70.4}    Function  ResizeFile(Path: PKolibriChar; LoSize, HiSize: Cardinal): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -2957,7 +2962,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.5}    Function  GetFileAttributes(Path: PChar; Var Buffer: TFileAttributes): Integer; StdCall;
+{70.5}    Function  GetFileAttributes(Path: PKolibriChar; Var Buffer: TFileAttributes): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -2975,7 +2980,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.6}    Function  SetFileAttributes(Path: PChar; Var Buffer: TFileAttributes): Integer; StdCall;
+{70.6}    Function  SetFileAttributes(Path: PKolibriChar; Var Buffer: TFileAttributes): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -2993,7 +2998,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.7}    Function  RunFile(Path, CmdLine: PChar): Integer; StdCall;
+{70.7}    Function  RunFile(Path, CmdLine: PKolibriChar): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -3011,7 +3016,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.7}    Function  DebugFile(Path, CmdLine: PChar): Integer; StdCall;
+{70.7}    Function  DebugFile(Path, CmdLine: PKolibriChar): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -3029,7 +3034,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.8}    Function  DeleteFile(Path: PChar): Integer; StdCall;
+{70.8}    Function  DeleteFile(Path: PKolibriChar): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -3047,7 +3052,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{70.9}    Function  CreateFolder(Path: PChar): Integer; StdCall;
+{70.9}    Function  CreateFolder(Path: PKolibriChar): Integer; StdCall;
           Asm
                   push   ebx
                   push   Path
@@ -3065,7 +3070,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{71.1}    Procedure SetWindowCaption(Caption: PChar); StdCall;
+{71.1}    Procedure SetWindowCaption(Caption: PKolibriChar); StdCall;
           Asm
                   push   ebx
                   mov    eax, 71
@@ -3075,7 +3080,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{72.1.2}  Function  SendActiveWindowKey(KeyCode: Dword): Integer; StdCall;
+{72.1.2}  Function  SendActiveWindowKey(KeyCode: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 72
@@ -3086,7 +3091,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{72.1.3}  Function  SendActiveWindowButton(ButtonID: Dword): Integer; StdCall;
+{72.1.3}  Function  SendActiveWindowButton(ButtonID: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 72
@@ -3097,7 +3102,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{73}      Procedure Blit(Const Src; SrcX, SrcY: Integer; SrcW, SrcH: Dword; DstX, DstY: Integer; DstW, DstH: Dword; Stride, Flags: Dword); StdCall;
+{73}      Procedure Blit(Const Src; SrcX, SrcY: Integer; SrcW, SrcH: LongWord; DstX, DstY: Integer; DstW, DstH: LongWord; Stride, Flags: LongWord); StdCall;
           Asm
                   push   Stride
                   push   Src
@@ -3116,7 +3121,7 @@ Implementation
                   add    esp, 40
           End;
 (* -------------------------------------------------------- *)
-{74.-1}   Function  GetActiveNetworkDevices: Dword; StdCall;
+{74.-1}   Function  GetActiveNetworkDevices: LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 74
@@ -3228,7 +3233,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.0}    Function  OpenSocket(Domain, Kind, Protocol: Dword): Dword; StdCall;
+{75.0}    Function  OpenSocket(Domain, Kind, Protocol: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -3242,7 +3247,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.1}    Function  CloseSocket(Socket: Dword): Integer; StdCall;
+{75.1}    Function  CloseSocket(Socket: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 75
@@ -3252,7 +3257,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.2}    Function  SocketBind(Socket: Dword; Var SockAddr: TSockAddr): Integer; StdCall;
+{75.2}    Function  SocketBind(Socket: LongWord; Var SockAddr: TSockAddr): Integer; StdCall;
           Const SIZEOF_TSOCKADDR = SizeOf(TSockAddr);
           Asm
                   push   ebx
@@ -3267,7 +3272,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.3}    Function  SocketListen(Socket: Dword; Var BackLog): Integer; StdCall;
+{75.3}    Function  SocketListen(Socket: LongWord; Var BackLog): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 75
@@ -3278,7 +3283,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.4}    Function  SocketConnect(Socket: Dword; Var SockAddr: TSockAddr): Integer; StdCall;
+{75.4}    Function  SocketConnect(Socket: LongWord; Var SockAddr: TSockAddr): Integer; StdCall;
           Const SIZEOF_TSOCKADDR = SizeOf(TSockAddr);
           Asm
                   push   ebx
@@ -3293,7 +3298,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.5}    Function  SocketAccept(Socket: Dword; Var SockAddr: TSockAddr): Dword; StdCall;
+{75.5}    Function  SocketAccept(Socket: LongWord; Var SockAddr: TSockAddr): LongWord; StdCall;
           Const SIZEOF_TSOCKADDR = SizeOf(TSockAddr);
           Asm
                   push   ebx
@@ -3308,7 +3313,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.6}    Function  SocketSend(Socket: Dword; Const Buffer; Size, Flags: Dword): Integer; StdCall;
+{75.6}    Function  SocketSend(Socket: LongWord; Const Buffer; Size, Flags: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -3325,7 +3330,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.7}    Function  SocketReceive(Socket: Dword; Var Buffer; Size, Flags: Dword): Integer; StdCall;
+{75.7}    Function  SocketReceive(Socket: LongWord; Var Buffer; Size, Flags: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -3342,7 +3347,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.8}    Function  SetSocketOptions(Socket: Dword; Var OptStruct: TOptStruct): Integer; StdCall;
+{75.8}    Function  SetSocketOptions(Socket: LongWord; Var OptStruct: TOptStruct): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 75
@@ -3353,7 +3358,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.9}    Function  GetSocketOptions(Socket: Dword; Var OptStruct: TOptStruct): Integer; StdCall;
+{75.9}    Function  GetSocketOptions(Socket: LongWord; Var OptStruct: TOptStruct): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 75
@@ -3364,7 +3369,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{75.10}   Function  GetSocketPair(Var Socket1, Socket2: Dword): Integer; StdCall;
+{75.10}   Function  GetSocketPair(Var Socket1, Socket2: LongWord): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 75
@@ -3377,7 +3382,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.0.0}  Function  GetMAC(Device: Byte): Dword; StdCall;
+{76.0.0}  Function  GetMAC(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3388,7 +3393,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.0}  Function  GetIPv4SentPackets(Device: Byte): Dword; StdCall;
+{76.1.0}  Function  GetIPv4SentPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3399,7 +3404,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.1}  Function  GetIPv4ReceivedPackets(Device: Byte): Dword; StdCall;
+{76.1.1}  Function  GetIPv4ReceivedPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3410,7 +3415,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.2}  Function  GetIPv4IP(Device: Byte): Dword; StdCall;
+{76.1.2}  Function  GetIPv4IP(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3421,7 +3426,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.3}  Function  SetIPv4IP(Device: Byte; IP: Dword): Dword; StdCall;
+{76.1.3}  Function  SetIPv4IP(Device: Byte; IP: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3433,7 +3438,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.4}  Function  GetIPv4DNS(Device: Byte): Dword; StdCall;
+{76.1.4}  Function  GetIPv4DNS(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3444,7 +3449,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.5}  Function  SetIPv4DNS(Device: Byte; DNS: Dword): Dword; StdCall;
+{76.1.5}  Function  SetIPv4DNS(Device: Byte; DNS: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3456,7 +3461,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.6}  Function  GetIPv4Subnet(Device: Byte): Dword; StdCall;
+{76.1.6}  Function  GetIPv4Subnet(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3467,7 +3472,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.7}  Function  SetIPv4Subnet(Device: Byte; Subnet: Dword): Dword; StdCall;
+{76.1.7}  Function  SetIPv4Subnet(Device: Byte; Subnet: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3479,7 +3484,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.8}  Function  GetIPv4Gateway(Device: Byte): Dword; StdCall;
+{76.1.8}  Function  GetIPv4Gateway(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3490,7 +3495,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.1.9}  Function  SetIPv4Gateway(Device: Byte; Gateway: Dword): Dword; StdCall;
+{76.1.9}  Function  SetIPv4Gateway(Device: Byte; Gateway: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3502,7 +3507,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.2.0}  Function  GetICMPSentPackets(Device: Byte): Dword; StdCall;
+{76.2.0}  Function  GetICMPSentPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3513,7 +3518,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.2.1}  Function  GetICMPReceivedPackets(Device: Byte): Dword; StdCall;
+{76.2.1}  Function  GetICMPReceivedPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3524,7 +3529,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.3.0}  Function  GetUDPSentPackets(Device: Byte): Dword; StdCall;
+{76.3.0}  Function  GetUDPSentPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3535,7 +3540,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.3.1}  Function  GetUDPReceivedPackets(Device: Byte): Dword; StdCall;
+{76.3.1}  Function  GetUDPReceivedPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3546,7 +3551,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.4.0}  Function  GetTCPSentPackets(Device: Byte): Dword; StdCall;
+{76.4.0}  Function  GetTCPSentPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3557,7 +3562,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.4.1}  Function  GetTCPReceivedPackets(Device: Byte): Dword; StdCall;
+{76.4.1}  Function  GetTCPReceivedPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3568,7 +3573,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.5.0}  Function  GetARPSentPackets(Device: Byte): Dword; StdCall;
+{76.5.0}  Function  GetARPSentPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3579,7 +3584,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.5.1}  Function  GetARPReceivedPackets(Device: Byte): Dword; StdCall;
+{76.5.1}  Function  GetARPReceivedPackets(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3590,7 +3595,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.5.2}  Function  GetARPEntrys(Device: Byte): Dword; StdCall;
+{76.5.2}  Function  GetARPEntrys(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3601,7 +3606,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.5.3}  Function  GetARPEntry(Device: Byte; Entry: Dword; Var Buffer): Dword; StdCall;
+{76.5.3}  Function  GetARPEntry(Device: Byte; Entry: LongWord; Var Buffer): LongWord; StdCall;
           Asm
                   push   ebx
                   push   edi
@@ -3616,7 +3621,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.5.4}  Function  AddARPEntry(Device: Byte; Const Buffer): Dword; StdCall;
+{76.5.4}  Function  AddARPEntry(Device: Byte; Const Buffer): LongWord; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -3630,7 +3635,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.5.5}  Function  RemoveARPEntry(Device: Byte; Entry: Dword): Dword; StdCall;
+{76.5.5}  Function  RemoveARPEntry(Device: Byte; Entry: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3642,7 +3647,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.5.6}  Function  SendARPAnnounce(Device: Byte): Dword; StdCall;
+{76.5.6}  Function  SendARPAnnounce(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3653,7 +3658,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{76.5.7}  Function  GetARPConflicts(Device: Byte): Dword; StdCall;
+{76.5.7}  Function  GetARPConflicts(Device: Byte): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 76
@@ -3664,7 +3669,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{77.0}    Function  CreateFutex(Futex: Pointer): Dword; StdCall;
+{77.0}    Function  CreateFutex(Futex: Pointer): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 77
@@ -3674,7 +3679,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{77.1}    Function  DestroyFutex(Handle: Dword): Dword; StdCall;
+{77.1}    Function  DestroyFutex(Handle: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 77
@@ -3684,7 +3689,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{77.2}    Function  WaitFutex(Handle, Value, Time: Dword): Dword; StdCall;
+{77.2}    Function  WaitFutex(Handle, Value, Time: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   push   esi
@@ -3698,7 +3703,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{77.3}    Function  WakeFutex(Handle, Waiters: Dword): Dword; StdCall;
+{77.3}    Function  WakeFutex(Handle, Waiters: LongWord): LongWord; StdCall;
           Asm
                   push   ebx
                   mov    eax, 77
@@ -3709,7 +3714,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-          Function  GetProcAddress(hLib: Pointer; ProcName: PChar): Pointer; StdCall;
+          Function  GetProcAddress(hLib: Pointer; ProcName: PKolibriChar): Pointer; StdCall;
           Asm
                   push   esi
                   push   edi

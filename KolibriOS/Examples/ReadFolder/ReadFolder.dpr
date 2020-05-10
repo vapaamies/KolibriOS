@@ -5,9 +5,9 @@ uses
 
 var
   hConsole: Pointer;
-  ConsoleInit:       procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PChar); stdcall;
+  ConsoleInit:       procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
   ConsoleExit:       procedure(bCloseWindow: Cardinal); stdcall;
-  printf:            function(const Format: PChar): Integer; cdecl varargs;
+  printf:            function(const Format: PKolibriChar): Integer; cdecl varargs;
 
 const
   FolderPath = '/sys';

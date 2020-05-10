@@ -5,9 +5,9 @@ uses
 
 var
   hConsole: Pointer;
-  ConsoleInit:       procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PChar); stdcall;
+  ConsoleInit:       procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
   ConsoleExit:       procedure(bCloseWindow: Cardinal); stdcall;
-  WriteN:            procedure(Str: PChar; Count: LongWord); stdcall;
+  WriteN:            procedure(Str: PKolibriChar; Count: LongWord); stdcall;
 
   FileSize: LongWord;
   Buffer: Pointer;
