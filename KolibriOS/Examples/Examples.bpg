@@ -1,0 +1,63 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = ColorButtons.exe DateTime.exe DrawImage.exe DrawImageEx.exe DrawText.exe GetCurrentDirectory.exe GetPixel.exe \
+  GetPointOwner.exe Hello.exe LoadFile.exe ReadFolder.exe Screenshot.exe SetCursor.exe SetPixel.exe SetWindowPos.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+ColorButtons.exe: ColorButtons\ColorButtons.dpr
+  $(DCC)
+
+DateTime.exe: DateTime\DateTime.dpr
+  $(DCC)
+
+DrawImage.exe: DrawImage\DrawImage.dpr
+  $(DCC)
+
+DrawImageEx.exe: DrawImageEx\DrawImageEx.dpr
+  $(DCC)
+
+DrawText.exe: DrawText\DrawText.dpr
+  $(DCC)
+
+GetCurrentDirectory.exe: GetCurrentDir\GetCurrentDir.dpr
+  $(DCC)
+
+GetPixel.exe: GetPixel\GetPixel.dpr
+  $(DCC)
+
+GetPointOwner.exe: GetPointOwner\GetPointOwner.dpr
+  $(DCC)
+
+Hello.exe: Hello\Hello.dpr
+  $(DCC)
+
+LoadFile.exe: LoadFile\LoadFile.dpr
+  $(DCC)
+
+ReadFolder.exe: ReadFolder\ReadFolder.dpr
+  $(DCC)
+
+Screenshot.exe: Screenshot\Screenshot.dpr
+  $(DCC)
+
+SetCursor.exe: SetCursor\SetCursor.dpr
+  $(DCC)
+
+SetPixel.exe: SetPixel\SetPixel.dpr
+  $(DCC)
+
+SetWindowPos.exe: SetWindowPos\SetWindowPos.dpr
+  $(DCC)
+
+

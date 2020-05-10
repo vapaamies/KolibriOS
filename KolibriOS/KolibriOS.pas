@@ -328,7 +328,7 @@ Const
   BLIT_CLIENT_RELATIVE = $20000000;
 
 (* -------------------------------------------------------- *)
-{-1}      Procedure ThreadTerminate; StdCall;
+{-1}      Procedure TerminateThread; StdCall;
 {0}       Procedure DrawWindow(Left, Top, Right, Bottom: Integer; Caption: PChar; BackColor, Style, CapStyle: Dword); StdCall;
 {1}       Procedure SetPixel(X, Y: Integer; Color: Dword); StdCall;
 {2}       Function  GetKey: TKeyboardInput; StdCall;
@@ -358,7 +358,7 @@ Const
 {16}      Function  FlushFloppyCache(FloppyNumber: Dword): Dword; StdCall;
 {17}      Function  GetButton: TButtonInput; StdCall;
 {18.1}    Procedure DeactivateWindow(Slot: Dword); StdCall;
-{18.2}    Procedure ThreadTerminateBySlot(Slot: Dword); StdCall;
+{18.2}    Procedure TerminateThreadBySlot(Slot: Dword); StdCall;
 {18.3}    Procedure ActivateWindow(Slot: Dword); StdCall;
 {18.4}    Function  GetIdleTime: Dword; StdCall;
 {18.5}    Function  GetCPUClock: Dword; StdCall;
@@ -375,7 +375,7 @@ Const
 {18.15}   Function  CenterMousePointer: Integer; StdCall;
 {18.16}   Function  GetFreeMemory: Dword; StdCall;
 {18.17}   Function  GetAvailableMemory: Dword; StdCall;
-{18.18}   Function  ThreadTerminateById(ID: Dword): Integer; StdCall;
+{18.18}   Function  TerminateThreadById(ID: Dword): Integer; StdCall;
 {18.19.0} Function  GetMouseSpeed: Dword; StdCall;
 {18.19.1} Procedure SetMouseSpeed(Speed: Dword); StdCall;
 {18.19.2} Function  GetMouseSensitivity: Dword; StdCall;
@@ -637,7 +637,7 @@ Const
 (* -------------------------------------------------------- *)
 Implementation
 (* -------------------------------------------------------- *)
-{-1}      Procedure ThreadTerminate; StdCall;
+{-1}      Procedure TerminateThread; StdCall;
           Asm
                   mov    eax, $FFFFFFFF
                   int    64
@@ -985,7 +985,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.2}    Procedure ThreadTerminateBySlot(Slot: Dword); StdCall;
+{18.2}    Procedure TerminateThreadBySlot(Slot: Dword); StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
@@ -1139,7 +1139,7 @@ Implementation
                   pop    ebx
           End;
 (* -------------------------------------------------------- *)
-{18.18}   Function  ThreadTerminateById(ID: Dword): Integer; StdCall;
+{18.18}   Function  TerminateThreadById(ID: Dword): Integer; StdCall;
           Asm
                   push   ebx
                   mov    eax, 18
