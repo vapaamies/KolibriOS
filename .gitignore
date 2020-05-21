@@ -1,5 +1,6 @@
 *.$*
 *.~*
+*.7z
 *.bak
 *.cfg
 *.bpl
@@ -9,5 +10,9 @@
 *.dof
 *.dsk
 *.exe
+*.img
+*.iso
 *.map
 *.tmp
+*.zip
+Bin/*
