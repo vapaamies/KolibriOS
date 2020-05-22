@@ -47,12 +47,12 @@ begin
     while B < Screen.Height do
     begin
       I := ((Screen.Width div 2) * B + A) div 2;
-      Preview[i].Red := (Red(A, B) + Red(B + 1, B) + Red(A, B + 1) + Red(A + 1, B + 1)) div 4;
+      Preview[i].Red := (Red(A, B) + Red(A+ 1, B) + Red(A, B + 1) + Red(A + 1, B + 1)) div 4;
       Preview[i].Green := (Green(A, B) + Green(A + 1, B) + Green(A, B + 1) + Green(A + 1, B + 1)) div 4;
       Preview[i].Blue := (Blue(A, B) + Blue(A + 1, B) + Blue(A, B + 1) + Blue(A + 1, B + 1)) div 4;
       Inc(B, 2);
     end;
-    Inc(B, 2);
+    Inc(A, 2);
   end;
 end;
 
