@@ -2,7 +2,8 @@
 
           KolibriOS system functions and definitions
 
- ************************************************************)
+*************************************************************)
+
 unit KolibriOS;
 
 interface
@@ -59,19 +60,18 @@ type
     WinStackPos:  Word;
     Reserved0:    Word;
     Reserved1:    Word;
-    Name:         array[0..10] of KolibriChar;
-    Reserved2:    Byte;
+    Name:         array[0..11] of KolibriChar;
     MemAddress:   LongWord;
     MemUsage:     LongWord;
     Identifier:   LongWord;
     Window:       TRect;
     ThreadState:  Word;
-    Reserved3:    Word;
+    Reserved2:    Word;
     Client:       TRect;
     WindowState:  Byte;
     EventMask:    LongWord;
     KeyboardMode: Byte;
-    Reserved4:    array[0..947] of Byte;
+    Reserved3:    array[0..947] of Byte;
   end;
 
   TKeyboardInputMode = (kmChar, kmScan);
@@ -119,8 +119,8 @@ type
 
   TKeyboardLayout = array[0..127] of KolibriChar;
 
-  TCtrlDriver = packed record
-    Handle:         LongWord;
+  TDriverControl = packed record
+    Handle:         THandle;
     Func:           LongWord;
     InputData:      Pointer;
     InputDataSize:  LongWord;
@@ -251,6 +251,8 @@ type
   end;
 
 const
+  INVALID_HANDLE = 0;
+
   // Window styles 
   WS_SKINNED_FIXED     =  $4000000;
   WS_SKINNED_SIZABLE   =  $3000000;
@@ -258,7 +260,7 @@ const
   WS_SIZABLE           =  $2000000;
   WS_TRANSPARENT_FILL  = $40000000;
   WS_GRADIENT_FILL     = $80000000;
-  WS_CLIENT_COORDS      = $20000000;
+  WS_CLIENT_COORDS     = $20000000;
   WS_CAPTION           = $10000000;
 
   // Caption styles 
@@ -333,7 +335,7 @@ const
   BLIT_CLIENT_RELATIVE = $20000000;
 
 {-1}      procedure TerminateThread; stdcall;
-{0}       procedure DrawWindow(Left, Top, Right, Bottom: LongInt; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); stdcall;
+{0}       procedure DrawWindow(Left, Top, Width, Height: LongInt; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); stdcall;
 {1}       procedure SetPixel(X, Y: LongInt; Color: LongWord); stdcall;
 {2}       function GetKey: TKeyboardInput; stdcall;
 {3}       function GetSystemTime: TSystemTime; stdcall;
@@ -341,7 +343,7 @@ const
 {5}       procedure Sleep(Time: LongWord); stdcall;
 {6}       {UNDEFINED}
 {7}       procedure DrawImage(const Image; X, Y: LongInt; Width, Height: LongWord); stdcall;
-{8}       procedure DrawButton(Left, Top, Right, Bottom: LongInt; BackColor, Style, ID: LongWord); stdcall;
+{8}       procedure DrawButton(Left, Top, Width, Height: LongInt; BackColor, Style, ID: LongWord); stdcall;
 {8}       procedure DeleteButton(ID: LongWord); stdcall;
 {9}       function GetThreadInfo(Slot: LongWord; var Buffer: TThreadInfo): LongWord; stdcall;
 {10}      function WaitEvent: LongWord; stdcall;
@@ -356,7 +358,7 @@ const
 {15.4}    procedure SetBackgroundDrawMode(DrawMode: LongWord); stdcall;
 {15.5}    procedure DrawBackgroundImage(const Image; X, Y: LongInt; Width, Height: LongWord); stdcall;
 {15.6}    function MapBackground: Pointer; stdcall;
-{15.7}    function UnMapBackground(Background: Pointer): LongInt; stdcall;
+{15.7}    function UnmapBackground(Background: Pointer): LongInt; stdcall;
 {15.8}    function GetLastDrawnBackgroundRect: TRect; stdcall;
 {15.9}    procedure UpdateBackgroundRect(Left, Top, Right, Bottom: LongInt); stdcall;
 {16}      function FlushFloppyCache(FloppyNumber: LongWord): LongWord; stdcall;
@@ -366,7 +368,7 @@ const
 {18.3}    procedure ActivateWindow(Slot: LongWord); stdcall;
 {18.4}    function GetIdleTime: LongWord; stdcall;
 {18.5}    function GetCPUClock: LongWord; stdcall;
-{18.6}    function SaveRamDisk(Path: PKolibriChar): LongWord; stdcall;
+{18.6}    function SaveRamDisk(FileName: PKolibriChar): LongWord; stdcall;
 {18.7}    function GetActiveWindow: LongWord; stdcall;
 {18.8.1}  function GetSpeakerState: LongInt; stdcall;
 {18.8.2}  procedure SwitchSpeakerState; stdcall;
@@ -450,11 +452,11 @@ const
 {37.1}    function GetWindowMousePos: TPoint; stdcall;
 {37.2}    function GetMouseButtons: LongWord; stdcall;
 {37.3}    function GetMouseEvents: LongWord; stdcall;
-{37.4}    function LoadCursorFromFile(Path: PKolibriChar): LongWord; stdcall;
-{37.4}    function LoadCursorFromMemory(const Buffer): LongWord; stdcall;
-{37.4}    function LoadCursorIndirect(const Buffer; HotSpotX, HotSpotY: ShortInt): LongWord; stdcall;
-{37.5}    function SetCursor(Handle: LongWord): LongWord; stdcall;
-{37.6}    function DeleteCursor(Handle: LongWord): LongWord; stdcall;
+{37.4}    function LoadCursorFromFile(FileName: PKolibriChar): THandle; stdcall;
+{37.4}    function LoadCursorFromMemory(const Buffer): THandle; stdcall;
+{37.4}    function LoadCursorIndirect(const Buffer; HotSpotX, HotSpotY: ShortInt): THandle; stdcall;
+{37.5}    function SetCursor(Handle: LongWord = 0): THandle; stdcall;
+{37.6}    procedure DeleteCursor(Handle: THandle); stdcall;
 {37.7}    function GetMouseScroll: TPoint; stdcall;
 {38}      procedure DrawLine(X1, Y1, X2, Y2: LongInt; Color: LongWord); stdcall;
 {39.1}    function GetBackgroundSize: TSize; stdcall;
@@ -479,7 +481,7 @@ const
 {48.5}    function GetScreenWorkingArea: TRect; stdcall;
 {48.6}    procedure SetScreenWorkingArea(Left, Top, Right, Bottom: LongInt); stdcall;
 {48.7}    function GetSkinMargins: TRect; stdcall;
-{48.8}    function SetSkin(Path: PKolibriChar): LongInt; stdcall;
+{48.8}    function SetSkin(FileName: PKolibriChar): LongInt; stdcall;
 {48.9}    function GetFontSmoothing: LongInt; stdcall;
 {48.10}   procedure SetFontSmoothing(Smoothing: LongInt); stdcall;
 {48.11}   function GetFontHeight: LongWord; stdcall;
@@ -516,8 +518,8 @@ const
 {62.8}    function WritePCIByte(Bus, Device, Func, Reg: Byte; Data: Byte): LongWord; stdcall;
 {62.9}    function WritePCIWord(Bus, Device, Func, Reg: Byte; Data: Word): LongWord; stdcall;
 {62.10}   function WritePCILongWord(Bus, Device, Func, Reg: Byte; Data: LongWord): LongWord; stdcall;
-{63.1}    procedure BoardWriteByte(Data: Byte); stdcall;
-{63.2}    function BoardReadByte(var Data: Byte): LongWord; stdcall;
+{63.1}    procedure DebugWrite(Data: Byte); stdcall;
+{63.2}    function DebugRead(var Data: Byte): LongWord; stdcall;
 {64}      function ReallocAppMemory(Count: LongWord): LongInt; stdcall;
 {65}      procedure DrawImageEx(const Image; Left, Top: LongInt; Width, Height, BPP: LongWord; Palette: Pointer; Padding: LongWord); stdcall;
 {66.1}    procedure SetKeyboardInputMode(Mode: LongWord); stdcall;
@@ -525,8 +527,8 @@ const
 {66.3}    function GetControlKeyState: LongWord; stdcall;
 {66.4}    function SetHotKey(ScanCode, Control: LongWord): LongInt; stdcall;
 {66.5}    function ResetHotKey(ScanCode, Control: LongWord): LongInt; stdcall;
-{66.6}    procedure KeyboardLock; stdcall;
-{66.7}    procedure KeyboardUnlock; stdcall;
+{66.6}    procedure LockKeyboard; stdcall;
+{66.7}    procedure UnlockKeyboard; stdcall;
 {67}      procedure SetWindowPos(Left, Top, Right, Bottom: LongInt); stdcall;
 {68.0}    function GetTaskSwitchCount: LongWord; stdcall;
 {68.1}    procedure SwitchThread; stdcall;
@@ -542,23 +544,23 @@ const
 {68.8}    {UNDEFINED}
 {68.9}    {UNDEFINED}
 {68.10}   {UNDEFINED}
-{68.11}   function HeapCreate: LongWord; stdcall;
+{68.11}   function HeapInit: LongWord; stdcall;
 {68.12}   function HeapAllocate(Bytes: LongWord): Pointer; stdcall;
 {68.13}   function HeapFree(MemPtr: Pointer): LongWord; stdcall;
 {68.14}   procedure WaitSignal(var Buffer: TSignalBuffer); stdcall;
 {68.15}   {UNDEFINED}
-{68.16}   function GetDriver(Name: PKolibriChar): LongWord; stdcall;
-{68.17}   function ControlDriver(var CtrlStructure: TCtrlDriver): LongWord; stdcall;
+{68.16}   function LoadDriver(Name: PKolibriChar): THandle; stdcall;
+{68.17}   function ControlDriver(var CtrlStructure: TDriverControl): LongWord; stdcall;
 {68.18}   {UNDEFINED}
-{68.19}   function LoadLibrary(Path: PKolibriChar): Pointer; stdcall;
+{68.19}   function LoadLibrary(FileName: PKolibriChar): Pointer; stdcall;
 {68.20}   function HeapReallocate(MemPtr: Pointer; Bytes: LongWord): Pointer; stdcall;
-{68.21}   function LoadDriver(Name, CmdLine: PKolibriChar): LongWord; stdcall;
+{68.21}   function LoadPEDriver(Name, CmdLine: PKolibriChar): THandle; stdcall;
 {68.22}   function OpenSharedMemory(Name: PKolibriChar; Bytes: LongWord; Flags: LongWord): Pointer; stdcall;
 {68.23}   function CloseSharedMemory(Name: PKolibriChar): LongWord; stdcall;
 {68.24}   function SetExceptionHandler(Handler: Pointer; Mask: LongWord; var OldMask: LongWord): Pointer; stdcall;
 {68.25}   function SetExceptionActivity(Signal, Activity: LongWord): LongInt; stdcall;
 {68.26}   procedure ReleaseMemoryPages(MemPtr: Pointer; Offset, Size: LongWord); stdcall;
-{68.27}   function LoadFile(Path: PKolibriChar; var Size: LongWord): Pointer; stdcall;
+{68.27}   function LoadFile(FileName: PKolibriChar; var Size: LongWord): Pointer; stdcall;
 {69.0}    procedure SetDebugBuffer(const Buffer: TDebugBuffer); stdcall;
 {69.1}    procedure GetThreadContext(ID: LongWord; var Context: TThreadContext); stdcall;
 {69.2}    procedure SetThreadContext(ID: LongWord; const Context: TThreadContext); stdcall;
@@ -570,16 +572,16 @@ const
 {69.8}    procedure DebugTerminate(ID: LongWord); stdcall;
 {69.9}    function SetBreakPoint(ID: LongWord; Index, Flags: Byte; Address: Pointer): LongInt; stdcall;
 {69.9}    function ResetBreakPoint(ID: LongWord; Index, Flags: Byte; Address: Pointer): LongInt; stdcall;
-{70.0}    function ReadFile(Path: PKolibriChar; var Buffer; Count: LongWord; Pos: UInt64; var BytesRead: LongWord): LongInt; stdcall;
+{70.0}    function ReadFile(FileName: PKolibriChar; var Buffer; Count: LongWord; Pos: UInt64; var BytesRead: LongWord): LongInt; stdcall;
 {70.1}    function ReadFolder(Path: PKolibriChar; var Buffer; Count, Start, Flags: LongWord; var BlocksRead: LongWord): LongInt; stdcall;
-{70.2}    function CreateFile(Path: PKolibriChar): LongInt; stdcall;
-{70.3}    function WriteFile(Path: PKolibriChar; const Buffer; Count: LongWord; Pos: UInt64; var BytesWritten: LongWord): LongInt; stdcall;
-{70.4}    function ResizeFile(Path: PKolibriChar; LoSize, HiSize: LongWord): LongInt; stdcall;
-{70.5}    function GetFileAttributes(Path: PKolibriChar; var Buffer: TFileAttributes): LongInt; stdcall;
-{70.6}    function SetFileAttributes(Path: PKolibriChar; var Buffer: TFileAttributes): LongInt; stdcall;
-{70.7}    function RunFile(Path, CmdLine: PKolibriChar): LongInt; stdcall;
-{70.7}    function DebugFile(Path, CmdLine: PKolibriChar): LongInt; stdcall;
-{70.8}    function DeleteFile(Path: PKolibriChar): LongInt; stdcall;
+{70.2}    function CreateFile(FileName: PKolibriChar): LongInt; stdcall;
+{70.3}    function WriteFile(FileName: PKolibriChar; const Buffer; Count: LongWord; Pos: UInt64; var BytesWritten: LongWord): LongInt; stdcall;
+{70.4}    function ResizeFile(FileName: PKolibriChar; Size: UInt64): LongInt; stdcall;
+{70.5}    function GetFileAttributes(FileName: PKolibriChar; var Buffer: TFileAttributes): LongWord; stdcall;
+{70.6}    function SetFileAttributes(FileName: PKolibriChar; var Buffer: TFileAttributes): LongWord; stdcall;
+{70.7}    function RunFile(FileName, CmdLine: PKolibriChar): LongInt; stdcall;
+{70.7}    function DebugFile(FileName, CommandLine: PKolibriChar): LongInt; stdcall;
+{70.8}    function DeleteFile(FileName: PKolibriChar): LongInt; stdcall;
 {70.9}    function CreateFolder(Path: PKolibriChar): LongInt; stdcall;
 {71.1}    procedure SetWindowCaption(Caption: PKolibriChar); stdcall;
 {72.1.2}  function SendActiveWindowKey(KeyCode: LongWord): LongInt; stdcall;
@@ -594,21 +596,21 @@ const
 {74.5}    {UNDEFINED}
 {74.6}    function GetSentPackets(Device: Byte): LongInt; stdcall;
 {74.7}    function GetReceivedPackets(Device: Byte): LongInt; stdcall;
-{74.8}    function GetSentBytes(Device: Byte): LongInt; stdcall;
-{74.9}    function GetReceivedBytes(Device: Byte): LongInt; stdcall;
+{74.8}    function GetSentBytes(Device: Byte): UInt64; stdcall;
+{74.9}    function GetReceivedBytes(Device: Byte): UInt64; stdcall;
 {74.10}   function GetLinkStatus(Device: Byte): LongInt; stdcall;
-{75.0}    function OpenSocket(Domain, Kind, Protocol: LongWord): LongWord; stdcall;
-{75.1}    function CloseSocket(Socket: LongWord): LongInt; stdcall;
-{75.2}    function SocketBind(Socket: LongWord; var SockAddr: TSockAddr): LongInt; stdcall;
-{75.3}    function SocketListen(Socket: LongWord; var BackLog): LongInt; stdcall;
-{75.4}    function SocketConnect(Socket: LongWord; var SockAddr: TSockAddr): LongInt; stdcall;
-{75.5}    function SocketAccept(Socket: LongWord; var SockAddr: TSockAddr): LongWord; stdcall;
-{75.6}    function SocketSend(Socket: LongWord; const Buffer; Size, Flags: LongWord): LongInt; stdcall;
-{75.7}    function SocketReceive(Socket: LongWord; var Buffer; Size, Flags: LongWord): LongInt; stdcall;
+{75.0}    function SocketOpen(Domain, Kind, Protocol: LongWord): LongWord; stdcall; //////////////////////////
+{75.1}    function SocketClose(Socket: LongWord): LongInt; stdcall;                                         //
+{75.2}    function SocketBind(Socket: LongWord; var SockAddr: TSockAddr): LongInt; stdcall;                 //
+{75.3}    function SocketListen(Socket: LongWord; var BackLog): LongInt; stdcall;                           //  BSD Sockets
+{75.4}    function SocketConnect(Socket: LongWord; var SockAddr: TSockAddr): LongInt; stdcall;              //     API
+{75.5}    function SocketAccept(Socket: LongWord; var SockAddr: TSockAddr): LongWord; stdcall;              //
+{75.6}    function SocketSend(Socket: LongWord; const Buffer; Size, Flags: LongWord): LongInt; stdcall;     //
+{75.7}    function SocketReceive(Socket: LongWord; var Buffer; Size, Flags: LongWord): LongInt; stdcall; /////
 {75.8}    function SetSocketOptions(Socket: LongWord; var OptStruct: TOptStruct): LongInt; stdcall;
 {75.9}    function GetSocketOptions(Socket: LongWord; var OptStruct: TOptStruct): LongInt; stdcall;
 {75.10}   function GetSocketPair(var Socket1, Socket2: LongWord): LongInt; stdcall;
-{76.0.0}  function GetMAC(Device: Byte): LongWord; stdcall;
+{76.0.0}  function GetMAC(Device: Byte): UInt64; stdcall;
 {76.1.0}  function GetIPv4SentPackets(Device: Byte): LongWord; stdcall;
 {76.1.1}  function GetIPv4ReceivedPackets(Device: Byte): LongWord; stdcall;
 {76.1.2}  function GetIPv4IP(Device: Byte): LongWord; stdcall;
@@ -633,10 +635,10 @@ const
 {76.5.5}  function RemoveARPEntry(Device: Byte; Entry: LongWord): LongWord; stdcall;
 {76.5.6}  function SendARPAnnounce(Device: Byte): LongWord; stdcall;
 {76.5.7}  function GetARPConflicts(Device: Byte): LongWord; stdcall;
-{77.0}    function CreateFutex(Futex: Pointer): LongWord; stdcall;
-{77.1}    function DestroyFutex(Handle: LongWord): LongWord; stdcall;
-{77.2}    function WaitFutex(Handle, Value, Time: LongWord): LongWord; stdcall;
-{77.3}    function WakeFutex(Handle, Waiters: LongWord): LongWord; stdcall;
+{77.0}    function CreateFutex(Futex: Pointer): THandle; stdcall;
+{77.1}    function DestroyFutex(Handle: THandle): LongInt; stdcall;
+{77.2}    function WaitFutex(Handle: THandle; Value, Time: LongWord): LongInt; stdcall;
+{77.3}    function WakeFutex(Handle: THandle; Waiters: LongWord): LongWord; stdcall;
           function GetProcAddress(hLib: Pointer; ProcName: PKolibriChar): Pointer; stdcall;
 
 implementation
@@ -647,7 +649,7 @@ asm
         int    $40
 end;
 
-procedure DrawWindow(Left, Top, Right, Bottom: LongInt; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); stdcall;
+procedure DrawWindow(Left, Top, Width, Height: LongInt; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); stdcall;
 asm
         push   ebx
         push   edi
@@ -657,8 +659,8 @@ asm
         mov    ecx, Top
         shl    ebx, 16
         shl    ecx, 16
-        or     ebx, Right
-        or     ecx, Bottom
+        or     ebx, Width
+        or     ecx, Height
         mov    edx, Style
         or     edx, BackColor
         mov    edi, Caption
@@ -736,7 +738,7 @@ asm
         pop    ebx
 end;
 
-procedure DrawButton(Left, Top, Right, Bottom: LongInt; BackColor, Style, ID: LongWord); stdcall;
+procedure DrawButton(Left, Top, Width, Height: LongInt; BackColor, Style, ID: LongWord); stdcall;
 asm
         push   ebx
         push   esi
@@ -745,8 +747,8 @@ asm
         mov    ecx, Top
         shl    ebx, 16
         shl    ecx, 16
-        or     ebx, Right
-        or     ecx, Bottom
+        or     ebx, Width
+        or     ecx, Height
         mov    edx, ID
         or     edx, Style
         mov    esi, BackColor
@@ -917,7 +919,7 @@ asm
         pop    ebx
 end;
 
-function UnMapBackground(Background: Pointer): LongInt; stdcall;
+function UnmapBackground(Background: Pointer): LongInt; stdcall;
 asm
         push   ebx
         mov    eax, 15
@@ -1025,12 +1027,12 @@ asm
         pop    ebx
 end;
 
-function SaveRamDisk(Path: PKolibriChar): LongWord; stdcall;
+function SaveRamDisk(FileName: PKolibriChar): LongWord; stdcall;
 asm
         push   ebx
         mov    eax, 18
         mov    ebx, 1
-        mov    ecx, Path
+        mov    ecx, FileName
         int    $40
         pop    ebx
 end;
@@ -1704,18 +1706,18 @@ asm
         pop    ebx
 end;
 
-function LoadCursorFromFile(Path: PKolibriChar): LongWord; stdcall;
+function LoadCursorFromFile(FileName: PKolibriChar): THandle; stdcall;
 asm
         push   ebx
         mov    eax, 37
         mov    ebx, 4
-        mov    ecx, Path
+        mov    ecx, FileName
         mov    edx, 0
         int    $40
         pop    ebx
 end;
 
-function LoadCursorFromMemory(const Buffer): LongWord; stdcall;
+function LoadCursorFromMemory(const Buffer): THandle; stdcall;
 asm
         push   ebx
         mov    eax, 37
@@ -1726,7 +1728,7 @@ asm
         pop    ebx
 end;
 
-function LoadCursorIndirect(const Buffer; HotSpotX, HotSpotY: ShortInt): LongWord; stdcall;
+function LoadCursorIndirect(const Buffer; HotSpotX, HotSpotY: ShortInt): THandle; stdcall;
 asm
         push   ebx
         mov    eax, 37
@@ -1740,7 +1742,7 @@ asm
         pop    ebx
 end;
 
-function SetCursor(Handle: LongWord): LongWord; stdcall;
+function SetCursor(Handle: THandle): THandle; stdcall;
 asm
         push   ebx
         mov    eax, 37
@@ -1750,7 +1752,7 @@ asm
         pop    ebx
 end;
 
-function DeleteCursor(Handle: LongWord): LongWord; stdcall;
+procedure DeleteCursor(Handle: THandle); stdcall;
 asm
         push   ebx
         mov    eax, 37
@@ -1992,12 +1994,12 @@ asm
         pop    ebx
 end;
 
-function SetSkin(Path: PKolibriChar): LongInt; stdcall;
+function SetSkin(FileName: PKolibriChar): LongInt; stdcall;
 asm
         push   ebx
         mov    eax, 48
         mov    ebx, 8
-        mov    ecx, Path
+        mov    ecx, FileName
         int    $40
         pop    ebx
 end;
@@ -2311,7 +2313,7 @@ asm
         pop    ebx
 end;
 
-procedure BoardWriteByte(Data: Byte); stdcall;
+procedure DebugWrite(Data: Byte); stdcall;
 asm
         push   ebx
         mov    eax, 63
@@ -2321,7 +2323,7 @@ asm
         pop    ebx
 end;
 
-function BoardReadByte(var Data: Byte): LongWord; stdcall;
+function DebugRead(var Data: Byte): LongWord; stdcall;
 asm
         push   ebx
         mov    eax, 63
@@ -2415,7 +2417,7 @@ asm
         pop    ebx
 end;
 
-procedure KeyboardLock; stdcall;
+procedure LockKeyboard; stdcall;
 asm
         push   ebx
         mov    eax, 66
@@ -2424,7 +2426,7 @@ asm
         pop    ebx
 end;
 
-procedure KeyboardUnlock; stdcall;
+procedure UnlockKeyboard; stdcall;
 asm
         push   ebx
         mov    eax, 66
@@ -2505,7 +2507,7 @@ asm
         pop    ebx
 end;
 
-function HeapCreate: LongWord; stdcall;
+function HeapInit: LongWord; stdcall;
 asm
         push   ebx
         mov    eax, 68
@@ -2544,7 +2546,7 @@ asm
         pop    ebx
 end;
 
-function GetDriver(Name: PKolibriChar): LongWord; stdcall;
+function LoadDriver(Name: PKolibriChar): THandle; stdcall;
 asm
         push   ebx
         mov    eax, 68
@@ -2554,7 +2556,7 @@ asm
         pop    ebx
 end;
 
-function ControlDriver(var CtrlStructure: TCtrlDriver): LongWord; stdcall;
+function ControlDriver(var CtrlStructure: TDriverControl): LongWord; stdcall;
 asm
         push   ebx
         mov    eax, 68
@@ -2564,12 +2566,12 @@ asm
         pop    ebx
 end;
 
-function LoadLibrary(Path: PKolibriChar): Pointer; stdcall;
+function LoadLibrary(FileName: PKolibriChar): Pointer; stdcall;
 asm
         push   ebx
         mov    eax, 68
         mov    ebx, 19
-        mov    ecx, Path
+        mov    ecx, FileName
         int    $40
         pop    ebx
 end;
@@ -2585,7 +2587,7 @@ asm
         pop    ebx
 end;
 
-function LoadDriver(Name, CmdLine: PKolibriChar): LongWord; stdcall;
+function LoadPEDriver(Name, CmdLine: PKolibriChar): THandle; stdcall;
 asm
         push   ebx
         mov    eax, 68
@@ -2658,12 +2660,12 @@ asm
         pop    ebx
 end;
 
-function LoadFile(Path: PKolibriChar; var Size: LongWord): Pointer; stdcall;
+function LoadFile(FileName: PKolibriChar; var Size: LongWord): Pointer; stdcall;
 asm
         push   ebx
         mov    eax, 68
         mov    ebx, 27
-        mov    ecx, Path
+        mov    ecx, FileName
         int    $40
         mov    ecx, Size
         mov    [ecx], edx
@@ -2817,10 +2819,10 @@ asm
         pop    ebx
 end;
 
-function ReadFile(Path: PKolibriChar; var Buffer; Count: LongWord; Pos: UInt64; var BytesRead: LongWord): LongInt; stdcall;
+function ReadFile(FileName: PKolibriChar; var Buffer; Count: LongWord; Pos: UInt64; var BytesRead: LongWord): LongInt; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   Buffer
@@ -2857,10 +2859,10 @@ asm
         pop    ebx
 end;
 
-function CreateFile(Path: PKolibriChar): LongInt; stdcall;
+function CreateFile(FileName: PKolibriChar): LongInt; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   0
@@ -2875,10 +2877,10 @@ asm
         pop    ebx
 end;
 
-function WriteFile(Path: PKolibriChar; const Buffer; Count: LongWord; Pos: UInt64; var BytesWritten: LongWord): LongInt; stdcall;
+function WriteFile(FileName: PKolibriChar; const Buffer; Count: LongWord; Pos: UInt64; var BytesWritten: LongWord): LongInt; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   Buffer
@@ -2895,16 +2897,16 @@ asm
         pop    ebx
 end;
 
-function ResizeFile(Path: PKolibriChar; LoSize, HiSize: LongWord): LongInt; stdcall;
+function ResizeFile(FileName: PKolibriChar; Size: UInt64): LongInt; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   0
         push   0
-        push   HiSize
-        push   LoSize
+        push   dword [Size+4]
+        push   dword [Size]
         push   4
         mov    ebx, esp
         mov    eax, 70
@@ -2913,10 +2915,10 @@ asm
         pop    ebx
 end;
 
-function GetFileAttributes(Path: PKolibriChar; var Buffer: TFileAttributes): LongInt; stdcall;
+function GetFileAttributes(FileName: PKolibriChar; var Buffer: TFileAttributes): LongWord; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   Buffer
@@ -2931,10 +2933,10 @@ asm
         pop    ebx
 end;
 
-function SetFileAttributes(Path: PKolibriChar; var Buffer: TFileAttributes): LongInt; stdcall;
+function SetFileAttributes(FileName: PKolibriChar; var Buffer: TFileAttributes): LongWord; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   Buffer
@@ -2949,10 +2951,10 @@ asm
         pop    ebx
 end;
 
-function RunFile(Path, CmdLine: PKolibriChar): LongInt; stdcall;
+function RunFile(FileName, CmdLine: PKolibriChar): LongInt; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   0
@@ -2967,15 +2969,15 @@ asm
         pop    ebx
 end;
 
-function DebugFile(Path, CmdLine: PKolibriChar): LongInt; stdcall;
+function DebugFile(FileName, CommandLine: PKolibriChar): LongInt; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   0
         push   0
-        push   CmdLine
+        push   CommandLine
         push   1
         push   7
         mov    ebx, esp
@@ -2985,10 +2987,10 @@ asm
         pop    ebx
 end;
 
-function DeleteFile(Path: PKolibriChar): LongInt; stdcall;
+function DeleteFile(FileName: PKolibriChar): LongInt; stdcall;
 asm
         push   ebx
-        push   Path
+        push   FileName
         dec    esp
         mov    byte[esp], 0
         push   0
@@ -3154,23 +3156,37 @@ asm
         pop    ebx
 end;
 
-function GetSentBytes(Device: Byte): LongInt; stdcall;
+function GetSentBytes(Device: Byte): UInt64; stdcall;
 asm
         push   ebx
         mov    eax, 74
         mov    bl, 8
         mov    bh, Device
         int    $40
+        cmp    eax, -1
+        jz     @error
+        mov    edx, ebx
+        jmp @end
+@error:
+        mov    edx, eax
+@end:
         pop    ebx
 end;
 
-function GetReceivedBytes(Device: Byte): LongInt; stdcall;
+function GetReceivedBytes(Device: Byte): UInt64; stdcall;
 asm
         push   ebx
         mov    eax, 74
         mov    bl, 9
         mov    bh, Device
         int    $40
+        cmp    eax, -1
+        jz     @error
+        mov    edx, ebx
+        jmp @end
+@error:
+        mov    edx, eax
+@end:
         pop    ebx
 end;
 
@@ -3184,7 +3200,7 @@ asm
         pop    ebx
 end;
 
-function OpenSocket(Domain, Kind, Protocol: LongWord): LongWord; stdcall;
+function SocketOpen(Domain, Kind, Protocol: LongWord): LongWord; stdcall;
 asm
         push   ebx
         push   esi
@@ -3198,7 +3214,7 @@ asm
         pop    ebx
 end;
 
-function CloseSocket(Socket: LongWord): LongInt; stdcall;
+function SocketClose(Socket: LongWord): LongInt; stdcall;
 asm
         push   ebx
         mov    eax, 75
@@ -3335,14 +3351,20 @@ asm
         pop    ebx
 end;
 
-function GetMAC(Device: Byte): LongWord; stdcall;
+function GetMAC(Device: Byte): UInt64; stdcall;
 asm
         push   ebx
         mov    eax, 76
-        mov    ebx, $00000000
-        mov    bl, 0
+        xor    ebx, ebx
         mov    bh, Device
         int    $40
+        cmp    ebx, -1
+        je     @error
+        movzx  edx, bx
+        jmp    @end
+@error:
+        mov    edx, eax
+@end:
         pop    ebx
 end;
 
@@ -3622,7 +3644,7 @@ asm
         pop    ebx
 end;
 
-function CreateFutex(Futex: Pointer): LongWord; stdcall;
+function CreateFutex(Futex: Pointer): THandle; stdcall;
 asm
         push   ebx
         mov    eax, 77
@@ -3632,7 +3654,7 @@ asm
         pop    ebx
 end;
 
-function DestroyFutex(Handle: LongWord): LongWord; stdcall;
+function DestroyFutex(Handle: THandle): LongInt; stdcall;
 asm
         push   ebx
         mov    eax, 77
@@ -3642,7 +3664,7 @@ asm
         pop    ebx
 end;
 
-function WaitFutex(Handle, Value, Time: LongWord): LongWord; stdcall;
+function WaitFutex(Handle: THandle; Value, Time: LongWord): LongInt; stdcall;
 asm
         push   ebx
         push   esi
@@ -3656,7 +3678,7 @@ asm
         pop    ebx
 end;
 
-function WakeFutex(Handle, Waiters: LongWord): LongWord; stdcall;
+function WakeFutex(Handle: THandle; Waiters: LongWord): LongWord; stdcall;
 asm
         push   ebx
         mov    eax, 77

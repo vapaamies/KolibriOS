@@ -67,12 +67,12 @@ var
 
   ArrowBitmapFile, PointBitmapFile, WaitBitmapFile: PBitmapFile;
   ArrowBitmap, PointBitmap, WaitBitmap: Pointer;
-  hArrowCursor, hPointCursor, hWaitCursor: LongWord;
+  hArrowCursor, hPointCursor, hWaitCursor: THandle;
 
   FileSize: LongWord;
 
 begin
-  HeapCreate;
+  HeapInit;
 
   ExtractFileDirectory(AppPath^, AppPath^);
   SetCurrentDirectory(AppPath^);

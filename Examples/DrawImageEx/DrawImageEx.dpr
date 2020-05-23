@@ -79,7 +79,7 @@ var
   FileAttributes: TFileAttributes;
 
 begin
-  HeapCreate;
+  HeapInit;
 
   ExtractFileDirectory(AppPath^, AppPath^);
   SetCurrentDirectory(AppPath^);

@@ -57,7 +57,7 @@ begin
 end;
 
 begin
-  HeapCreate;
+  HeapInit;
 
   Screen := GetScreenSize;
 

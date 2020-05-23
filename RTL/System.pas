@@ -10,6 +10,8 @@ type
   PPAnsiChar = ^PAnsiChar;
   PInteger = ^Integer;
 
+  THandle = LongWord;
+
   TGUID = record
     D1: LongWord;
     D2: Word;
