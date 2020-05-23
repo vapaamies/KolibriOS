@@ -519,7 +519,7 @@ const
 {63.1}    procedure BoardWriteByte(Data: Byte); stdcall;
 {63.2}    function BoardReadByte(var Data: Byte): LongWord; stdcall;
 {64}      function ReallocAppMemory(Count: LongWord): LongInt; stdcall;
-{65}      procedure DrawImageEx(const Image; Left, Top: LongInt; Width, Height: LongWord; BPP: LongWord; const Palette: Pointer; Padding: LongWord); stdcall;
+{65}      procedure DrawImageEx(const Image; Left, Top: LongInt; Width, Height, BPP: LongWord; Palette: Pointer; Padding: LongWord); stdcall;
 {66.1}    procedure SetKeyboardInputMode(Mode: LongWord); stdcall;
 {66.2}    function GetKeyboardInputMode: LongWord; stdcall;
 {66.3}    function GetControlKeyState: LongWord; stdcall;
@@ -584,7 +584,7 @@ const
 {71.1}    procedure SetWindowCaption(Caption: PKolibriChar); stdcall;
 {72.1.2}  function SendActiveWindowKey(KeyCode: LongWord): LongInt; stdcall;
 {72.1.3}  function SendActiveWindowButton(ButtonID: LongWord): LongInt; stdcall;
-{73}      procedure Blit(const Src; SrcX, SrcY: LongInt; SrcW, SrcH: LongWord; DstX, DstY: LongInt; DstW, DstH: LongWord; Stride, Flags: LongWord); stdcall;
+{73}      procedure Blit(const Src; SrcX, SrcY: LongInt; SrcW, SrcH: LongWord; DstX, DstY: LongInt; DstW, DstH, Stride, Flags: LongWord); stdcall;
 {74.-1}   function GetActiveNetworkDevices: LongWord; stdcall;
 {74.0}    function GetNetworkDeviceType(Device: Byte): LongInt; stdcall;
 {74.1}    function GetNetworkDeviceName(Device: Byte; var Buffer): LongInt; stdcall;
@@ -2343,9 +2343,11 @@ asm
         pop    ebx
 end;
 
-procedure DrawImageEx(const Image; Left, Top: LongInt; Width, Height: LongWord; BPP: LongWord; const Palette: Pointer; Padding: LongWord); stdcall;
+procedure DrawImageEx(const Image; Left, Top: LongInt; Width, Height, BPP: LongWord; Palette: Pointer; Padding: LongWord); stdcall;
 asm
         push   ebx
+        push   esi
+        push   edi
         mov    eax, 65
         mov    ebx, Image
         mov    ecx, Width
@@ -2358,6 +2360,8 @@ asm
         mov    edi, Palette
         mov    ebp, Padding
         int    $40
+        pop    edi
+        pop    esi
         pop    ebx
 end;
 
@@ -3049,8 +3053,9 @@ asm
         pop    ebx
 end;
 
-procedure Blit(const Src; SrcX, SrcY: LongInt; SrcW, SrcH: LongWord; DstX, DstY: LongInt; DstW, DstH: LongWord; Stride, Flags: LongWord); stdcall;
+procedure Blit(const Src; SrcX, SrcY: LongInt; SrcW, SrcH: LongWord; DstX, DstY: LongInt; DstW, DstH, Stride, Flags: LongWord); stdcall;
 asm
+        push   ebx
         push   Stride
         push   Src
         push   SrcH
@@ -3066,6 +3071,7 @@ asm
         mov    ecx, esp
         int    $40
         add    esp, 40
+        pop    ebx
 end;
 
 function GetActiveNetworkDevices: LongWord; stdcall;

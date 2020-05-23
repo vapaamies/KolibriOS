@@ -90,7 +90,7 @@ begin
 
   with BitmapFile1^, BitmapFileHeader, BitmapInfoHeader do
   begin
-    Padding1 := (32 - biWidth * biBitCount mod 32) and not 32 div 6;
+    Padding1 := (32 - biWidth * biBitCount mod 32) and not 32 div 8;
     Image1 := Pointer(LongWord(BitmapFile1) + bfOffBits);
   end;
 
@@ -100,7 +100,7 @@ begin
 
   with BitmapFile2^, BitmapFileHeader, BitmapInfoHeader do
   begin
-    Padding2 := (32 - biWidth * biBitCount mod 32) and not 32 div 6;
+    Padding2 := (32 - biWidth * biBitCount mod 32) and not 32 div 8;
     Image2 := Pointer(LongWord(BitmapFile2) + bfOffBits);
   end;
 
@@ -110,13 +110,13 @@ begin
 
   with BitmapFile3^, BitmapFileHeader, BitmapInfoHeader do
   begin
-    Padding3 := (32 - biWidth * biBitCount mod 32) and not 32 div 6;
+    Padding3 := (32 - biWidth * biBitCount mod 32) and not 32 div 8;
     Image3 := Pointer(LongWord(BitmapFile3) + bfOffBits);
   end;
 
   with GetScreenSize do
   begin
-    Right := Width div 4;
+    Right := 340;
     Bottom := Height div 4;
     Left := (Width  - Right) div 2;
     Top := (Height - Bottom) div 2;
