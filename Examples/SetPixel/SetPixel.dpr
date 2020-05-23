@@ -23,7 +23,7 @@ begin
           BeginDraw;
 
           DrawWindow(Left, Top, Right, Bottom, 'Set Pixel', $00FFFFFF,
-            WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
 
           for Y := 0 to 50 do
             for X := 0 to 50 do

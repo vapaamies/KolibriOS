@@ -32,7 +32,7 @@ begin
         begin
           BeginDraw;
           DrawWindow(Left, Top, Right, Bottom, 'Color Buttons', $00FFFFFF,
-            WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
           DrawButton(10, 20, 50, 30, COLOR_RED, 0, RED_BUTTON);
           DrawButton(70, 20, 50, 30, COLOR_GREEN, 0, GREEN_BUTTON);
           DrawButton(10, 60, 50, 30, COLOR_BLUE, 0, BLUE_BUTTON);

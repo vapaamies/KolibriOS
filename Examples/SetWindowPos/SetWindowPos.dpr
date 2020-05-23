@@ -26,7 +26,7 @@ begin
   with ThreadInfo.Window do
   begin
     if Boolean(ControlKeyState and (RIGHT_CTRL_PRESSED or LEFT_CTRL_PRESSED)) then
-      case Key.Scan of
+      case Key.ScanCode of
         KS_UP:
           Dec(Bottom, MOVE_STEP);
         KS_DOWN:
@@ -37,7 +37,7 @@ begin
           Inc(Right, MOVE_STEP);
       end
     else
-      case Key.Scan of
+      case Key.ScanCode of
         KS_UP:
           Dec(Top, MOVE_STEP);
         KS_DOWN:
@@ -69,7 +69,7 @@ begin
         begin
           BeginDraw;
           DrawWindow(Left, Top, Right, Bottom, 'Set Window Position', $00FFFFFF,
-            WS_SKINNED_SIZABLE + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
+            WS_SKINNED_SIZABLE + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
           DrawText(24, 26, 'Use arrow keys(Left, Right, Up, Down)', $00000000, $00FFFFFF, DT_ZSTRING, 0);
           DrawText(24, 35, 'to move the window.', $00000000, $00FFFFFF, DT_ZSTRING, 0);
           DrawText(24, 44, 'Use Ctrl+arrow keys to resize window.', $00000000, $00FFFFFF, DT_ZSTRING, 0);

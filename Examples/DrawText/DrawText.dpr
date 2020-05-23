@@ -27,7 +27,7 @@ begin
           CurY := 0;
           BeginDraw;
           DrawWindow(Left, Top, Right, Bottom, 'Get Key', $00FFFFFF,
-            WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
           EndDraw;
         end;
       KEY_EVENT:

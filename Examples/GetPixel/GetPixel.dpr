@@ -33,7 +33,7 @@ begin
 
           with Window do
             DrawWindow(Left, Top, Right, Bottom, 'Get Pixel', $00FFFFFF,
-              WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
+              WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
 
           with Rectangle do
           begin

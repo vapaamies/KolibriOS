@@ -3,6 +3,11 @@ program ReadFolderApp;
 uses
   KolibriOS;
 
+type
+  TInt64Rec = packed record
+    Lo, Hi: LongWord;
+  end;
+
 var
   hConsole: Pointer;
   ConsoleInit:       procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
@@ -41,17 +46,17 @@ begin
   begin
     with FolderInformation, FileInformation[0] do
     begin
-      printf('FileName     = %s'#10, FileName);
-      with FileAttributes do
+      printf('FileName     = %s'#10, Name);
+      with Attributes do
       begin
-        printf('SizeHi       = %u'#10, SizeHi);
-        printf('SizeLo       = %u'#10, SizeLo);
-        with modifyDate   do printf('modifyDate   = %02d.%02d.%02d'#10, Day, Month, Year);
-        with modifyTime   do printf('modifyTime   = %02d:%02d:%02d'#10, Hours, Minutes, Seconds);
-        with AccessDate   do printf('AccessDate   = %02d.%02d.%02d'#10, Day, Month, Year);
-        with AccessTime   do printf('AccessTime   = %02d:%02d:%02d'#10, Hours, Minutes, Seconds);
-        with CreationDate do printf('CreationDate = %02d.%02d.%02d'#10, Day, Month, Year);
-        with CreationTime do printf('CreationTime = %02d:%02d:%02d'#10, Hours, Minutes, Seconds);
+        printf('SizeLo       = %u'#10, TInt64Rec(Size).Lo);
+        printf('SizeHi       = %u'#10, TInt64Rec(Size).Hi);
+        with Modify.Date   do printf('modifyDate   = %02d.%02d.%02d'#10, Day, Month, Year);
+        with Modify.Time   do printf('modifyTime   = %02d:%02d:%02d'#10, Hours, Minutes, Seconds);
+        with Access.Date   do printf('AccessDate   = %02d.%02d.%02d'#10, Day, Month, Year);
+        with Access.Time   do printf('AccessTime   = %02d:%02d:%02d'#10, Hours, Minutes, Seconds);
+        with Creation.Date do printf('CreationDate = %02d.%02d.%02d'#10, Day, Month, Year);
+        with Creation.Time do printf('CreationTime = %02d:%02d:%02d'#10, Hours, Minutes, Seconds);
         printf('Attributes   = 0x%08x'#10, Attributes);
       end;
     end;

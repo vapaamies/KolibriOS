@@ -85,8 +85,8 @@ begin
   SetCurrentDirectory(AppPath^);
 
   GetFileAttributes(Picture1, FileAttributes);
-  BitmapFile1 := HeapAllocate(FileAttributes.SizeLo);
-  ReadFile(Picture1, BitmapFile1^, FileAttributes.SizeLo, 0, 0, BytesRead);
+  BitmapFile1 := HeapAllocate(FileAttributes.Size);
+  ReadFile(Picture1, BitmapFile1^, FileAttributes.Size, 0, BytesRead);
 
   with BitmapFile1^, BitmapFileHeader, BitmapInfoHeader do
   begin
@@ -95,8 +95,8 @@ begin
   end;
 
   GetFileAttributes(Picture2, FileAttributes);
-  BitmapFile2 := HeapAllocate(FileAttributes.SizeLo);
-  ReadFile(Picture2, BitmapFile2^, FileAttributes.SizeLo, 0, 0, BytesRead);
+  BitmapFile2 := HeapAllocate(FileAttributes.Size);
+  ReadFile(Picture2, BitmapFile2^, FileAttributes.Size, 0, BytesRead);
 
   with BitmapFile2^, BitmapFileHeader, BitmapInfoHeader do
   begin
@@ -105,8 +105,8 @@ begin
   end;
 
   GetFileAttributes(Picture3, FileAttributes);
-  BitmapFile3 := HeapAllocate(FileAttributes.SizeLo);
-  ReadFile(Picture3, BitmapFile3^, FileAttributes.SizeLo, 0, 0, BytesRead);
+  BitmapFile3 := HeapAllocate(FileAttributes.Size);
+  ReadFile(Picture3, BitmapFile3^, FileAttributes.Size, 0, BytesRead);
 
   with BitmapFile3^, BitmapFileHeader, BitmapInfoHeader do
   begin
@@ -129,7 +129,7 @@ begin
           BeginDraw;
 
           DrawWindow(Left, Top, Right, Bottom, 'Draw Image Extended', $00FFFFFF,
-            WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
 
           (* these image files was saved with 'flip row order' parameter *)
           (* therefore they have negative biHeight field *)

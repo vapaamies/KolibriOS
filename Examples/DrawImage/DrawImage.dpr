@@ -81,7 +81,7 @@ begin
         begin
           BeginDraw;
           DrawWindow(Left, Top, Right, Bottom, 'Draw Image', $00FFFFFF,
-            WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
           with TargaFile.Header do
             DrawImage(Image^, 30, 20, Width, Height);
           EndDraw;

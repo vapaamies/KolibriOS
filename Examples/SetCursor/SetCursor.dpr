@@ -104,14 +104,14 @@ begin
           BeginDraw;
 
           DrawWindow(Left, Top, Right, Bottom, 'Set Cursor', $00FFFFFF,
-            WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
 
-          DrawText( 8, 8, 'Click on picture buttons', 0, $00FFFFFF, DT_CP866_8X16 + DT_FILL_OPAQUE + DT_ZSTRING, 0);
-          DrawText( 8, 25, 'below to select cursor:', 0, $00FFFFFF, DT_CP866_8X16 + DT_FILL_OPAQUE + DT_ZSTRING, 0);
+          DrawText( 8, 8, 'Click on picture buttons', 0, $00FFFFFF, DT_CP866_8x16 + DT_FILL_OPAQUE + DT_ZSTRING, 0);
+          DrawText( 8, 25, 'below to select cursor:', 0, $00FFFFFF, DT_CP866_8x16 + DT_FILL_OPAQUE + DT_ZSTRING, 0);
 
-          DrawButton(8, 40, 32, 32, 0, BS_FILL_TRANSPARENT, ARROW_BUTTON);
-          DrawButton(52, 40, 32, 32, 0, BS_FILL_TRANSPARENT, POINT_BUTTON);
-          DrawButton(96, 40, 32, 32, 0, BS_FILL_TRANSPARENT, WAIT_BUTTON );
+          DrawButton(8, 40, 32, 32, 0, BS_TRANSPARENT_FILL, ARROW_BUTTON);
+          DrawButton(52, 40, 32, 32, 0, BS_TRANSPARENT_FILL, POINT_BUTTON);
+          DrawButton(96, 40, 32, 32, 0, BS_TRANSPARENT_FILL, WAIT_BUTTON );
 
           Blit(ArrowBitmap^, 0, 0, 32, 32, 8, 40, 32, 32, 32*4, BLIT_CLIENT_RELATIVE);
           Blit(PointBitmap^, 0, 0, 32, 32, 52, 40, 32, 32, 32*4, BLIT_CLIENT_RELATIVE);

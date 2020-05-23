@@ -26,7 +26,7 @@ begin
   (* clear unnecessary part of possible previous name by white rectangle *)
   DrawRectangle(64 + I * CHAR_WIDTH, 16, (SizeOf(ThreadInfo.Name) - I) * CHAR_WIDTH, CHAR_HEIGHT, $00FFFFFF);
   (* draw current name *)
-  DrawText(64, 16, ThreadInfo.Name, $00000000, $00FFFFFF, DT_CP866_8X16 + DT_FILL_OPAQUE + DT_ZSTRING, 0);
+  DrawText(64, 16, ThreadInfo.Name, $00000000, $00FFFFFF, DT_CP866_8x16 + DT_FILL_OPAQUE + DT_ZSTRING, 0);
 end;
 
 const
@@ -51,8 +51,8 @@ begin
         begin
           BeginDraw;
           DrawWindow(Left, Top, Width, Height, 'Get Point Owner', $00FFFFFF,
-            WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION, CAPTION_MOVABLE);
-          DrawText(16, 16, 'Name:', $00000000, $00FFFFFF, DT_CP866_8X16 + DT_ZSTRING, 0);
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
+          DrawText(16, 16, 'Name:', $00000000, $00FFFFFF, DT_CP866_8x16 + DT_ZSTRING, 0);
           EndDraw;
         end;
       BUTTON_EVENT:

@@ -81,7 +81,7 @@ begin
         begin
           BeginDraw;
           DrawWindow(Left, Top, Right, Bottom, 'Screenshot', $00FFFFFF,
-            WS_SKINNED_FIXED + WS_COORD_CLIENT + WS_CAPTION + WS_FILL_TRANSPARENT, CAPTION_MOVABLE);
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION + WS_TRANSPARENT_FILL, CAPTION_MOVABLE);
           with Screen do
             DrawImage(Preview^, 0, 0, Width div 2, Height div 2);
           EndDraw;
