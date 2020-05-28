@@ -23,7 +23,7 @@ begin
   ConsoleExit       := GetProcAddress(hConsole, 'con_exit');
   printf            := GetProcAddress(hConsole, 'con_printf');
 
-  ConsoleInit($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, 'Test');
+  ConsoleInit($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, 'Get Current Directory');
 
   GetCurrentDirectory(Buffer, BUFFER_SIZE);
 

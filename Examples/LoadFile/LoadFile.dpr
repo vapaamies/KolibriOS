@@ -18,7 +18,7 @@ begin
   ConsoleExit       := GetProcAddress(hConsole, 'con_exit');
   WriteN            := GetProcAddress(hConsole, 'con_write_string');
 
-  ConsoleInit($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, 'Test');
+  ConsoleInit($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, 'Load File');
 
   Buffer := LoadFile('/sys/example.asm', FileSize);
   WriteN(Buffer, FileSize);

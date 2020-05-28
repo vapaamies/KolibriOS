@@ -37,7 +37,7 @@ begin
     end
   else
   begin
-    ConsoleInit($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, 'ReadFolder');
+    ConsoleInit($FFFFFFFF, $FFFFFFFF, $FFFFFFFF, $FFFFFFFF, 'Read Folder');
     printf('Folder "%s" can not be read.'#10, FolderPath);
   end;
 
