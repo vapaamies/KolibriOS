@@ -18,16 +18,17 @@ if exist "%Source%.cfg" del "%Source%.cfg"
 if not exist "%~dp0..\RTL\SysInit.dcu" call "%~dp0..\build-RTL.bat"
 if errorlevel 1 goto exit
 
+if not exist "%Bin%\convert.bat" (
+  echo @%%~dp0..\Lib\convert.bat %%* >"%Bin%\convert.bat"
+  if errorlevel 1 goto exit
+)
+
 dcc32 "%Source%.dpr" -e"%Bin%" -u"%Units%" %Options%
 if errorlevel 1 goto exit
 
-"%~dp0..\Pet" -nologo -strip -trunc -dropsect .idata,.rsrc -rebase 0 -osver 0.7 -log brief -into "%Target%.exe"
+call "%~dp0convert.bat" "%Target%.exe"
 if errorlevel 1 goto exit
 
-"%~dp0..\exe2kos" "%Target%.exe" "%Target%"
-if errorlevel 1 goto exit
 del "%Target%.exe"
-
-%~dp0..\kpack "%Target%"
 
 :exit
