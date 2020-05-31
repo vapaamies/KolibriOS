@@ -18,7 +18,7 @@ if exist "%Source%.cfg" del "%Source%.cfg"
 dcc32 "%Source%.dpr" -e"%Bin%" %Options% -u"%Units%"
 if errorlevel 1 goto exit
 
-"%~dp0..\pet" -nologo -strip -trunc -dropsect .idata,.rsrc -rebase 0 -osver 0.7 -ls -into "%Target%.exe"
+"%~dp0..\Pet" -nologo -strip -trunc -dropsect .idata,.rsrc -rebase 0 -osver 0.7 -log brief -into "%Target%.exe"
 if errorlevel 1 goto exit
 
 "%~dp0..\exe2kos" "%Target%.exe" "%Target%"
