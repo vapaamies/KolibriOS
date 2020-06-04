@@ -669,6 +669,51 @@ const
 {77.3}    function WakeFutex(Handle: THandle; Waiters: LongWord): LongWord; stdcall;
           function GetProcAddress(hLib: Pointer; ProcName: PKolibriChar): Pointer; stdcall;
 
+
+{Indirect Functions and difinitions}
+type
+  TRGBColor=packed record
+   Red:Byte;
+   Green:Byte;
+   Blue:Byte;
+  end;
+
+  LOGWINDOW = packed record
+    Box:TBox;
+    Caption:PKolibriChar;
+    BackColor:TRGBColor;
+    WindowStyle:LongWord;
+    CaptionStyle:LongWord;
+  end;
+
+  LOGBUTTON = packed record
+    Box:TBox;
+    BackColor:TRGBColor;
+    ButtonStyle:LongWord;
+    ID:LongWord;
+  end;
+
+  procedure DrawWindowIndirect(Window:LOGWINDOW);
+  procedure DrawButtonIndirect(Button:LOGBUTTON);
+
+{Helpers Functions and difinitions}
+  // Make and fill structures
+  function Rect(Left, Top, Right, Bottom:LongInt):TRect;overload;
+  function Rect(LeftTop:TPointLong; RightBottom:TPointLong):TRect;overload;
+  function Box(Left, Top: LongInt; Width, Height: LongWord):TBox;overload;
+  function Box(LeftTop: TPointLong; WidthHeight: TSizeLong):TBox;overload;
+  
+  //Convert functions
+  function RectToBox(Rect:TRect):TBox;
+  function BoxToRect(Box:TBox):TRect;
+
+  //Convert color to RGB and RGB to color
+  function RGBColor(Red,Green,Blue:Byte):TRGBColor;
+  function RGB(Red,Green,Blue:Byte):LongWord;overload;
+  function RGB(RGBColor:TRGBColor):LongWord;overload;
+  function ToRGBColor(RGB:LongWord):TRGBColor;
+
+
 implementation
 
 procedure TerminateThread; stdcall;
@@ -3745,6 +3790,109 @@ asm
         pop    ebx
         pop    edi
         pop    esi
+end;
+
+{Indirect Functions and difinitions}
+procedure DrawWindowIndirect(Window:LOGWINDOW);
+begin
+ with Window do
+  DrawWindow(Box.Left, Box.Top,Box.Left+Box.Width, Box.Top+Box.Height, Caption, RGB(BackColor),WindowStyle,CaptionStyle);
+end;
+
+procedure DrawButtonIndirect(Button:LOGBUTTON);
+begin
+ with Button do
+  DrawButton(Box.Left,Box.Top,Box.Left+Box.Width, Box.Top+Box.Height,RGB(BackColor),ButtonStyle,ID);
+end;
+
+{Helpers Functions and difinitions}
+function Rect(Left, Top, Right, Bottom:LongInt):TRect;
+begin
+ Result.Left:=Left;
+ Result.Top:=Top;
+ Result.Right:=Right;
+ Result.Bottom:=Bottom;
+end;
+
+function Rect(LeftTop:TPointLong; RightBottom:TPointLong):TRect;
+begin
+ Result.Left:=LeftTop.X;
+ Result.Top:=LeftTop.Y;
+ Result.Right:=RightBottom.X;
+ Result.Bottom:=RightBottom.Y;
+end;
+
+function Box(Left, Top: LongInt; Width, Height: LongWord):TBox;
+begin
+ Result.Left:=Left;
+ Result.Top:=Top;
+ Result.Width:=Width;
+ Result.Height:=Height;
+end;
+
+function Box(LeftTop: TPointLong; WidthHeight: TSizeLong):TBox;
+begin
+ Result.Left:=LeftTop.X;
+ Result.Top:=LeftTop.Y;
+ Result.Width:=WidthHeight.Width;
+ Result.Height:=WidthHeight.Height;
+end;
+
+function RectToBox(Rect:TRect):TBox;
+begin
+ If Rect.Left<Rect.Right then
+ begin
+    Result.Left:=Rect.Left;
+    Result.Width:=Rect.Right-Rect.Left;
+ end
+ else
+ begin
+    Result.Left:=Rect.Right;
+    Result.Width:=Rect.Left-Rect.Right;
+ end;
+
+ If Rect.Top<Rect.Bottom then
+ begin
+    Result.Top:=Rect.Top;
+    Result.Height:=Rect.Bottom-Rect.Top;
+ end
+ else
+ begin
+    Result.Top:=Rect.Bottom;
+    Result.Height:=Rect.Top-Rect.Bottom;
+ end;
+end;
+
+function BoxToRect(Box:TBox):TRect;
+begin
+ Result.Left:=Box.Left;
+ Result.Top:=Box.Top;
+ Result.Right:=Box.Left+Box.Width;
+ Result.Bottom:=Box.Top+Box.Height;
+end;
+
+function RGBColor(Red,Green,Blue:Byte):TRGBColor;
+begin
+ Result.Red:=Red;
+ Result.Green:=Green;
+ Result.Blue:=Blue;
+end;
+
+function RGB(Red,Green,Blue:Byte):LongWord;
+begin
+ Result:=Red shl 16+Green shl 8+Blue;
+end;
+
+function RGB(RGBColor:TRGBColor):LongWord;
+begin
+ Result:=RGB(RGBColor.Red,RGBColor.Green,RGBColor.Blue);
+end;
+
+function ToRGBColor(RGB:LongWord):TRGBColor;
+begin
+ Result.Red:=RGB shr 16;
+ Result.Green:=Word(RGB) shr 8;
+ Result.Blue:=Byte(RGB);
 end;
 
 end.
