@@ -22,23 +22,51 @@ type
     Width:  Word;
   end;
 
+  TSizeLong = packed record
+    Width:  LongWord;
+    Height: LongWord;
+  end;
+
   TPoint = packed record
     Y: SmallInt;
     X: SmallInt;
   end;
 
+  TPointLong = packed record
+    X: LongInt;
+    Y: LongInt;
+  end;
+
   TRect = packed record
+  case Integer of
+    0:
+    (
     Left:   LongInt;
     Top:    LongInt;
     Right:  LongInt;
     Bottom: LongInt;
+    );
+    1:
+    (
+    TopLeft:TPointLong;
+    BottomRight:TPointLong;
+    )
   end;
 
   TBox = packed record
+  case Integer of
+    0:
+    (
     Left:   LongInt;
     Top:    LongInt;
     Width:  LongWord;
     Height: LongWord;
+    );
+    1:
+    (
+    Position:TPointLong;
+    Size:TSizeLong;
+    );
   end;
 
   TSystemDate = packed record
