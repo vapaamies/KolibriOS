@@ -3796,13 +3796,13 @@ end;
 procedure DrawWindowIndirect(Window:LOGWINDOW);
 begin
  with Window do
-  DrawWindow(Box.Left, Box.Top,Box.Left+Box.Width, Box.Top+Box.Height, Caption, RGB(BackColor),WindowStyle,CaptionStyle);
+  DrawWindow(Box.Left, Box.Top, Box.Width, Box.Height, Caption, RGB(BackColor),WindowStyle,CaptionStyle);
 end;
 
 procedure DrawButtonIndirect(Button:LOGBUTTON);
 begin
  with Button do
-  DrawButton(Box.Left,Box.Top,Box.Left+Box.Width, Box.Top+Box.Height,RGB(BackColor),ButtonStyle,ID);
+  DrawButton(Box.Left, Box.Top, Box.Width, Box.Height,RGB(BackColor),ButtonStyle,ID);
 end;
 
 {Helpers Functions and difinitions}
