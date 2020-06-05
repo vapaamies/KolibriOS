@@ -41,15 +41,15 @@ type
   case Integer of
     0:
     (
-    Left:   LongInt;
-    Top:    LongInt;
-    Right:  LongInt;
-    Bottom: LongInt;
+      Left:   LongInt;
+      Top:    LongInt;
+      Right:  LongInt;
+      Bottom: LongInt;
     );
     1:
     (
-    TopLeft:TPointLong;
-    BottomRight:TPointLong;
+      TopLeft:     TPointLong;
+      BottomRight: TPointLong;
     )
   end;
 
@@ -57,15 +57,15 @@ type
   case Integer of
     0:
     (
-    Left:   LongInt;
-    Top:    LongInt;
-    Width:  LongWord;
-    Height: LongWord;
+      Left:   LongInt;
+      Top:    LongInt;
+      Width:  LongWord;
+      Height: LongWord;
     );
     1:
     (
-    Position:TPointLong;
-    Size:TSizeLong;
+      Position: TPointLong;
+      Size:     TSizeLong;
     );
   end;
 
@@ -673,24 +673,24 @@ const
 {Indirect Functions and difinitions}
 type
   TRGBColor=packed record
-   Red:Byte;
-   Green:Byte;
-   Blue:Byte;
+   Red:   Byte;
+   Green: Byte;
+   Blue:  Byte;
   end;
 
   LOGWINDOW = packed record
-    Box:TBox;
-    Caption:PKolibriChar;
-    BackColor:TRGBColor;
-    WindowStyle:LongWord;
-    CaptionStyle:LongWord;
+    Box:          TBox;
+    Caption:      PKolibriChar;
+    BackColor:    TRGBColor;
+    WindowStyle:  LongWord;
+    CaptionStyle: LongWord;
   end;
 
   LOGBUTTON = packed record
-    Box:TBox;
-    BackColor:TRGBColor;
-    ButtonStyle:LongWord;
-    ID:LongWord;
+    Box:         TBox;
+    BackColor:   TRGBColor;
+    ButtonStyle: LongWord;
+    ID:          LongWord;
   end;
 
   procedure DrawWindowIndirect(Window:LOGWINDOW);
@@ -3795,104 +3795,104 @@ end;
 {Indirect Functions and difinitions}
 procedure DrawWindowIndirect(Window:LOGWINDOW);
 begin
- with Window do
-  DrawWindow(Box.Left, Box.Top, Box.Width, Box.Height, Caption, RGB(BackColor),WindowStyle,CaptionStyle);
+  with Window do
+    DrawWindow(Box.Left, Box.Top, Box.Width, Box.Height, Caption, RGB(BackColor),WindowStyle,CaptionStyle);
 end;
 
 procedure DrawButtonIndirect(Button:LOGBUTTON);
 begin
- with Button do
-  DrawButton(Box.Left, Box.Top, Box.Width, Box.Height,RGB(BackColor),ButtonStyle,ID);
+  with Button do
+    DrawButton(Box.Left, Box.Top, Box.Width, Box.Height,RGB(BackColor),ButtonStyle,ID);
 end;
 
 {Helpers Functions and difinitions}
 function Rect(Left, Top, Right, Bottom:LongInt):TRect;
 begin
- Result.Left:=Left;
- Result.Top:=Top;
- Result.Right:=Right;
- Result.Bottom:=Bottom;
+  Result.Left   := Left;
+  Result.Top    := Top;
+  Result.Right  := Right;
+  Result.Bottom := Bottom;
 end;
 
 function Rect(LeftTop:TPointLong; RightBottom:TPointLong):TRect;
 begin
- Result.Left:=LeftTop.X;
- Result.Top:=LeftTop.Y;
- Result.Right:=RightBottom.X;
- Result.Bottom:=RightBottom.Y;
+  Result.Left   := LeftTop.X;
+  Result.Top    := LeftTop.Y;
+  Result.Right  := RightBottom.X;
+  Result.Bottom := RightBottom.Y;
 end;
 
 function Box(Left, Top: LongInt; Width, Height: LongWord):TBox;
 begin
- Result.Left:=Left;
- Result.Top:=Top;
- Result.Width:=Width;
- Result.Height:=Height;
+  Result.Left   := Left;
+  Result.Top    := Top;
+  Result.Width  := Width;
+  Result.Height := Height;
 end;
 
 function Box(LeftTop: TPointLong; WidthHeight: TSizeLong):TBox;
 begin
- Result.Left:=LeftTop.X;
- Result.Top:=LeftTop.Y;
- Result.Width:=WidthHeight.Width;
- Result.Height:=WidthHeight.Height;
+  Result.Left   := LeftTop.X;
+  Result.Top    := LeftTop.Y;
+  Result.Width  := WidthHeight.Width;
+  Result.Height := WidthHeight.Height;
 end;
 
 function RectToBox(Rect:TRect):TBox;
 begin
- If Rect.Left<Rect.Right then
- begin
-    Result.Left:=Rect.Left;
-    Result.Width:=Rect.Right-Rect.Left;
- end
- else
- begin
-    Result.Left:=Rect.Right;
-    Result.Width:=Rect.Left-Rect.Right;
- end;
+  If Rect.Left<Rect.Right then
+  begin
+    Result.Left  := Rect.Left;
+    Result.Width := Rect.Right-Rect.Left;
+  end
+  else
+  begin
+    Result.Left  := Rect.Right;
+    Result.Width := Rect.Left-Rect.Right;
+  end;
 
- If Rect.Top<Rect.Bottom then
- begin
-    Result.Top:=Rect.Top;
-    Result.Height:=Rect.Bottom-Rect.Top;
- end
- else
- begin
-    Result.Top:=Rect.Bottom;
-    Result.Height:=Rect.Top-Rect.Bottom;
- end;
+  If Rect.Top<Rect.Bottom then
+  begin
+    Result.Top    := Rect.Top;
+    Result.Height := Rect.Bottom-Rect.Top;
+  end
+  else
+  begin
+    Result.Top    := Rect.Bottom;
+    Result.Height := Rect.Top-Rect.Bottom;
+  end;
 end;
 
 function BoxToRect(Box:TBox):TRect;
 begin
- Result.Left:=Box.Left;
- Result.Top:=Box.Top;
- Result.Right:=Box.Left+Box.Width;
- Result.Bottom:=Box.Top+Box.Height;
+  Result.Left   := Box.Left;
+  Result.Top    := Box.Top;
+  Result.Right  := Box.Left+Box.Width;
+  Result.Bottom := Box.Top+Box.Height;
 end;
 
 function RGBColor(Red,Green,Blue:Byte):TRGBColor;
 begin
- Result.Red:=Red;
- Result.Green:=Green;
- Result.Blue:=Blue;
+  Result.Red   := Red;
+  Result.Green := Green;
+  Result.Blue  := Blue;
 end;
 
 function RGB(Red,Green,Blue:Byte):LongWord;
 begin
- Result:=Red shl 16+Green shl 8+Blue;
+  Result:=Red shl 16+Green shl 8+Blue;
 end;
 
 function RGB(RGBColor:TRGBColor):LongWord;
 begin
- Result:=RGB(RGBColor.Red,RGBColor.Green,RGBColor.Blue);
+  Result:=RGB(RGBColor.Red,RGBColor.Green,RGBColor.Blue);
 end;
 
 function ToRGBColor(RGB:LongWord):TRGBColor;
 begin
- Result.Red:=RGB shr 16;
- Result.Green:=Word(RGB) shr 8;
- Result.Blue:=Byte(RGB);
+  Result.Red   := RGB shr 16;
+  Result.Green := Word(RGB) shr 8;
+  Result.Blue  := Byte(RGB);
 end;
 
 end.
