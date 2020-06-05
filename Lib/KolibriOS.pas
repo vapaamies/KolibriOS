@@ -521,7 +521,7 @@ const
 {66.5}    function ResetHotKey(ScanCode, Control: LongWord): LongInt; stdcall;
 {66.6}    procedure LockKeyboard; stdcall;
 {66.7}    procedure UnlockKeyboard; stdcall;
-{67}      procedure SetWindowPos(Left, Top, Right, Bottom: LongInt); stdcall;
+{67}      procedure SetWindowPos(Left, Top, Width, Height: LongInt); stdcall;
 {68.0}    function GetTaskSwitchCount: LongWord; stdcall;
 {68.1}    procedure SwitchThread; stdcall;
 {68.2.0}  function EnableRDPMC: LongWord; stdcall;
@@ -2427,15 +2427,15 @@ asm
         pop    ebx
 end;
 
-procedure SetWindowPos(Left, Top, Right, Bottom: LongInt); stdcall;
+procedure SetWindowPos(Left, Top, Width, Height: LongInt); stdcall;
 asm
         push   ebx
         push   esi
         mov    eax, 67
         mov    ebx, Left
         mov    ecx, Top
-        mov    edx, Right
-        mov    esi, Bottom
+        mov    edx, Width
+        mov    esi, Height
         int    $40
         pop    esi
         pop    ebx
@@ -3155,13 +3155,7 @@ asm
         mov    bl, 8
         mov    bh, Device
         int    $40
-        cmp    eax, -1
-        jz     @error
         mov    edx, ebx
-        jmp @end
-@error:
-        mov    edx, eax
-@end:
         pop    ebx
 end;
 
@@ -3172,13 +3166,7 @@ asm
         mov    bl, 9
         mov    bh, Device
         int    $40
-        cmp    eax, -1
-        jz     @error
         mov    edx, ebx
-        jmp @end
-@error:
-        mov    edx, eax
-@end:
         pop    ebx
 end;
 
@@ -3350,13 +3338,12 @@ asm
         xor    ebx, ebx
         mov    bh, Device
         int    $40
-        cmp    ebx, -1
-        je     @error
-        movzx  edx, bx
-        jmp    @end
-@error:
-        mov    edx, eax
-@end:
+        movzx  ecx, bx
+        cmp    eax, -1
+        jne    @next
+        mov    ecx, eax
+@next:
+        mov    edx, ecx
         pop    ebx
 end;
 
