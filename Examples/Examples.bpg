@@ -15,53 +15,53 @@ PROJECTS = ColorButtons.exe ConsoleColors.exe DateTime.exe DrawImage.exe DrawIma
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
-ColorButtons.exe: ColorButtons\ColorButtons.dpr
+ColorButtons.exe: GUI\ColorButtons\ColorButtons.dpr
   $(DCC)
 
-ConsoleColors.exe: ConsoleColors\ConsoleColors.dpr
+ConsoleColors.exe: Console\ConsoleColors\ConsoleColors.dpr
   $(DCC)
 
-DateTime.exe: DateTime\DateTime.dpr
+DateTime.exe: Console\DateTime\DateTime.dpr
   $(DCC)
 
-DrawImage.exe: DrawImage\DrawImage.dpr
+DrawImage.exe: GUI\DrawImage\DrawImage.dpr
   $(DCC)
 
-DrawImageEx.exe: DrawImageEx\DrawImageEx.dpr
+DrawImageEx.exe: GUI\DrawImageEx\DrawImageEx.dpr
   $(DCC)
 
-DrawText.exe: DrawText\DrawText.dpr
+DrawText.exe: GUI\DrawText\DrawText.dpr
   $(DCC)
 
-GetCurrentDirectory.exe: GetCurrentDir\GetCurrentDir.dpr
+GetCurrentDirectory.exe: Console\GetCurrentDir\GetCurrentDir.dpr
   $(DCC)
 
-GetPixel.exe: GetPixel\GetPixel.dpr
+GetPixel.exe: GUI\GetPixel\GetPixel.dpr
   $(DCC)
 
-GetPointOwner.exe: GetPointOwner\GetPointOwner.dpr
+GetPointOwner.exe: GUI\GetPointOwner\GetPointOwner.dpr
   $(DCC)
 
-Hello.exe: Hello\Hello.dpr
+Hello.exe: Console\Hello\Hello.dpr
   $(DCC)
 
-HelloGUI.exe: Hello\HelloGUI.dpr
+HelloGUI.exe: GUI\Hello\HelloGUI.dpr
   $(DCC)
 
-LoadFile.exe: LoadFile\LoadFile.dpr
+LoadFile.exe: Console\LoadFile\LoadFile.dpr
   $(DCC)
 
-ReadFolder.exe: ReadFolder\ReadFolder.dpr
+ReadFolder.exe: Console\ReadFolder\ReadFolder.dpr
   $(DCC)
 
-Screenshot.exe: Screenshot\Screenshot.dpr
+Screenshot.exe: GUI\Screenshot\Screenshot.dpr
   $(DCC)
 
-SetCursor.exe: SetCursor\SetCursor.dpr
+SetCursor.exe: GUI\SetCursor\SetCursor.dpr
   $(DCC)
 
-SetPixel.exe: SetPixel\SetPixel.dpr
+SetPixel.exe: GUI\SetPixel\SetPixel.dpr
   $(DCC)
 
-SetWindowPos.exe: SetWindowPos\SetWindowPos.dpr
+SetWindowPos.exe: GUI\SetWindowPos\SetWindowPos.dpr
   $(DCC)
