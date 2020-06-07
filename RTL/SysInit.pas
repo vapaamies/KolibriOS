@@ -1,15 +1,14 @@
 (*
-    Minimal Delphi SysInit unit
+    KolibriOS RTL System unit
 *)
 
 unit SysInit;
 
 interface
 
-procedure _InitExe;
+procedure _InitExe(InitTable: PPackageInfo);
 
 var
-  ModuleIsLib: Boolean;
   TLSIndex: Integer = -1;
   TLSLast: Byte;
 
@@ -18,8 +17,9 @@ const
 
 implementation
 
-procedure _InitExe;
-asm
+procedure _InitExe(InitTable: PPackageInfo);
+begin
+  _StartExe(InitTable);
 end;
 
 end.

@@ -28,7 +28,8 @@ const
   Yellow        = 14;
   White         = 15;
 
-procedure ConsoleInit(Title: PKolibriChar);
+procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean = True;
+  WndWidth: LongWord = $FFFFFFFF; WndHeight: LongWord = $FFFFFFFF; ScrWidth: LongWord = $FFFFFFFF; ScrHeight: LongWord = $FFFFFFFF);
 
 function GetCursorPos: TConsolePoint;
 procedure SetCursorPos(X, Y: Integer); overload;
@@ -43,7 +44,6 @@ function WriteLn(LineBreaks: Integer = 1): LongInt; overload;
 function WriteLn(Text: PKolibriChar; LineBreaks: Integer = 1): LongInt; overload;
 
 var
-  ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
   KeyPressed: function: Boolean;
   ReadKey: function: KolibriChar; stdcall;
   SetCursorHeight: function(Height: Integer): Integer; stdcall;
@@ -51,6 +51,9 @@ var
   WriteText: procedure(Text: PKolibriChar; Length: LongWord); stdcall;
 
 implementation
+
+var
+  CloseWindow: Boolean;
 
 procedure ResetAttributes;
 begin
@@ -129,15 +132,17 @@ end;
 
 var
   hConsole: Pointer;
-  ConsoleInitProc: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongInt; Caption: PKolibriChar); stdcall;
+  ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
+  ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
   GetCursorPosProc: procedure(var X, Y: Integer); stdcall;
   SetCursorPosProc: procedure(X, Y: Integer); stdcall;
 
-procedure ConsoleInit(Title: PKolibriChar);
+procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean;
+  WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
 begin
   hConsole := LoadLibrary('/sys/lib/console.obj');
-  ConsoleInitProc := GetProcAddress(hConsole, 'con_init');
   ConsoleExit := GetProcAddress(hConsole, 'con_exit');
+  ConsoleInit := GetProcAddress(hConsole, 'con_init');
   GetCursorPosProc := GetProcAddress(hConsole, 'con_get_cursor_pos');
   KeyPressed := GetProcAddress(hConsole, 'con_kbhit');
   ReadKey := GetProcAddress(hConsole, 'con_getch');
@@ -146,7 +151,8 @@ begin
   Write := GetProcAddress(hConsole, 'con_printf');
   WriteText := GetProcAddress(hConsole, 'con_write_string');
 
-  ConsoleInitProc(-1, -1, -1, -1, Title);
+  ConsoleInit(WndWidth, WndHeight, ScrWidth, ScrHeight, Caption);
+  CloseWindow := CloseWindowOnExit;
 end;
 
 function GetCursorPos: TConsolePoint;
@@ -164,5 +170,11 @@ begin
   with Point do
     SetCursorPosProc(X, Y);
 end;
+
+initialization
+
+finalization
+  if hConsole <> nil then
+    ConsoleExit(CloseWindow);
 
 end.

@@ -13,13 +13,11 @@ var
   Buffer: array[0..BUFFER_SIZE - 1] of Char;
 
 begin
-  ConsoleInit('Get Current Directory');
+  InitConsole('Get Current Directory', False);
 
   GetCurrentDirectory(Buffer, BUFFER_SIZE);
 
   Write('AppPath is "%s"'#10, AppPath^);
   Write('CmdLine is "%s"'#10, CmdLine^);
   Write('Current Directory is "%s"'#10, Buffer);
-
-  ConsoleExit(False);
 end.

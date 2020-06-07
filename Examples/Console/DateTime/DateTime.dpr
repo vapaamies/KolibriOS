@@ -9,7 +9,7 @@ var
   CursorPos: TConsolePoint;
 
 begin
-  ConsoleInit('Date/Time');
+  InitConsole('Date/Time');
 
   SetCursorHeight(0);
   SetCursorPos(27, 11);
@@ -29,6 +29,4 @@ begin
     SetCursorPos(CursorPos);
     Sleep(50);
   until KeyPressed;
-
-  ConsoleExit(True);
 end.

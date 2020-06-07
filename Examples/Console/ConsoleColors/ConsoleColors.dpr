@@ -4,7 +4,7 @@ uses
   CRT;
 
 begin
-  ConsoleInit('Console Colors');
+  InitConsole('Console Colors');
 
   TextBackground(Black);
   WriteLn('Black');
@@ -75,6 +75,4 @@ begin
   WriteLn('White');
 
   ReadKey;
-
-  ConsoleExit(True);
 end.

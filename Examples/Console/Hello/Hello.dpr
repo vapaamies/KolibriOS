@@ -4,10 +4,7 @@ uses
   CRT;
 
 begin
-  ConsoleInit('Hello');
-
+  InitConsole('Hello');
   WriteLn('Hello, world!');
-
   ReadKey;
-  ConsoleExit(True);
 end.

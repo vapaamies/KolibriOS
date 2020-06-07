@@ -8,10 +8,8 @@ var
   Buffer: Pointer;
 
 begin
-  ConsoleInit('Load File');
+  InitConsole('Load File', False);
 
   Buffer := LoadFile('/sys/example.asm', FileSize);
   WriteText(Buffer, FileSize);
-
-  ConsoleExit(False);
 end.

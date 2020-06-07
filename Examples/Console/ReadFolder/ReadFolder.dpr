@@ -17,7 +17,7 @@ var
   Pos: LongWord;
 
 begin
-  ConsoleInit('Read Folder');
+  InitConsole('Read Folder', False);
 
   if ReadFolder(FolderPath, FolderInformation, 0, 0, 0, BlocksRead) = 0 then
     with FolderInformation do
@@ -53,6 +53,4 @@ begin
     Write(#10);
     Inc(Pos);
   end;
-
-  ConsoleExit(False);
 end.
