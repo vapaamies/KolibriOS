@@ -9,13 +9,16 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = ColorButtons.exe DateTime.exe DrawImage.exe DrawImageEx.exe DrawText.exe GetCurrentDirectory.exe GetPixel.exe \
-  GetPointOwner.exe Hello.exe LoadFile.exe ReadFolder.exe Screenshot.exe SetCursor.exe SetPixel.exe SetWindowPos.exe
+PROJECTS = ColorButtons.exe ConsoleColors.exe DateTime.exe DrawImage.exe DrawImageEx.exe DrawText.exe GetCurrentDirectory.exe \
+  GetPixel.exe GetPointOwner.exe Hello.exe HelloGUI.exe LoadFile.exe ReadFolder.exe Screenshot.exe SetCursor.exe SetPixel.exe SetWindowPos.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
 ColorButtons.exe: ColorButtons\ColorButtons.dpr
+  $(DCC)
+
+ConsoleColors.exe: ConsoleColors\ConsoleColors.dpr
   $(DCC)
 
 DateTime.exe: DateTime\DateTime.dpr
@@ -42,6 +45,9 @@ GetPointOwner.exe: GetPointOwner\GetPointOwner.dpr
 Hello.exe: Hello\Hello.dpr
   $(DCC)
 
+HelloGUI.exe: Hello\HelloGUI.dpr
+  $(DCC)
+
 LoadFile.exe: LoadFile\LoadFile.dpr
   $(DCC)
 
@@ -59,5 +65,3 @@ SetPixel.exe: SetPixel\SetPixel.dpr
 
 SetWindowPos.exe: SetWindowPos\SetWindowPos.dpr
   $(DCC)
-
-

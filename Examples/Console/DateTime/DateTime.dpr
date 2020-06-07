@@ -28,7 +28,7 @@ begin
     end;
     SetCursorPos(CursorPos);
     Sleep(50);
-  until Escape;
+  until KeyPressed;
 
   ConsoleExit(True);
 end.
