@@ -24,5 +24,4 @@ begin
   WriteN(Buffer, FileSize);
 
   ConsoleExit(0);
-  TerminateThread;
 end.

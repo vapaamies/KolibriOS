@@ -65,5 +65,4 @@ begin
   end;
 
   ConsoleExit(0);
-  TerminateThread;
 end.

@@ -52,7 +52,7 @@ begin
           BLACK_BUTTON:
             SetWindowCaption('Black');
           1:
-            TerminateThread;
+            Break;
         end;
     end;
 end.

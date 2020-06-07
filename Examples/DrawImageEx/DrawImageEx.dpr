@@ -148,6 +148,6 @@ begin
         GetKey;
       BUTTON_EVENT:
         if GetButton.ID = 1 then
-          TerminateThread;
+          Break;
     end;
 end.

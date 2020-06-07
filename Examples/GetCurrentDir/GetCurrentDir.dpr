@@ -32,5 +32,4 @@ begin
   printf('CurrentDirectory is "%s"'#10, Buffer);
 
   ConsoleExit(0);
-  TerminateThread;
 end.

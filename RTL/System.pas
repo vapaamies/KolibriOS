@@ -29,12 +29,20 @@ type
     DLLInitState: byte;
   end;
 
+procedure _Halt0;
 procedure _HandleFinally;
 
 implementation
 
 uses
   SysInit;
+
+procedure _Halt0;
+asm
+        XOR EAX, EAX
+        DEC EAX
+        INT $40
+end;
 
 procedure _HandleFinally;
 asm

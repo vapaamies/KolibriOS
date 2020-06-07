@@ -130,7 +130,7 @@ begin
           WAIT_BUTTON:
             SetCursor(hWaitCursor);
           1:
-            TerminateThread;
+            Break;
         end;
     end;
 end.

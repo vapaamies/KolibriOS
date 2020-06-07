@@ -50,5 +50,4 @@ begin
   until KBHit;
 
   ConsoleExit(1);
-  TerminateThread;
 end.
