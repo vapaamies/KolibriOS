@@ -4,23 +4,24 @@ uses
   KolibriOS;
 
 var
-  Window, Rectangle: TRect;
+  WndLeft, WndTop, WndWidth, WndHeight: Integer;
+  Rect: TRect;
   Point: TPoint;
 begin
-  with Window, GetScreenSize do
+  with GetScreenSize do
   begin
-    Right := Width div 4;
-    Bottom := Height div 4;
-    Left := (Width  - Right) div 2;
-    Top := (Height - Bottom) div 2;
+    WndWidth := Width div 4;
+    WndHeight := Height div 4;
+    WndLeft := (Width - WndWidth) div 2;
+    WndTop := (Height - WndHeight) div 2;
   end;
 
-  with Rectangle do
+  with Rect do
   begin
     Left := 10;
     Top := 10;
-    Right := Window.Right - 20;
-    Bottom := Window.Bottom - 40;
+    Right := WndWidth - 20;
+    Bottom := WndHeight - 40;
   end;
 
   SetEventMask(EM_REDRAW + EM_BUTTON + EM_MOUSE);
@@ -31,11 +32,10 @@ begin
         begin
           BeginDraw;
 
-          with Window do
-            DrawWindow(Left, Top, Right, Bottom, 'Get Pixel', $00FFFFFF,
-              WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
+          DrawWindow(WndLeft, WndTop, WndWidth, WndHeight, 'Get Pixel', $00FFFFFF,
+            WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
 
-          with Rectangle do
+          with Rect do
           begin
             DrawLine(Left, Top, Left, Bottom, 0);
             DrawLine(Right, Top, Right, Bottom, 0);
@@ -48,7 +48,7 @@ begin
       MOUSE_EVENT:
         begin
           Point := GetMousePos;
-          with Rectangle, Point do
+          with Rect, Point do
             DrawRectangle(Left + 1, Top + 1, Right - Left - 1, Bottom - Top - 1, GetPixel(X, Y));
         end;
       BUTTON_EVENT:

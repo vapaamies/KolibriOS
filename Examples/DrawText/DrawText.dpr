@@ -4,16 +4,16 @@ uses
   KolibriOS;
 
 var
-  Left, Right, Top, Bottom, CurX, CurY: Integer;
+  WndLeft, WndTop, WndWidth, WndHeight, CurX, CurY: Integer;
   Key: TKeyboardInput;
 
 begin
   with GetScreenSize do
   begin
-    Right := Width div 4;
-    Bottom := Height div 4;
-    Left := (Width  - Right) div 2;
-    Top := (Height - Bottom) div 2;
+    WndWidth := Width div 4;
+    WndHeight := Height div 4;
+    WndLeft := (Width  - WndWidth) div 2;
+    WndTop := (Height - WndHeight) div 2;
   end;
 
   CurX := 0;
@@ -26,7 +26,7 @@ begin
           CurX := 0;
           CurY := 0;
           BeginDraw;
-          DrawWindow(Left, Top, Right, Bottom, 'Please type text to draw', $00FFFFFF,
+          DrawWindow(WndLeft, WndTop, WndWidth, WndHeight, 'Please type text to draw', $00FFFFFF,
             WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
           EndDraw;
         end;

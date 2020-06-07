@@ -51,7 +51,7 @@ asm
 end;
 
 var
-  Left, Right, Top, Bottom: Integer;
+  WndLeft, WndTop, WndWidth, WndHeight: Integer;
   TargaFile: PTargaFile;
   Image: Pointer;
   FileSize: LongWord;
@@ -69,10 +69,10 @@ begin
 
   with GetScreenSize do
   begin
-    Right := Width div 4;
-    Bottom := Height div 4;
-    Left := (Width  - Right) div 2;
-    Top := (Height - Bottom) div 2;
+    WndWidth := Width div 4;
+    WndHeight := Height div 4;
+    WndLeft := (Width  - WndWidth) div 2;
+    WndTop := (Height - WndHeight) div 2;
   end;
 
   while True do
@@ -80,7 +80,7 @@ begin
       REDRAW_EVENT:
         begin
           BeginDraw;
-          DrawWindow(Left, Top, Right, Bottom, 'Draw Image', $00FFFFFF,
+          DrawWindow(WndLeft, WndTop, WndWidth, WndHeight, 'Draw Image', $00FFFFFF,
             WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
           with TargaFile.Header do
             DrawImage(Image^, 30, 20, Width, Height);

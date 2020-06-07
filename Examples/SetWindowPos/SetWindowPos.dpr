@@ -52,15 +52,17 @@ begin
 end;
 
 var
-  Left, Right, Top, Bottom: Integer;
+  WndLeft, WndTop, WndWidth, WndHeight: Integer;
 
 begin
   with GetScreenSize do
   begin
-    Right := Width div 4;
-    Bottom := Height div 4;
-    Left := (Width - Right) div 2;
-    Top := (Height - Bottom) div 2;
+    WndWidth := Width div 4;
+    if WndWidth < 280 then
+      WndWidth := 280; // to center the prompt
+    WndHeight := Height div 4;
+    WndLeft := (Width - WndWidth) div 2;
+    WndTop := (Height - WndHeight) div 2;
   end;
 
   while True do
@@ -68,7 +70,7 @@ begin
       REDRAW_EVENT:
         begin
           BeginDraw;
-          DrawWindow(Left, Top, Right, Bottom, 'Set Window Position', $00FFFFFF,
+          DrawWindow(WndLeft, WndTop, WndWidth, WndHeight, 'Set Window Position', $00FFFFFF,
             WS_SKINNED_SIZABLE + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
           DrawText(24, 26, 'Use arrow keys(Left, Right, Up, Down)', $00000000, $00FFFFFF, DT_ZSTRING, 0);
           DrawText(24, 35, 'to move the window.', $00000000, $00FFFFFF, DT_ZSTRING, 0);

@@ -15,15 +15,15 @@ const
   RED_BUTTON    = 4000;
 
 var
-  Left, Right, Top, Bottom: Integer;
+  WndLeft, WndTop, WndWidth, WndHeight: Integer;
 
 begin
   with GetScreenSize do
   begin
-    Right := Width div 4;
-    Bottom := Height div 4;
-    Left := (Width - Right) div 2;
-    Top := (Height - Bottom) div 2;
+    WndWidth := Width div 4;
+    WndHeight := Height div 4;
+    WndLeft := (Width - WndWidth) div 2;
+    WndTop := (Height - WndHeight) div 2;
   end;
 
   while True do
@@ -31,7 +31,7 @@ begin
       REDRAW_EVENT:
         begin
           BeginDraw;
-          DrawWindow(Left, Top, Right, Bottom, 'Color Buttons', $00FFFFFF,
+          DrawWindow(WndLeft, WndTop, WndWidth, WndHeight, 'Color Buttons', $00FFFFFF,
             WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
           DrawButton(10, 20, 50, 30, COLOR_RED, 0, RED_BUTTON);
           DrawButton(70, 20, 50, 30, COLOR_GREEN, 0, GREEN_BUTTON);
