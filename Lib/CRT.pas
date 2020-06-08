@@ -41,10 +41,13 @@ function WhereX: Integer;
 function WhereY: Integer;
 function WhereXY: TCursorXY;
 
-procedure NormVideo; // reset text attributes
-procedure TextAttribute(Color, Background: Integer);
-procedure TextBackground(Color: Integer);
-procedure TextColor(Color: Integer);
+function NormVideo: LongWord; // reset text attributes
+function TextAttribute: Byte; overload;
+function TextAttribute(Color, Background: Byte): LongWord; overload;
+function TextBackground: Byte; overload;
+function TextBackground(Color: Byte): LongWord; overload;
+function TextColor: Byte; overload;
+function TextColor(Color: Byte): LongWord; overload;
 
 function WriteLn(LineBreaks: Integer = 1): LongInt; overload;
 function WriteLn(Text: PKolibriChar; LineBreaks: Integer = 1): LongInt; overload;
@@ -67,67 +70,6 @@ implementation
 
 var
   CloseWindow: Boolean;
-
-procedure NormVideo;
-begin
-  Write(#27'[0m');
-end;
-
-procedure TextAttribute(Color, Background: Integer);
-begin
-  TextColor(Color);
-  TextBackground(Background);
-end;
-
-procedure TextBackground(Color: Integer);
-const
-  Light = #27'[5m';
-  Colors: array[Black..LightGray] of PKolibriChar = (
-    #27'[40m', // Black
-    #27'[44m', // Blue
-    #27'[42m', // Green
-    #27'[46m', // Cyan
-    #27'[41m', // Red
-    #27'[45m', // Magenta
-    #27'[43m', // Brown
-    #27'[47m'  // LightGray
-  );
-begin
-  case Color of
-    Black..LightGray:
-      Write(Colors[Color]);
-    DarkGray..White:
-      begin
-        Write(Colors[Color - 8]);
-        Write(Light);
-      end;
-  end;
-end;
-
-procedure TextColor(Color: Integer);
-const
-  Light = #27'[1m';
-  Colors: array[Black..LightGray] of PKolibriChar = (
-    #27'[30m', // Black
-    #27'[34m', // Blue
-    #27'[32m', // Green
-    #27'[36m', // Cyan
-    #27'[31m', // Red
-    #27'[35m', // Magenta
-    #27'[33m', // Brown
-    #27'[37m'  // LightGray
-  );
-begin
-  case Color of
-    Black..LightGray:
-      Write(Colors[Color]);
-    DarkGray..White:
-      begin
-        Write(Colors[Color - 8]);
-        Write(Light);
-      end;
-  end;
-end;
 
 function WriteLn(LineBreaks: Integer): LongInt;
 var
@@ -152,7 +94,9 @@ var
   hConsole: Pointer;
   ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
   ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
+  GetFlags: function: LongWord; stdcall;
   GotoXYProc: procedure(X, Y: LongWord); stdcall;
+  SetFlags: function(Flags: LongWord): LongWord; stdcall;
   WhereXYProc: procedure(var X, Y: LongWord); stdcall;
 
 procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean;
@@ -163,15 +107,52 @@ begin
   ConsoleExit := GetProcAddress(hConsole, 'con_exit');
   ConsoleInit := GetProcAddress(hConsole, 'con_init');
   CursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
+  GotoXYProc := GetProcAddress(hConsole, 'con_set_cursor_pos');
+  GetFlags := GetProcAddress(hConsole, 'con_get_flags');
   KeyPressed := GetProcAddress(hConsole, 'con_kbhit');
   ReadKey := GetProcAddress(hConsole, 'con_getch');
-  GotoXYProc := GetProcAddress(hConsole, 'con_set_cursor_pos');
+  SetFlags := GetProcAddress(hConsole, 'con_set_flags');
   WhereXYProc := GetProcAddress(hConsole, 'con_get_cursor_pos');
   Write := GetProcAddress(hConsole, 'con_printf');
   WriteText := GetProcAddress(hConsole, 'con_write_string');
 
   ConsoleInit(WndWidth, WndHeight, ScrWidth, ScrHeight, Caption);
   CloseWindow := CloseWindowOnExit;
+end;
+
+function NormVideo: LongWord;
+begin
+  Result := SetFlags(GetFlags and $300 or $07);
+end;
+
+function TextAttribute: Byte;
+begin
+  Result := GetFlags and $FF;
+end;
+
+function TextAttribute(Color, Background: Byte): LongWord;
+begin
+  Result := SetFlags(GetFlags and $300 or Color and $0F or Background and $0F shl 4);
+end;
+
+function TextBackground: Byte;
+begin
+  Result := GetFlags and $F0 shr 4;
+end;
+
+function TextBackground(Color: Byte): LongWord;
+begin
+  Result := SetFlags(GetFlags and $30F or Color and $0F shl 4);
+end;
+
+function TextColor: Byte;
+begin
+  Result := GetFlags and $0F;
+end;
+
+function TextColor(Color: Byte): LongWord;
+begin
+  Result := SetFlags(GetFlags and $3F0 or Color and $0F);
 end;
 
 procedure GotoXY(X, Y: Integer);
