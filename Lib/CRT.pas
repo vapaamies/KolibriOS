@@ -56,6 +56,7 @@ function CursorOn: LongWord;
 procedure Delay(Milliseconds: LongWord); // absolute Sleep(Milliseconds);
 
 var
+  ClrScr: procedure; stdcall;
   CursorHeight: function(Height: LongWord): LongWord; stdcall;
   KeyPressed: function: Boolean;
   ReadKey: function: KolibriChar; stdcall;
@@ -158,6 +159,7 @@ procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean;
   WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
 begin
   hConsole := LoadLibrary('/sys/lib/console.obj');
+  ClrScr := GetProcAddress(hConsole, 'con_cls');
   ConsoleExit := GetProcAddress(hConsole, 'con_exit');
   ConsoleInit := GetProcAddress(hConsole, 'con_init');
   CursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
