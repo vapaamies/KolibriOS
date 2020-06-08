@@ -17,9 +17,9 @@ const
   Cyan          = 3;
   Red           = 4;
   Magenta       = 5;
-  Brown         = 6; // none in KolibriOS?
+  Brown         = 6;
   LightGray     = 7;
-  DarkGray      = 8; // none in KolibriOS?
+  DarkGray      = 8; 
   LightBlue     = 9;
   LightGreen    = 10;
   LightCyan     = 11;
@@ -68,7 +68,7 @@ end;
 
 procedure TextBackground(Color: Integer);
 const
-  Light = #27'[1m';
+  Light = #27'[5m';
   Colors: array[Black..LightGray] of PKolibriChar = (
     #27'[40m', // Black
     #27'[44m', // Blue
@@ -77,7 +77,7 @@ const
     #27'[41m', // Red
     #27'[45m', // Magenta
     #27'[43m', // Brown
-    #27'[37m'  // LightGray
+    #27'[47m'  // LightGray
   );
 begin
   case Color of
@@ -85,7 +85,7 @@ begin
       Write(Colors[Color]);
     DarkGray..White:
       begin
-        Write(Colors[Color]);
+        Write(Colors[Color - 8]);
         Write(Light);
       end;
   end;
@@ -93,7 +93,7 @@ end;
 
 procedure TextColor(Color: Integer);
 const
-  Light = #27'[5m';
+  Light = #27'[1m';
   Colors: array[Black..LightGray] of PKolibriChar = (
     #27'[30m', // Black
     #27'[34m', // Blue
@@ -110,7 +110,7 @@ begin
       Write(Colors[Color]);
     DarkGray..White:
       begin
-        Write(Colors[Color]);
+        Write(Colors[Color - 8]);
         Write(Light);
       end;
   end;
