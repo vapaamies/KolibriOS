@@ -4,29 +4,25 @@ uses
   KolibriOS, CRT;
 
 var
-  SystemDate: TSystemDate;
-  SystemTime: TSystemTime;
-  CursorPos: TConsolePoint;
+  CursorXY: TCursorXY;
 
 begin
   InitConsole('Date/Time');
 
-  SetCursorHeight(0);
-  SetCursorPos(27, 11);
+  CursorOff;
+  GotoXY(27, 11);
   Write(
     'System Date and System Time'#10 +
     '                              '
   );
-  CursorPos := GetCursorPos;
+  CursorXY := WhereXY;
   repeat
-    SystemDate := GetSystemDate;
-    SystemTime := GetSystemTime;
-    with SystemDate, SystemTime do
+    with GetSystemDate, GetSystemTime do
     begin
       Write('%02x.%02x.%02x', Day, Month, Year);
       Write(' - %02x:%02x:%02x', Hours, Minutes, Seconds);
     end;
-    SetCursorPos(CursorPos);
-    Sleep(50);
+    GotoXY(CursorXY);
+    Delay(500);
   until KeyPressed;
 end.

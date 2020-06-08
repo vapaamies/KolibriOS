@@ -1,3 +1,7 @@
+(*
+    KolibriOS CRT unit
+*)
+
 unit CRT;
 
 interface
@@ -6,8 +10,8 @@ uses
   KolibriOS;
 
 type
-  TConsolePoint = record
-    X, Y: Integer;
+  TCursorXY = record
+    X, Y: LongWord;
   end;
 
 const
@@ -31,11 +35,13 @@ const
 procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean = True;
   WndWidth: LongWord = $FFFFFFFF; WndHeight: LongWord = $FFFFFFFF; ScrWidth: LongWord = $FFFFFFFF; ScrHeight: LongWord = $FFFFFFFF);
 
-function GetCursorPos: TConsolePoint;
-procedure SetCursorPos(X, Y: Integer); overload;
-procedure SetCursorPos(const Point: TConsolePoint); overload;
+procedure GotoXY(X, Y: Integer); overload;
+procedure GotoXY(const Point: TCursorXY); overload;
+function WhereX: Integer;
+function WhereY: Integer;
+function WhereXY: TCursorXY;
 
-procedure ResetAttributes;
+procedure NormVideo; // reset text attributes
 procedure TextAttribute(Color, Background: Integer);
 procedure TextBackground(Color: Integer);
 procedure TextColor(Color: Integer);
@@ -43,10 +49,16 @@ procedure TextColor(Color: Integer);
 function WriteLn(LineBreaks: Integer = 1): LongInt; overload;
 function WriteLn(Text: PKolibriChar; LineBreaks: Integer = 1): LongInt; overload;
 
+function CursorBig: LongWord;
+function CursorOff: LongWord;
+function CursorOn: LongWord;
+
+procedure Delay(Milliseconds: LongWord); // absolute Sleep(Milliseconds);
+
 var
+  CursorHeight: function(Height: LongWord): LongWord; stdcall;
   KeyPressed: function: Boolean;
   ReadKey: function: KolibriChar; stdcall;
-  SetCursorHeight: function(Height: Integer): Integer; stdcall;
   Write: function(const Text: PKolibriChar): LongInt; cdecl varargs;
   WriteText: procedure(Text: PKolibriChar; Length: LongWord); stdcall;
 
@@ -55,7 +67,7 @@ implementation
 var
   CloseWindow: Boolean;
 
-procedure ResetAttributes;
+procedure NormVideo;
 begin
   Write(#27'[0m');
 end;
@@ -130,12 +142,17 @@ begin
   Result := Write(Text) + WriteLn(LineBreaks);
 end;
 
+procedure Delay(Milliseconds: LongWord);
+begin
+  Sleep(Milliseconds div 10);
+end;
+
 var
   hConsole: Pointer;
   ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
   ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
-  GetCursorPosProc: procedure(var X, Y: Integer); stdcall;
-  SetCursorPosProc: procedure(X, Y: Integer); stdcall;
+  GotoXYProc: procedure(X, Y: LongWord); stdcall;
+  WhereXYProc: procedure(var X, Y: LongWord); stdcall;
 
 procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean;
   WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
@@ -143,11 +160,11 @@ begin
   hConsole := LoadLibrary('/sys/lib/console.obj');
   ConsoleExit := GetProcAddress(hConsole, 'con_exit');
   ConsoleInit := GetProcAddress(hConsole, 'con_init');
-  GetCursorPosProc := GetProcAddress(hConsole, 'con_get_cursor_pos');
+  CursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
   KeyPressed := GetProcAddress(hConsole, 'con_kbhit');
   ReadKey := GetProcAddress(hConsole, 'con_getch');
-  SetCursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
-  SetCursorPosProc := GetProcAddress(hConsole, 'con_set_cursor_pos');
+  GotoXYProc := GetProcAddress(hConsole, 'con_set_cursor_pos');
+  WhereXYProc := GetProcAddress(hConsole, 'con_get_cursor_pos');
   Write := GetProcAddress(hConsole, 'con_printf');
   WriteText := GetProcAddress(hConsole, 'con_write_string');
 
@@ -155,20 +172,45 @@ begin
   CloseWindow := CloseWindowOnExit;
 end;
 
-function GetCursorPos: TConsolePoint;
+procedure GotoXY(X, Y: Integer);
 begin
-  GetCursorPosProc(Result.X, Result.Y);
+  GotoXYProc(X, Y);
 end;
 
-procedure SetCursorPos(X, Y: Integer);
-begin
-  SetCursorPosProc(X, Y);
-end;
-
-procedure SetCursorPos(const Point: TConsolePoint);
+procedure GotoXY(const Point: TCursorXY);
 begin
   with Point do
-    SetCursorPosProc(X, Y);
+    GotoXYProc(X, Y);
+end;
+
+function WhereX: Integer;
+begin
+  Result := WhereXY.X;
+end;
+
+function WhereY: Integer;
+begin
+  Result := WhereXY.Y;
+end;
+
+function WhereXY: TCursorXY;
+begin
+  WhereXYProc(Result.X, Result.Y);
+end;
+
+function CursorBig: LongWord;
+begin
+  Result := CursorHeight(15);
+end;
+
+function CursorOff: LongWord;
+begin
+  Result := CursorHeight(0);
+end;
+
+function CursorOn: LongWord;
+begin
+  Result := CursorHeight(2);
 end;
 
 initialization

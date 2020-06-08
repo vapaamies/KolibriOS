@@ -39,7 +39,7 @@ begin
   TextBackground(White);
   WriteLn('White');
 
-  ResetAttributes;
+  NormVideo;
 
   TextColor(Black);
   WriteLn('Black');
