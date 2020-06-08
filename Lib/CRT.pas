@@ -52,15 +52,16 @@ function TextColor(Color: Byte): LongWord; overload;
 function WriteLn(LineBreaks: Integer = 1): LongInt; overload;
 function WriteLn(Text: PKolibriChar; LineBreaks: Integer = 1): LongInt; overload;
 
-function CursorBig: LongWord;
-function CursorOff: LongWord;
-function CursorOn: LongWord;
+function CursorBig: Integer;
+function CursorHeight: Integer; overload;
+function CursorHeight(Height: Integer): Integer; overload;
+function CursorOff: Integer;
+function CursorOn: Integer;
 
 procedure Delay(Milliseconds: LongWord); // absolute Sleep(Milliseconds);
 
 var
   ClrScr: procedure; stdcall;
-  CursorHeight: function(Height: LongWord): LongWord; stdcall;
   KeyPressed: function: Boolean;
   ReadKey: function: KolibriChar; stdcall;
   Write: function(const Text: PKolibriChar): LongInt; cdecl varargs;
@@ -94,9 +95,11 @@ var
   hConsole: Pointer;
   ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
   ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
+  GetCursorHeight: function: Integer; stdcall;
   GetFlags: function: LongWord; stdcall;
   GotoXYProc: procedure(X, Y: LongWord); stdcall;
   SetFlags: function(Flags: LongWord): LongWord; stdcall;
+  SetCursorHeight: function(Height: Integer): Integer; stdcall;
   WhereXYProc: procedure(var X, Y: LongWord); stdcall;
 
 procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean;
@@ -106,11 +109,12 @@ begin
   ClrScr := GetProcAddress(hConsole, 'con_cls');
   ConsoleExit := GetProcAddress(hConsole, 'con_exit');
   ConsoleInit := GetProcAddress(hConsole, 'con_init');
-  CursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
-  GotoXYProc := GetProcAddress(hConsole, 'con_set_cursor_pos');
+  GetCursorHeight := GetProcAddress(hConsole, 'con_get_cursor_height');
   GetFlags := GetProcAddress(hConsole, 'con_get_flags');
+  GotoXYProc := GetProcAddress(hConsole, 'con_set_cursor_pos');
   KeyPressed := GetProcAddress(hConsole, 'con_kbhit');
   ReadKey := GetProcAddress(hConsole, 'con_getch');
+  SetCursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
   SetFlags := GetProcAddress(hConsole, 'con_set_flags');
   WhereXYProc := GetProcAddress(hConsole, 'con_get_cursor_pos');
   Write := GetProcAddress(hConsole, 'con_printf');
@@ -181,19 +185,29 @@ begin
   WhereXYProc(Result.X, Result.Y);
 end;
 
-function CursorBig: LongWord;
+function CursorBig: Integer;
 begin
-  Result := CursorHeight(15);
+  Result := SetCursorHeight(15);
 end;
 
-function CursorOff: LongWord;
+function CursorHeight: Integer;
 begin
-  Result := CursorHeight(0);
+  Result := GetCursorHeight;
 end;
 
-function CursorOn: LongWord;
+function CursorHeight(Height: Integer): Integer;
 begin
-  Result := CursorHeight(2);
+  Result := SetCursorHeight(Height);
+end;
+
+function CursorOff: Integer;
+begin
+  Result := SetCursorHeight(0);
+end;
+
+function CursorOn: Integer;
+begin
+  Result := SetCursorHeight(2);
 end;
 
 initialization
