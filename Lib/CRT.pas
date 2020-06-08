@@ -62,6 +62,7 @@ procedure Delay(Milliseconds: LongWord); // absolute Sleep(Milliseconds);
 
 var
   ClrScr: procedure; stdcall;
+  FontHeight: function: Integer; stdcall;
   KeyPressed: function: Boolean;
   ReadKey: function: KolibriChar; stdcall;
   Write: function(const Text: PKolibriChar): LongInt; cdecl varargs;
@@ -109,6 +110,7 @@ begin
   ClrScr := GetProcAddress(hConsole, 'con_cls');
   ConsoleExit := GetProcAddress(hConsole, 'con_exit');
   ConsoleInit := GetProcAddress(hConsole, 'con_init');
+  FontHeight := GetProcAddress(hConsole, 'con_get_font_height');
   GetCursorHeight := GetProcAddress(hConsole, 'con_get_cursor_height');
   GetFlags := GetProcAddress(hConsole, 'con_get_flags');
   GotoXYProc := GetProcAddress(hConsole, 'con_set_cursor_pos');
