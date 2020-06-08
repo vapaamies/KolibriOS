@@ -11,7 +11,7 @@ uses
 
 type
   TCursorXY = record
-    X, Y: LongWord;
+    X, Y: Integer;
   end;
 
 const
@@ -97,10 +97,10 @@ var
   ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
   GetCursorHeight: function: Integer; stdcall;
   GetFlags: function: LongWord; stdcall;
-  GotoXYProc: procedure(X, Y: LongWord); stdcall;
+  GotoXYProc: procedure(X, Y: Integer); stdcall;
   SetFlags: function(Flags: LongWord): LongWord; stdcall;
   SetCursorHeight: function(Height: Integer): Integer; stdcall;
-  WhereXYProc: procedure(var X, Y: LongWord); stdcall;
+  WhereXYProc: procedure(var X, Y: Integer); stdcall;
 
 procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean;
   WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
