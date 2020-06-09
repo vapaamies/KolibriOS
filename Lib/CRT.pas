@@ -49,8 +49,18 @@ function TextBackground(Color: Byte): LongWord; overload;
 function TextColor: Byte; overload;
 function TextColor(Color: Byte): LongWord; overload;
 
-function WriteLn(LineBreaks: Integer = 1): LongInt; overload;
-function WriteLn(Text: PKolibriChar; LineBreaks: Integer = 1): LongInt; overload;
+procedure ClrScr;
+
+procedure Write(Str: PKolibriChar); overload;
+procedure Write(Str: PKolibriChar; Length: LongWord); overload;
+procedure Write(const Str: ShortString); overload;
+function Write(Format: PKolibriChar; const Args: array of const): Integer; overload;
+
+procedure WriteLn(LineBreaks: Integer = 1); overload;
+procedure WriteLn(Str: PKolibriChar; LineBreaks: Integer = 1); overload;
+procedure WriteLn(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer = 1); overload;
+procedure WriteLn(const Str: ShortString; LineBreaks: Integer = 1); overload;
+function WriteLn(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer; overload;
 
 function CursorBig: Integer;
 function CursorHeight: Integer; overload;
@@ -58,69 +68,54 @@ function CursorHeight(Height: Integer): Integer; overload;
 function CursorOff: Integer;
 function CursorOn: Integer;
 
-procedure Delay(Milliseconds: LongWord); // absolute Sleep(Milliseconds);
+function KeyPressed: Boolean;
+function ReadKey: KolibriChar;
 
-var
-  ClrScr: procedure; stdcall;
-  FontHeight: function: Integer; stdcall;
-  KeyPressed: function: Boolean;
-  ReadKey: function: KolibriChar; stdcall;
-  Write: function(const Text: PKolibriChar): LongInt; cdecl varargs;
-  WriteText: procedure(Text: PKolibriChar; Length: LongWord); stdcall;
+function FontHeight: Integer;
+
+procedure Delay(Milliseconds: LongWord); // absolute Sleep(Milliseconds);
 
 implementation
 
 var
   CloseWindow: Boolean;
 
-function WriteLn(LineBreaks: Integer): LongInt;
-var
-  I: Integer;
-begin
-  Result := 0;
-  for I := 0 to LineBreaks - 1 do
-    Inc(Result, Write(#10));
-end;
-
-function WriteLn(Text: PKolibriChar; LineBreaks: Integer): LongInt;
-begin
-  Result := Write(Text) + WriteLn(LineBreaks);
-end;
-
-procedure Delay(Milliseconds: LongWord);
-begin
-  Sleep(Milliseconds div 10);
-end;
-
-var
   hConsole: Pointer;
+  ClrScrProc: procedure; stdcall;
   ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
   ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
   GetCursorHeight: function: Integer; stdcall;
   GetFlags: function: LongWord; stdcall;
+  GetFontHeight: function: Integer; stdcall;
   GotoXYProc: procedure(X, Y: Integer); stdcall;
+  KeyPressedFunc: function: Boolean;
+  PrintF: function(const Str: PKolibriChar): Integer; cdecl varargs;
+  ReadKeyFunc: function: KolibriChar; stdcall;
   SetFlags: function(Flags: LongWord): LongWord; stdcall;
   SetCursorHeight: function(Height: Integer): Integer; stdcall;
   WhereXYProc: procedure(var X, Y: Integer); stdcall;
+  WritePChar: procedure(Str: PKolibriChar); stdcall;
+  WritePCharLen: procedure(Str: PKolibriChar; Length: LongWord); stdcall;
 
 procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean;
   WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
 begin
   hConsole := LoadLibrary('/sys/lib/console.obj');
-  ClrScr := GetProcAddress(hConsole, 'con_cls');
+  ClrScrProc := GetProcAddress(hConsole, 'con_cls');
   ConsoleExit := GetProcAddress(hConsole, 'con_exit');
   ConsoleInit := GetProcAddress(hConsole, 'con_init');
-  FontHeight := GetProcAddress(hConsole, 'con_get_font_height');
   GetCursorHeight := GetProcAddress(hConsole, 'con_get_cursor_height');
   GetFlags := GetProcAddress(hConsole, 'con_get_flags');
+  GetFontHeight := GetProcAddress(hConsole, 'con_get_font_height');
   GotoXYProc := GetProcAddress(hConsole, 'con_set_cursor_pos');
-  KeyPressed := GetProcAddress(hConsole, 'con_kbhit');
-  ReadKey := GetProcAddress(hConsole, 'con_getch');
+  KeyPressedFunc := GetProcAddress(hConsole, 'con_kbhit');
+  PrintF := GetProcAddress(hConsole, 'con_printf');
+  ReadKeyFunc := GetProcAddress(hConsole, 'con_getch');
   SetCursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
   SetFlags := GetProcAddress(hConsole, 'con_set_flags');
   WhereXYProc := GetProcAddress(hConsole, 'con_get_cursor_pos');
-  Write := GetProcAddress(hConsole, 'con_printf');
-  WriteText := GetProcAddress(hConsole, 'con_write_string');
+  WritePChar := GetProcAddress(hConsole, 'con_write_asciiz');
+  WritePCharLen := GetProcAddress(hConsole, 'con_write_string');
 
   ConsoleInit(WndWidth, WndHeight, ScrWidth, ScrHeight, Caption);
   CloseWindow := CloseWindowOnExit;
@@ -210,6 +205,102 @@ end;
 function CursorOn: Integer;
 begin
   Result := SetCursorHeight(2);
+end;
+
+procedure ClrScr;
+begin
+  ClrScrProc;
+end;
+
+procedure Write(Str: PKolibriChar);
+begin
+  WritePChar(Str);
+end;
+
+procedure Write(Str: PKolibriChar; Length: LongWord);
+begin
+  WritePCharLen(Str, Length);
+end;
+
+procedure Write(const Str: ShortString);
+begin
+  WritePCharLen(@Str[1], Length(Str));
+end;
+
+function Write(Format: PKolibriChar; const Args: array of const): Integer;
+const
+  VarArgSize = SizeOf(TVarRec);
+asm
+        PUSH EDI
+        PUSH EBX
+        MOV EBX, ESP
+
+        INC ECX
+        JZ @@call
+@@arg:
+        MOV EDI, [EDX + ECX * VarArgSize - VarArgSize]
+        PUSH EDI
+        LOOP @@arg
+@@call:
+        PUSH ESP
+        PUSH EAX
+        CALL PrintF
+
+        MOV ESP, EBX
+        POP EBX
+        POP EDI
+end;
+
+procedure WriteLn(LineBreaks: Integer);
+var
+  I: Integer;
+begin
+  for I := 0 to LineBreaks - 1 do
+    WritePCharLen(#10, 1);
+end;
+
+procedure WriteLn(Str: PKolibriChar; LineBreaks: Integer);
+begin
+  WritePChar(Str);
+  WriteLn(LineBreaks);
+end;
+
+procedure WriteLn(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer);
+begin
+  WritePCharLen(Str, Length);
+  WriteLn(LineBreaks);
+end;
+
+procedure WriteLn(const Str: ShortString; LineBreaks: Integer);
+begin
+  WritePCharLen(@Str[1], Length(Str));
+  WriteLn(LineBreaks);
+end;
+
+function WriteLn(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer;
+begin
+  Result := Write(Format, Args);
+  WriteLn(LineBreaks);
+end;
+
+function KeyPressed: Boolean;
+begin
+  Result := KeyPressedFunc;
+end;
+
+function ReadKey: KolibriChar;
+begin
+  Result := ReadKeyFunc;
+end;
+
+function FontHeight: Integer;
+begin
+  Result := GetFontHeight;
+end;
+
+procedure Delay(Milliseconds: LongWord);
+begin
+  Sleep(Milliseconds div 10);
 end;
 
 initialization

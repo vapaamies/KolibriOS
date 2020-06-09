@@ -19,8 +19,8 @@ begin
   repeat
     with GetSystemDate, GetSystemTime do
     begin
-      Write('%02x.%02x.%02x', Day, Month, Year);
-      Write(' - %02x:%02x:%02x', Hours, Minutes, Seconds);
+      Write('%02x.%02x.%02x', [Day, Month, Year]);
+      Write(' - %02x:%02x:%02x', [Hours, Minutes, Seconds]);
     end;
     GotoXY(CursorXY);
     Delay(500);
