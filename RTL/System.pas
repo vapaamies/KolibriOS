@@ -6,26 +6,6 @@ unit System;
 
 interface
 
-const
-// Open array VarType values
-  vtInteger    = 0;
-  vtBoolean    = 1;
-  vtChar       = 2;
-  vtExtended   = 3;
-  vtString     = 4;
-  vtPointer    = 5;
-  vtPChar      = 6;
-  vtObject     = 7;
-  vtClass      = 8;
-  vtWideChar   = 9;
-  vtPWideChar  = 10;
-  vtAnsiString = 11;
-  vtCurrency   = 12;
-  vtVariant    = 13;
-  vtInterface  = 14;
-  vtWideString = 15;
-  vtInt64      = 16;
-
 type
   PPAnsiChar = ^PAnsiChar;
 
@@ -36,8 +16,8 @@ type
   PLongWord = ^LongWord;
   PLongInt = ^LongInt;
   PInt64 = ^Int64;
-{$IF CompilerVersion > 14}
-//  PUInt64 = ^UInt64;
+{$IF CompilerVersion >= 15}
+  PUInt64 = ^UInt64;
 {$IFEND}
 
   PCardinal = ^Cardinal;
@@ -79,26 +59,32 @@ type
     OuterContext: PInitContext;
   end;
 
+  TVarType = (
+    vtInteger, vtBoolean, vtAnsiChar, vtExtended, vtShortString, vtPointer, vtPAnsiChar,
+    vtObject, vtClass, vtWideChar, vtPWideChar, vtAnsiString, vtCurrency, vtVariant, vtInterface,
+    vtWideString, vtInt64
+  );
+
   PVarRec = ^TVarRec;
   TVarRec = record { do not pack this record; it is compiler-generated }
-    case Byte of
-      vtInteger:    (VarInteger: Integer; VarType: Byte);
-      vtBoolean:    (VarBoolean: Boolean);
-      vtChar:       (VarChar: Char);
-      vtExtended:   (VarExtended: PExtended);
-      vtString:     (VarString: PShortString);
-      vtPointer:    (VarPointer: Pointer);
-      vtPChar:      (VarPChar: PChar);
-      vtObject:     (VarObject: Pointer);
-      vtClass:      (VarClass: Pointer);
-      vtWideChar:   (VarWideChar: WideChar);
-      vtPWideChar:  (VarPWideChar: PWideChar);
-      vtAnsiString: (VarAnsiString: PAnsiChar);
-      vtCurrency:   (VarCurrency: PCurrency);
-      vtVariant:    (VarVariant: PVariant);
-      vtInterface:  (VarInterface: Pointer);
-      vtWideString: (VarWideString: PWideChar);
-      vtInt64:      (VarInt64: PInt64);
+    case TVarType of
+      vtInteger:     (VarInteger: Integer; VarType: Byte);
+      vtBoolean:     (VarBoolean: Boolean);
+      vtAnsiChar:    (VarChar: AnsiChar);
+      vtExtended:    (VarExtended: PExtended);
+      vtShortString: (VarString: PShortString);
+      vtPointer:     (VarPointer: Pointer);
+      vtPAnsiChar:   (VarPChar: PAnsiChar);
+      vtObject:      (VarObject: Pointer);
+      vtClass:       (VarClass: Pointer);
+      vtWideChar:    (VarWideChar: WideChar);
+      vtPWideChar:   (VarPWideChar: PWideChar);
+      vtAnsiString:  (VarAnsiString: PAnsiChar);
+      vtCurrency:    (VarCurrency: PCurrency);
+      vtVariant:     (VarVariant: PVariant);
+      vtInterface:   (VarInterface: Pointer);
+      vtWideString:  (VarWideString: PWideChar);
+      vtInt64:       (VarInt64: PInt64);
   end;
 
 procedure _Halt0;
