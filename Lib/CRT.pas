@@ -231,24 +231,20 @@ function Write(Format: PKolibriChar; const Args: array of const): Integer;
 const
   VarArgSize = SizeOf(TVarRec);
 asm
-        PUSH EDI
         PUSH EBX
         MOV EBX, ESP
 
         INC ECX
         JZ @@call
 @@arg:
-        MOV EDI, [EDX + ECX * VarArgSize - VarArgSize]
-        PUSH EDI
+        PUSH dword [EDX + ECX * VarArgSize - VarArgSize]
         LOOP @@arg
 @@call:
-        PUSH ESP
         PUSH EAX
         CALL PrintF
 
         MOV ESP, EBX
         POP EBX
-        POP EDI
 end;
 
 procedure WriteLn(LineBreaks: Integer);
