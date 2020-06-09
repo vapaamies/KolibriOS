@@ -42,8 +42,9 @@ function WhereY: Integer;
 function WhereXY: TCursorXY;
 
 function NormVideo: LongWord; // reset text attributes
-function TextAttribute: Byte; overload;
-function TextAttribute(Color, Background: Byte): LongWord; overload;
+function TextAttr: Byte; overload;
+function TextAttr(Attr: Byte): LongWord; overload;
+function TextAttr(Color, Background: Byte): LongWord; overload;
 function TextBackground: Byte; overload;
 function TextBackground(Color: Byte): LongWord; overload;
 function TextColor: Byte; overload;
@@ -126,12 +127,17 @@ begin
   Result := SetFlags(GetFlags and $300 or $07);
 end;
 
-function TextAttribute: Byte;
+function TextAttr: Byte;
 begin
   Result := GetFlags and $FF;
 end;
 
-function TextAttribute(Color, Background: Byte): LongWord;
+function TextAttr(Attr: Byte): LongWord;
+begin
+  Result := SetFlags(GetFlags and $300 or Attr);
+end;
+
+function TextAttr(Color, Background: Byte): LongWord;
 begin
   Result := SetFlags(GetFlags and $300 or Color and $0F or Background and $0F shl 4);
 end;
