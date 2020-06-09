@@ -75,7 +75,7 @@ function ReadKey: KolibriChar;
 
 function FontHeight: Integer;
 
-procedure Delay(Milliseconds: LongWord); // absolute Sleep(Milliseconds);
+procedure Delay(Milliseconds: LongWord);
 
 implementation
 
@@ -310,7 +310,7 @@ end;
 
 procedure Delay(Milliseconds: LongWord);
 begin
-  Sleep(Milliseconds div 10);
+  Sleep((Milliseconds + 10 div 2) div 10);
 end;
 
 initialization
