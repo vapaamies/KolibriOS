@@ -32,8 +32,9 @@ const
   Yellow        = 14;
   White         = 15;
 
-procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean = True;
+procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean = True;
   WndWidth: LongWord = $FFFFFFFF; WndHeight: LongWord = $FFFFFFFF; ScrWidth: LongWord = $FFFFFFFF; ScrHeight: LongWord = $FFFFFFFF);
+procedure SetTitle(Title: PKolibriChar);
 
 procedure GotoXY(X, Y: Integer); overload;
 procedure GotoXY(const Point: TCursorXY); overload;
@@ -94,11 +95,12 @@ var
   ReadKeyFunc: function: KolibriChar; stdcall;
   SetFlags: function(Flags: LongWord): LongWord; stdcall;
   SetCursorHeight: function(Height: Integer): Integer; stdcall;
+  SetTitleProc: procedure(Title: PKolibriChar); stdcall;
   WhereXYProc: procedure(var X, Y: Integer); stdcall;
   WritePChar: procedure(Str: PKolibriChar); stdcall;
   WritePCharLen: procedure(Str: PKolibriChar; Length: LongWord); stdcall;
 
-procedure InitConsole(Caption: PKolibriChar; CloseWindowOnExit: Boolean;
+procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean;
   WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
 begin
   hConsole := LoadLibrary('/sys/lib/console.obj');
@@ -114,12 +116,18 @@ begin
   ReadKeyFunc := GetProcAddress(hConsole, 'con_getch');
   SetCursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
   SetFlags := GetProcAddress(hConsole, 'con_set_flags');
+  SetTitleProc := GetProcAddress(hConsole, 'con_set_title');
   WhereXYProc := GetProcAddress(hConsole, 'con_get_cursor_pos');
   WritePChar := GetProcAddress(hConsole, 'con_write_asciiz');
   WritePCharLen := GetProcAddress(hConsole, 'con_write_string');
 
-  ConsoleInit(WndWidth, WndHeight, ScrWidth, ScrHeight, Caption);
+  ConsoleInit(WndWidth, WndHeight, ScrWidth, ScrHeight, Title);
   CloseWindow := CloseWindowOnExit;
+end;
+
+procedure SetTitle(Title: PKolibriChar);
+begin
+  SetTitleProc(Title);
 end;
 
 function NormVideo: LongWord;
