@@ -32,7 +32,7 @@ const
   Yellow        = 14;
   White         = 15;
 
-procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean = True;
+procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean = False;
   WndWidth: LongWord = $FFFFFFFF; WndHeight: LongWord = $FFFFFFFF; ScrWidth: LongWord = $FFFFFFFF; ScrHeight: LongWord = $FFFFFFFF);
 procedure SetTitle(Title: PKolibriChar);
 

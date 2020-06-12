@@ -7,7 +7,7 @@ var
   CursorXY: TCursorXY;
 
 begin
-  InitConsole('Date/Time');
+  InitConsole('Date/Time', True);
 
   CursorOff;
   GotoXY(27, 11);

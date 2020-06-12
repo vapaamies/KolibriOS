@@ -17,7 +17,7 @@ var
   Pos: LongWord;
 
 begin
-  InitConsole('Read Folder', False);
+  InitConsole('Read Folder');
 
   if ReadFolder(FolderPath, FolderInformation, 0, 0, 0, BlocksRead) = 0 then
     with FolderInformation do

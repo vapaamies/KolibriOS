@@ -13,7 +13,7 @@ var
   Buffer: array[0..BUFFER_SIZE - 1] of KolibriChar;
 
 begin
-  InitConsole('Get Current Directory', False);
+  InitConsole('Get Current Directory');
 
   GetCurrentDirectory(Buffer, BUFFER_SIZE);
 

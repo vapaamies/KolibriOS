@@ -6,5 +6,4 @@ uses
 begin
   InitConsole('Hello');
   WriteLn('Hello, world!');
-  ReadKey;
 end.
