@@ -9,14 +9,6 @@ unit KolibriOS;
 interface
 
 type
-  KolibriChar = AnsiChar;
-  PKolibriChar = PAnsiChar;
-  PPKolibriChar = PPAnsiChar;
-
-{$IF CompilerVersion < 15}
-  UInt64 = Int64;
-{$IFEND}
-
   TSize = packed record
     Height: Word;
     Width:  Word;

@@ -9,6 +9,14 @@ interface
 type
   PPAnsiChar = ^PAnsiChar;
 
+  KolibriChar = AnsiChar;
+  PKolibriChar = PAnsiChar;
+  PPKolibriChar = PPAnsiChar;
+
+{$IF CompilerVersion < 15}
+  UInt64 = Int64;
+{$IFEND}
+
   THandle = LongWord;
 
   PByte = ^Byte;
