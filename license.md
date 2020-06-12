@@ -1,5 +1,7 @@
 Copyright © 2017-2019 0CodErr
+
 Copyright © 2020 0CodErr, Nikolay Burshtyn (aka amber8706), Vladislav Javadov (aka Freeman)
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
