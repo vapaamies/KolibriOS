@@ -13,6 +13,8 @@ const
   RTLVersion = 15.2006;  // <---'
 {$IFEND}
 
+  UnicodeCompiler = CompilerVersion >= 20.0;
+  
 type
   PPAnsiChar = ^PAnsiChar;
 
@@ -92,6 +94,9 @@ const
   vtInterface  = 14;
   vtWideString = 15;
   vtInt64      = 16;
+{$IFDEF UnicodeCompiler}
+  vtUnicodeString = 17;
+{$ENDIF}
 
 type
   PVarRec = ^TVarRec;
@@ -114,6 +119,9 @@ type
       vtInterface:  (VInterface: Pointer);
       vtWideString: (VWideString: Pointer);
       vtInt64:      (VInt64: PInt64);
+    {$IFDEF UnicodeCompiler}
+      vtUnicodeString: (VUnicodeString: Pointer);
+    {$ENDIF}    
   end;
 
 procedure _Halt0;
