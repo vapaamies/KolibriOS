@@ -34,6 +34,12 @@ Open program in the IDE, press `Ctrl+F9`. Compiled `.exe` file will appear in `B
 convert hello.exe
 ````
 
+To automate this process, you can add `Build` item to Delphi `Tools` menu:
+
+![How to add Build item to Delphi Tools menu](http://forum.cantorsys.com/misc.php?action=pun_attachment&item=38&download=0)
+
+For your projects, please ensure if you have correct `build.bat` script.
+
 ## Compiling from command line
 To compile an example, use `build.bat` script included to its directory. If RTL not built yet, it will build automatically. Build script automates all compling and converting operations, so `Bin` directory will contain KolibriOS executable immediately after the run.
 
