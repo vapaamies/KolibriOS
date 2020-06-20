@@ -9,8 +9,9 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = ColorButtons.exe ConsoleColors.exe DateTime.exe DrawImage.exe DrawImageEx.exe DrawText.exe GetCurrentDirectory.exe \
-  GetPixel.exe GetPointOwner.exe Hello.exe HelloGUI.exe LoadFile.exe ReadFolder.exe Screenshot.exe SetCursor.exe SetPixel.exe SetWindowPos.exe
+PROJECTS = ColorButtons.exe ConsoleColors.exe DateTime.exe DrawImage.exe DrawImageEx.exe DrawText.exe \
+  Echo.exe GetCurrentDirectory.exe GetPixel.exe GetPointOwner.exe Hello.exe HelloGUI.exe LoadFile.exe \
+  ReadFolder.exe Screenshot.exe SetCursor.exe SetPixel.exe SetWindowPos.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -31,6 +32,9 @@ DrawImageEx.exe: GUI\DrawImageEx\DrawImageEx.dpr
   $(DCC)
 
 DrawText.exe: GUI\DrawText\DrawText.dpr
+  $(DCC)
+
+Echo.exe: Console\Echo\Echo.dpr
   $(DCC)
 
 GetCurrentDirectory.exe: Console\GetCurrentDir\GetCurrentDir.dpr
