@@ -14,6 +14,10 @@ type
     X, Y: Integer;
   end;
 
+  TKey = record
+    CharCode, ScanCode: Byte;
+  end;
+
 const
   Black         = 0;
   Blue          = 1;
@@ -64,6 +68,10 @@ procedure WriteLn(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer = 1);
 procedure WriteLn(const Str: ShortString; LineBreaks: Integer = 1); overload;
 function WriteLn(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer; overload;
 
+procedure Read(var Result: KolibriChar); overload;
+procedure Read(var Result: TKey); overload;
+procedure ReadLn(var Result: ShortString); 
+
 function CursorBig: Integer;
 function CursorHeight: Integer; overload;
 function CursorHeight(Height: Integer): Integer; overload;
@@ -79,6 +87,9 @@ procedure Delay(Milliseconds: LongWord);
 
 implementation
 
+uses
+  SysUtils;
+
 var
   CloseWindow: Boolean;
 
@@ -86,6 +97,9 @@ var
   ClrScrProc: procedure; stdcall;
   ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
   ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Caption: PKolibriChar); stdcall;
+  GetCh: function: Integer; stdcall;
+  GetCh2: function: Word; stdcall;
+  GetS: function(Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall;
   GetCursorHeight: function: Integer; stdcall;
   GetFlags: function: LongWord; stdcall;
   GetFontHeight: function: Integer; stdcall;
@@ -107,6 +121,9 @@ begin
   ClrScrProc := GetProcAddress(hConsole, 'con_cls');
   ConsoleExit := GetProcAddress(hConsole, 'con_exit');
   ConsoleInit := GetProcAddress(hConsole, 'con_init');
+  GetCh := GetProcAddress(hConsole, 'con_getch');
+  GetCh2 := GetProcAddress(hConsole, 'con_getch2');
+  GetS := GetProcAddress(hConsole, 'con_gets');
   GetCursorHeight := GetProcAddress(hConsole, 'con_get_cursor_height');
   GetFlags := GetProcAddress(hConsole, 'con_get_flags');
   GetFontHeight := GetProcAddress(hConsole, 'con_get_font_height');
@@ -291,6 +308,35 @@ function WriteLn(Format: PKolibriChar; const Args: array of const; LineBreaks: I
 begin
   Result := Write(Format, Args);
   WriteLn(LineBreaks);
+end;
+
+procedure Read(var Result: KolibriChar);
+begin
+  Result := Chr(GetCh);
+end;
+
+procedure Read(var Result: TKey);
+var
+  K: Word;
+begin
+  K := GetCh2;
+  with WordRec(K), Result do
+  begin
+    CharCode := Lo;
+    ScanCode := Hi;
+  end;
+end;
+
+procedure ReadLn(var Result: ShortString);
+var
+  P, Limit: PKolibriChar;
+begin
+  P := PKolibriChar(@Result[1]);
+  GetS(P, High(Byte));
+  Limit := P + High(Byte);
+  while (P < Limit) and not (P^ in [#0, #10]) do
+    Inc(P);
+  PByte(@Result)^ := P - PKolibriChar(@Result[1]);
 end;
 
 function KeyPressed: Boolean;
