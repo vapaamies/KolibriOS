@@ -90,7 +90,7 @@ var
   GetFlags: function: LongWord; stdcall;
   GetFontHeight: function: Integer; stdcall;
   GotoXYProc: procedure(X, Y: Integer); stdcall;
-  KeyPressedFunc: function: Boolean;
+  KeyPressedFunc: function: Boolean; stdcall;
   PrintF: function(const Str: PKolibriChar): Integer; cdecl varargs;
   ReadKeyFunc: function: KolibriChar; stdcall;
   SetFlags: function(Flags: LongWord): LongWord; stdcall;
