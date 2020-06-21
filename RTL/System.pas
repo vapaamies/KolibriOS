@@ -124,6 +124,27 @@ type
     {$ENDIF}    
   end;
 
+  PConsoleInterface = ^TConsoleInterface;
+  TConsoleInterface = record
+    ClrScr: procedure; stdcall;
+    GetCh: function: Integer; stdcall;
+    GetCh2: function: Word; stdcall;
+    GetS: function(Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall;
+    GetCursorHeight: function: Integer; stdcall;
+    GetFlags: function: LongWord; stdcall;
+    GetFontHeight: function: Integer; stdcall;
+    GotoXY: procedure(X, Y: Integer); stdcall;
+    KeyPressed: function: Boolean; stdcall;
+    PrintF: function(Str: PKolibriChar): Integer; cdecl varargs;
+    ReadKey: function: KolibriChar; stdcall;
+    SetFlags: function(Flags: LongWord): LongWord; stdcall;
+    SetCursorHeight: function(Height: Integer): Integer; stdcall;
+    SetTitle: procedure(Title: PKolibriChar); stdcall;
+    WhereXY: procedure(var X, Y: Integer); stdcall;
+    WritePChar: procedure(Str: PKolibriChar); stdcall;
+    WritePCharLen: procedure(Str: PKolibriChar; Length: LongWord); stdcall;
+  end;
+
 procedure _Halt0;
 procedure _HandleFinally;
 procedure _StartExe(InitTable: PPackageInfo);
