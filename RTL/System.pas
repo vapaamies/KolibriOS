@@ -152,9 +152,16 @@ procedure _StartExe(InitTable: PPackageInfo);
 var
   Default8087CW: Word = $1332; // for Extended type
 
-procedure InitFPU;
 function Get8087CW: Word;
 procedure Set8087CW(Value: Word);
+
+var
+  RandSeed: LongWord;
+  RandCounter: LongWord;
+
+function _RandInt(Range: LongWord): LongWord;
+function _RandExt: Extended;
+procedure Randomize;
 
 function UpCase(Ch: KolibriChar): KolibriChar;
 
@@ -224,13 +231,6 @@ begin
   end;
 end;
 
-procedure InitFPU;
-asm
-        FNINIT
-        FWAIT
-        FLDCW Default8087CW
-end;
-
 function Get8087CW: Word;
 asm
         PUSH 0
@@ -247,11 +247,62 @@ begin
   end;
 end;
 
+// Produce random values in a given range [MinValue..MaxValue]
+// Note: Always return 0 if range = [0..$FFFFFFFF]
+// cause (MaxValue - MinValue + 1) * eax + MinValue = 0
+// uses variation of XorShift based algorithm
+function RandInt(MinValue, MaxValue: LongWord): LongWord; stdcall;
+asm
+        MOV EAX, RandSeed
+        MOV ECX, EAX
+        SHL EAX, 13
+        XOR ECX, EAX
+        MOV EAX, ECX
+        SHR EAX, 17
+        XOR ECX, EAX
+        MOV EAX, ECX
+        SHL EAX, 5
+        XOR EAX, ECX
+        ADD RandCounter, 361275
+        MOV RandSeed, EAX
+        ADD EAX, RandCounter
+        MOV EDX, MaxValue
+        SUB EDX, MinValue
+        INC EDX
+        MUL EDX
+        MOV EAX, EDX
+        ADD EAX, MinValue
+end;
+
+function _RandInt(Range: LongWord): LongWord;
+begin
+  Result := RandInt(0, Range - 1);
+end;
+
+function _RandExt: Extended;
+begin
+  Result := 1 / RandInt(1, $FFFFFFFE);
+end;
+
+procedure Randomize;
+asm
+        RDTSC
+        MOV RandSeed, EAX
+end;
+
 function UpCase(Ch: KolibriChar): KolibriChar;
 begin
   if Ch in ['a'..'z'] then
     Dec(Ch, Ord('a') - Ord('A'));
   Result := Ch;
+end;
+
+initialization
+
+asm // InitFPU
+  FNINIT
+  FWAIT
+  FLDCW Default8087CW
 end;
 
 end.
