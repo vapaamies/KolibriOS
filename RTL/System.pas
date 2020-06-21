@@ -149,6 +149,8 @@ procedure _Halt0;
 procedure _HandleFinally;
 procedure _StartExe(InitTable: PPackageInfo);
 
+function UpCase(Ch: KolibriChar): KolibriChar;
+
 implementation
 
 uses
@@ -213,6 +215,13 @@ begin
     OR EAX, -1
     INT $40
   end;
+end;
+
+function UpCase(Ch: KolibriChar): KolibriChar;
+begin
+  if Ch in ['a'..'z'] then
+    Dec(Ch, Ord('a') - Ord('A'));
+  Result := Ch;
 end;
 
 end.
