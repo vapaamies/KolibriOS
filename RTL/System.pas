@@ -149,6 +149,13 @@ procedure _Halt0;
 procedure _HandleFinally;
 procedure _StartExe(InitTable: PPackageInfo);
 
+var
+  Default8087CW: Word = $1332; // for Extended type
+
+procedure InitFPU;
+function Get8087CW: Word;
+procedure Set8087CW(Value: Word);
+
 function UpCase(Ch: KolibriChar): KolibriChar;
 
 implementation
@@ -214,6 +221,29 @@ begin
   asm
     OR EAX, -1
     INT $40
+  end;
+end;
+
+procedure InitFPU;
+asm
+        FNINIT
+        FWAIT
+        FLDCW Default8087CW
+end;
+
+function Get8087CW: Word;
+asm
+        PUSH 0
+        FNSTCW [ESP].Word
+        POP EAX
+end;
+
+procedure Set8087CW(Value: Word);
+begin
+  Default8087CW := Value;
+  asm
+    FNCLEX
+    FLDCW Default8087CW
   end;
 end;
 
