@@ -11,17 +11,16 @@ begin
 
   CursorOff;
   GotoXY(27, 11);
-  Write(
+  WriteEx(
     'System Date and System Time'#10 +
     '                              '
   );
   CursorXY := WhereXY;
   repeat
-    with GetSystemDate, GetSystemTime do
-    begin
-      Write('%02x.%02x.%02x', [Day, Month, Year]);
-      Write('  -  %02x:%02x:%02x', [Hours, Minutes, Seconds]);
-    end;
+    with GetSystemDate do
+      WriteEx('%02x.%02x.%02x', [Day, Month, Year]);
+    with GetSystemTime do
+      WriteEx('  -  %02x:%02x:%02x', [Hours, Minutes, Seconds]);
     GotoXY(CursorXY);
     Delay(500);
   until KeyPressed;

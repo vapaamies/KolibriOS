@@ -13,14 +13,16 @@ const
   RTLVersion = 15.2006;  // <---'
 {$IFEND}
 
-  UnicodeCompiler = CompilerVersion >= 20.0;
+  UnicodeCompiler = CompilerVersion >= 20;
   
 type
-  PPAnsiChar = ^PAnsiChar;
+  PPAnsiChar    = ^PAnsiChar;
 
-  KolibriChar = AnsiChar;
-  PKolibriChar = PAnsiChar;
+  KolibriChar   = AnsiChar;
+  PKolibriChar  = PAnsiChar;
   PPKolibriChar = PPAnsiChar;
+
+  KolibriString = AnsiString;
 
 {$IF CompilerVersion < 15}
   UInt64 = Int64;
@@ -104,11 +106,11 @@ type
     case Byte of
       vtInteger:    (VInteger: Integer; VType: Byte);
       vtBoolean:    (VBoolean: Boolean);
-      vtChar:       (VChar: AnsiChar);
+      vtChar:       (VChar: KolibriChar);
       vtExtended:   (VExtended: PExtended);
       vtString:     (VString: PShortString);
       vtPointer:    (VPointer: Pointer);
-      vtPChar:      (VPChar: PAnsiChar);
+      vtPChar:      (VPChar: PKolibriChar);
       vtObject:     (VObject: Pointer);
       vtClass:      (VClass: Pointer);
       vtWideChar:   (VWideChar: WideChar);
@@ -146,6 +148,20 @@ type
     WriteString: procedure(Str: PKolibriChar; Length: LongWord); stdcall;
   end;
 
+  PTextBuf = ^TTextBuf;
+  TTextBuf = array[0..127] of KolibriChar;
+
+  TTextRec = packed record
+    Handle: THandle;       
+    Mode, Flags: Word;
+    BufSize, BufPos, BufEnd: Cardinal;
+    BufPtr: PKolibriChar;
+    OpenFunc, InOutFunc, FlushFunc, CloseFunc: Pointer;
+    UserData: array[1..32] of Byte;
+    Name: array[0..259] of Char;
+    Buffer: TTextBuf;
+  end;
+
 procedure _Halt0;
 procedure _HandleFinally;
 procedure _StartExe(InitTable: PPackageInfo);
@@ -165,6 +181,31 @@ function _RandExt: Extended;
 procedure Randomize;
 
 function UpCase(Ch: KolibriChar): KolibriChar;
+
+function _LStrLen(const S: KolibriString): LongInt;
+function _LStrToPChar(const S: KolibriString): PKolibriChar;
+
+var
+  ConsoleInterface: TConsoleInterface;
+  IOResult: Integer;
+  Output: Text;
+
+function _Flush(var T: TTextRec): Integer;
+procedure __IOTest;
+
+procedure _Write0Bool(var T: TTextRec; Value: Boolean);
+procedure _Write0Char(var T: TTextRec; Ch: KolibriChar);
+procedure _Write0Long(var T: TTextRec; Value: LongInt);
+procedure _Write0String(var T: TTextRec; const S: ShortString);
+procedure _Write0CString(var T: TTextRec; S: PKolibriChar);
+procedure _Write0LString(var T: TTextRec; const S: KolibriString);
+procedure _WriteBool(var T: TTextRec; Value: Boolean; Width: LongInt);
+procedure _WriteChar(var T: TTextRec; Ch: KolibriChar; Width: LongInt);
+procedure _WriteCString(var T: TTextRec; S: PKolibriChar; Width: LongInt);
+procedure _WriteLong(var T: TTextRec; Value, Width: LongInt);
+procedure _WriteString(var T: TTextRec; const S: ShortString; Width: LongInt);
+procedure _WriteLString(var T: TTextRec; const S: KolibriString; Width: LongInt);
+procedure _WriteLn(var T: TTextRec);
 
 implementation
 
@@ -296,6 +337,107 @@ begin
   if Ch in ['a'..'z'] then
     Dec(Ch, Ord('a') - Ord('A'));
   Result := Ch;
+end;
+
+type
+  PStrRec = ^TStrRec;
+  TStrRec = packed record
+  {$IFDEF UnicodeCompiler}
+    CodePage, CharSize: Word;
+  {$ENDIF}
+    RefCount, Length: LongInt;
+  end;
+
+function _LStrLen(const S: KolibriString): LongInt;
+begin
+  Result := PStrRec(PKolibriChar(Pointer(S)) - SizeOf(TStrRec)).Length;
+end;
+
+function _LStrToPChar(const S: KolibriString): PKolibriChar;
+const
+  EmptyString = '';
+begin
+  if Pointer(S) = nil then
+    Result := EmptyString
+  else
+    Result := Pointer(S);
+end;
+
+function _Flush(var T: TTextRec): Integer;
+asm
+end;
+
+procedure __IOTest;
+asm
+  // TODO: I/O error call
+end;
+
+const
+  Booleans: array[Boolean] of PKolibriChar = ('False', 'True');
+
+procedure _Write0Bool(var T: TTextRec; Value: Boolean);
+begin
+  ConsoleInterface.WriteASCIIZ(Booleans[Value]);
+end;
+
+procedure _Write0Char(var T: TTextRec; Ch: KolibriChar);
+begin
+  ConsoleInterface.WriteString(@Ch, 1);
+end;
+
+procedure _Write0Long(var T: TTextRec; Value: LongInt);
+begin
+  ConsoleInterface.PrintF('%d', Value);
+end;
+
+procedure _Write0String(var T: TTextRec; const S: ShortString);
+begin
+  ConsoleInterface.WriteString(@S[1], Length(S));
+end;
+
+procedure _Write0CString(var T: TTextRec; S: PKolibriChar);
+begin
+  ConsoleInterface.WriteASCIIZ(S);
+end;
+
+procedure _Write0LString(var T: TTextRec; const S: KolibriString);
+begin
+  ConsoleInterface.WriteString(Pointer(S), Length(S));
+end;
+
+procedure _WriteBool(var T: TTextRec; Value: Boolean; Width: LongInt);
+begin
+  ConsoleInterface.PrintF('%*s', Width, Booleans[Value]);
+end;
+
+procedure _WriteChar(var T: TTextRec; Ch: KolibriChar; Width: LongInt);
+begin
+  ConsoleInterface.PrintF('%*c', Width, Ch);
+end;
+
+procedure _WriteCString(var T: TTextRec; S: PKolibriChar; Width: LongInt);
+begin
+  ConsoleInterface.PrintF('%*s', Width, S);
+end;
+
+procedure _WriteLong(var T: TTextRec; Value, Width: LongInt);
+begin
+  ConsoleInterface.PrintF('%*d', Width, Value);
+end;
+
+procedure _WriteString(var T: TTextRec; const S: ShortString; Width: LongInt);
+begin
+  ConsoleInterface.PrintF('%*s', Width, @S[1]);
+end;
+
+procedure _WriteLString(var T: TTextRec; const S: KolibriString; Width: LongInt);
+begin
+  ConsoleInterface.PrintF('%*s', Width, Pointer(S));
+end;
+
+procedure _WriteLn(var T: TTextRec);
+begin
+  ConsoleInterface.WriteString(#10, 1);
 end;
 
 initialization

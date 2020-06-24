@@ -17,7 +17,7 @@ begin
 
   GetCurrentDirectory(Buffer, BUFFER_SIZE);
 
-  WriteLn('AppPath is "%s"', [AppPath^]);
-  WriteLn('CmdLine is "%s"', [CmdLine^]);
-  WriteLn('Current Directory is "%s"', [Buffer]);
+  WriteLnEx('AppPath is "%s"', [AppPath^]);
+  WriteLnEx('CmdLine is "%s"', [CmdLine^]);
+  WriteLnEx('Current Directory is "%s"', [Buffer]);
 end.

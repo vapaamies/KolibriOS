@@ -57,20 +57,20 @@ function TextColor(Color: Byte): LongWord; overload;
 
 procedure ClrScr;
 
-procedure Write(Str: PKolibriChar); overload;
-procedure Write(Str: PKolibriChar; Length: LongWord); overload;
-procedure Write(const Str: ShortString); overload;
-function Write(Format: PKolibriChar; const Args: array of const): Integer; overload;
+procedure WriteEx(Str: PKolibriChar); overload;
+procedure WriteEx(Str: PKolibriChar; Length: LongWord); overload;
+procedure WriteEx(const Str: ShortString); overload;
+function WriteEx(Format: PKolibriChar; const Args: array of const): Integer; overload;
 
-procedure WriteLn(LineBreaks: Integer = 1); overload;
-procedure WriteLn(Str: PKolibriChar; LineBreaks: Integer = 1); overload;
-procedure WriteLn(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer = 1); overload;
-procedure WriteLn(const Str: ShortString; LineBreaks: Integer = 1); overload;
-function WriteLn(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer; overload;
+procedure WriteLnEx(LineBreaks: Integer = 1); overload;
+procedure WriteLnEx(Str: PKolibriChar; LineBreaks: Integer = 1); overload;
+procedure WriteLnEx(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer = 1); overload;
+procedure WriteLnEx(const Str: ShortString; LineBreaks: Integer = 1); overload;
+function WriteLnEx(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer; overload;
 
 procedure Read(var Result: KolibriChar); overload;
 procedure Read(var Result: TKey); overload;
-procedure ReadLn(var Result: ShortString); 
+procedure ReadLn(var Result: ShortString);
 
 function CursorBig: Integer;
 function CursorHeight: Integer; overload;
@@ -91,38 +91,12 @@ uses
   SysUtils;
 
 var
-  ConsoleInterface: TConsoleInterface;
   CloseWindow: Boolean;
 
 procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean;
   WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
-var
-  hConsole: Pointer;
 begin
-  hConsole := LoadLibrary('/sys/lib/console.obj');
-  with ConsoleInterface do
-  begin
-    Cls := GetProcAddress(hConsole, 'con_cls');
-    ConsoleExit := GetProcAddress(hConsole, 'con_exit');
-    ConsoleInit := GetProcAddress(hConsole, 'con_init');
-    GetCh := GetProcAddress(hConsole, 'con_getch');
-    GetCh2 := GetProcAddress(hConsole, 'con_getch2');
-    GetCursorPos := GetProcAddress(hConsole, 'con_get_cursor_pos');
-    GetCursorHeight := GetProcAddress(hConsole, 'con_get_cursor_height');
-    GetFlags := GetProcAddress(hConsole, 'con_get_flags');
-    GetFontHeight := GetProcAddress(hConsole, 'con_get_font_height');
-    GetS := GetProcAddress(hConsole, 'con_gets');
-    KbdHit := GetProcAddress(hConsole, 'con_kbhit');
-    PrintF := GetProcAddress(hConsole, 'con_printf');
-    SetCursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
-    SetCursorPos := GetProcAddress(hConsole, 'con_set_cursor_pos');
-    SetFlags := GetProcAddress(hConsole, 'con_set_flags');
-    SetTitle := GetProcAddress(hConsole, 'con_set_title');
-    WriteASCIIZ := GetProcAddress(hConsole, 'con_write_asciiz');
-    WriteString := GetProcAddress(hConsole, 'con_write_string');
-
-    ConsoleInit(WndWidth, WndHeight, ScrWidth, ScrHeight, Title);
-  end;
+  ConsoleInterface.ConsoleInit(WndWidth, WndHeight, ScrWidth, ScrHeight, Title);
   CloseWindow := CloseWindowOnExit;
 end;
 
@@ -236,22 +210,22 @@ begin
   ConsoleInterface.Cls;
 end;
 
-procedure Write(Str: PKolibriChar);
+procedure WriteEx(Str: PKolibriChar);
 begin
   ConsoleInterface.WriteASCIIZ(Str);
 end;
 
-procedure Write(Str: PKolibriChar; Length: LongWord);
+procedure WriteEx(Str: PKolibriChar; Length: LongWord);
 begin
   ConsoleInterface.WriteString(Str, Length);
 end;
 
-procedure Write(const Str: ShortString);
+procedure WriteEx(const Str: ShortString);
 begin
   ConsoleInterface.WriteString(@Str[1], Length(Str));
 end;
 
-function Write(Format: PKolibriChar; const Args: array of const): Integer;
+function WriteEx(Format: PKolibriChar; const Args: array of const): Integer;
 const
   VarArgSize = SizeOf(TVarRec);
 asm
@@ -271,7 +245,7 @@ asm
         POP EBX
 end;
 
-procedure WriteLn(LineBreaks: Integer);
+procedure WriteLnEx(LineBreaks: Integer);
 var
   I: Integer;
 begin
@@ -279,28 +253,28 @@ begin
     ConsoleInterface.WriteString(#10, 1);
 end;
 
-procedure WriteLn(Str: PKolibriChar; LineBreaks: Integer);
+procedure WriteLnEx(Str: PKolibriChar; LineBreaks: Integer);
 begin
   ConsoleInterface.WriteASCIIZ(Str);
-  WriteLn(LineBreaks);
+  WriteLnEx(LineBreaks);
 end;
 
-procedure WriteLn(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer);
+procedure WriteLnEx(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer);
 begin
   ConsoleInterface.WriteString(Str, Length);
-  WriteLn(LineBreaks);
+  WriteLnEx(LineBreaks);
 end;
 
-procedure WriteLn(const Str: ShortString; LineBreaks: Integer);
+procedure WriteLnEx(const Str: ShortString; LineBreaks: Integer);
 begin
   ConsoleInterface.WriteString(@Str[1], Length(Str));
-  WriteLn(LineBreaks);
+  WriteLnEx(LineBreaks);
 end;
 
-function WriteLn(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer;
+function WriteLnEx(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer;
 begin
-  Result := Write(Format, Args);
-  WriteLn(LineBreaks);
+  Result := WriteEx(Format, Args);
+  WriteLnEx(LineBreaks);
 end;
 
 procedure Read(var Result: KolibriChar);
@@ -352,7 +326,32 @@ begin
   Sleep((Milliseconds + 10 div 2) div 10);
 end;
 
+var
+  hConsole: Pointer;
+
 initialization
+  hConsole := LoadLibrary('/sys/lib/console.obj');
+  with ConsoleInterface do
+  begin
+    Cls := GetProcAddress(hConsole, 'con_cls');
+    ConsoleExit := GetProcAddress(hConsole, 'con_exit');
+    ConsoleInit := GetProcAddress(hConsole, 'con_init');
+    GetCh := GetProcAddress(hConsole, 'con_getch');
+    GetCh2 := GetProcAddress(hConsole, 'con_getch2');
+    GetCursorPos := GetProcAddress(hConsole, 'con_get_cursor_pos');
+    GetCursorHeight := GetProcAddress(hConsole, 'con_get_cursor_height');
+    GetFlags := GetProcAddress(hConsole, 'con_get_flags');
+    GetFontHeight := GetProcAddress(hConsole, 'con_get_font_height');
+    GetS := GetProcAddress(hConsole, 'con_gets');
+    KbdHit := GetProcAddress(hConsole, 'con_kbhit');
+    PrintF := GetProcAddress(hConsole, 'con_printf');
+    SetCursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
+    SetCursorPos := GetProcAddress(hConsole, 'con_set_cursor_pos');
+    SetFlags := GetProcAddress(hConsole, 'con_set_flags');
+    SetTitle := GetProcAddress(hConsole, 'con_set_title');
+    WriteASCIIZ := GetProcAddress(hConsole, 'con_write_asciiz');
+    WriteString := GetProcAddress(hConsole, 'con_write_string');
+  end;
 
 finalization
   with ConsoleInterface do
