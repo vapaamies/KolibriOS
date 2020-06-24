@@ -69,7 +69,7 @@ begin
     WndTop  := (Height - WndHeight) div 2;
 
     Image := HeapAllocate(Width * Height * 3);
-    Preview := HeapAllocate(Width * Height * 3 div 2);
+    Preview := HeapAllocate(Width * Height * 3 div 4);
 
     GetScreenImage(Image^, 0, 0, Width, Height);
     ResizeImage;
