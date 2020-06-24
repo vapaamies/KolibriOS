@@ -281,7 +281,7 @@ end;
 
 function _RandExt: Extended;
 begin
-  Result := 1 / RandInt(1, $FFFFFFFE);
+  Result := 1 / RandInt(2, $FFFFFFFF);
 end;
 
 procedure Randomize;
