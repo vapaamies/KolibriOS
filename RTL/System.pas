@@ -126,23 +126,24 @@ type
 
   PConsoleInterface = ^TConsoleInterface;
   TConsoleInterface = record
-    ClrScr: procedure; stdcall;
+    Cls: procedure; stdcall;
+    ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
+    ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Title: PKolibriChar); stdcall;
     GetCh: function: Integer; stdcall;
     GetCh2: function: Word; stdcall;
-    GetS: function(Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall;
+    GetCursorPos: procedure(var X, Y: Integer); stdcall;
     GetCursorHeight: function: Integer; stdcall;
     GetFlags: function: LongWord; stdcall;
     GetFontHeight: function: Integer; stdcall;
-    GotoXY: procedure(X, Y: Integer); stdcall;
-    KeyPressed: function: Boolean; stdcall;
+    GetS: function(Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall;
+    KbdHit: function: Boolean; stdcall;
     PrintF: function(Str: PKolibriChar): Integer; cdecl varargs;
-    ReadKey: function: KolibriChar; stdcall;
     SetFlags: function(Flags: LongWord): LongWord; stdcall;
     SetCursorHeight: function(Height: Integer): Integer; stdcall;
+    SetCursorPos: procedure(X, Y: Integer); stdcall;
     SetTitle: procedure(Title: PKolibriChar); stdcall;
-    WhereXY: procedure(var X, Y: Integer); stdcall;
-    WritePChar: procedure(Str: PKolibriChar); stdcall;
-    WritePCharLen: procedure(Str: PKolibriChar; Length: LongWord); stdcall;
+    WriteASCIIZ: procedure(Str: PKolibriChar); stdcall;
+    WriteString: procedure(Str: PKolibriChar; Length: LongWord); stdcall;
   end;
 
 procedure _Halt0;
