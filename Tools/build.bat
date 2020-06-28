@@ -8,11 +8,13 @@ if "%Source%"=="" (
 )
 
 set Bin=%~dp0..\Bin
+set DCU=%~dp0..\Bin\DCU
 set Options=-$C- -$I- -$T+
 set Target=%Bin%\%~n1
 set Units=%~dp0..\RTL;%~dp0..\Lib
 
 if not exist "%Bin%" mkdir "%Bin%"
+if not exist "%DCU%" mkdir "%DCU%"
 if exist "%Source%.cfg" del "%Source%.cfg"
 
 if not exist "%~dp0..\RTL\SysInit.dcu" call "%~dp0..\build-RTL.bat"
@@ -23,7 +25,7 @@ if not exist "%Bin%\convert.bat" (
   if errorlevel 1 goto exit
 )
 
-dcc32 "%Source%.dpr" -e"%Bin%" -u"%Units%" %Options%
+dcc32 "%Source%.dpr" -e"%Bin%" -n"%DCU%" -u"%Units%" %Options%
 if errorlevel 1 goto exit
 
 call "%~dp0convert.bat" "%Target%.exe"
