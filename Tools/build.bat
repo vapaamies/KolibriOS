@@ -19,7 +19,7 @@ if not exist "%~dp0..\RTL\SysInit.dcu" call "%~dp0..\build-RTL.bat"
 if errorlevel 1 goto exit
 
 if not exist "%Bin%\convert.bat" (
-  echo @%%~dp0..\Lib\convert.bat %%* >"%Bin%\convert.bat"
+  echo @%%~dp0..\Tools\convert.bat %%* >"%Bin%\convert.bat"
   if errorlevel 1 goto exit
 )
 

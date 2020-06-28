@@ -1,1 +1,1 @@
-@call "%~dp0..\..\..\Lib\build.bat" "%~dp0ConsoleColors"
+@call "%~dp0..\..\..\Tools\build.bat" "%~dp0ConsoleColors"

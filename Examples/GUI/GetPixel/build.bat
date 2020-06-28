@@ -1,1 +1,1 @@
-@call "%~dp0..\..\..\Lib\build.bat" "%~dp0GetPixel"
+@call "%~dp0..\..\..\Tools\build.bat" "%~dp0GetPixel"
