@@ -2,7 +2,7 @@
 
 set Source=%1
 
-if "%Source%"=="" (
+if #%Source%#==## (
   echo Usage: %~n0 [source-file]
   goto exit
 )
@@ -21,11 +21,11 @@ if not exist "%~dp0..\RTL\SysInit.dcu" call "%~dp0..\build-RTL.bat"
 if errorlevel 1 goto exit
 
 if not exist "%Bin%\convert.bat" (
-  echo @%%~dp0..\Tools\convert.bat %%* >"%Bin%\convert.bat"
+  echo @call "%%~dp0..\Tools\convert.bat" %%* >"%Bin%\convert.bat"
   if errorlevel 1 goto exit
 )
 
-dcc32 "%Source%.dpr" -e"%Bin%" -n"%DCU%" -u"%Units%" %Options%
+dcc32 %Source%.dpr -e"%Bin%" -n"%DCU%" -u"%Units%" %Options%
 if errorlevel 1 goto exit
 
 call "%~dp0convert.bat" "%Target%.exe"
