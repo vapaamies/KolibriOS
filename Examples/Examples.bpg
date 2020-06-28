@@ -52,7 +52,7 @@ GetPointOwner.exe: GUI\GetPointOwner\GetPointOwner.dpr
 Hello.exe: Console\Hello\Hello.dpr
   $(DCC)
 
-HelloGUI.exe: GUI\Hello\HelloGUI.dpr
+HelloGUI.exe: GUI\HelloGUI\HelloGUI.dpr
   $(DCC)
 
 LoadFile.exe: Console\LoadFile\LoadFile.dpr

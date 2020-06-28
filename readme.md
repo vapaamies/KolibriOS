@@ -27,7 +27,7 @@ end.
 ````
 
 ## Compiling from Delphi IDE
-First, you need to build RTL for you version of Delphi. Please run `build-RTL.bat` script to do it. Compiled DCUs will appear in `RTL` directory.
+First, you need to initialize projects before open them in Delphi IDE. Please run `init-for-IDE.bat` script. It will build RTL for your version of Delphi, and then generate project configuration files contain correct paths to libraries, DCU and EXE/DLL directories for Delphi IDE.
 
 Open program in the IDE, press `Ctrl+F9`. Compiled `.exe` file will appear in `Bin` directory. Use `convert.bat` to convert it to KolibriOS executable:
 ````
@@ -70,15 +70,11 @@ Default KolibriOS code page is [CP866](https://en.wikipedia.org/wiki/Code_page_8
   * `build-all.bat` – builds RTL and all programs, including your programs.
   * `build-examples.bat` – builds example programs.
   * `build-my.bat` – builds your programs have put to the subdirectories of `My` directory.
-  * `build-RTL.bat` – builds Delphi RTL for KolibriOS.
-  * `Bin\convert.bat` – helper script to convert manually compiled programs to KolibriOS format.
+  * `init-for-IDE.bat` – initializes project for open in Delphi IDE, builds RTL as well.
+  * `Bin\convert.bat` – helper script to convert manually compiled program to KolibriOS format.
+  * `Bin\convert-all.bat` – helper script to convert all manually compiled programs to KolibriOS format.
   * `Lib\build.bat` – library build script calling by other ones when builings programs.
   * `Lib\convert.bat` – library conversion script calling by other ones when builings or converting programs compiled manually.
-
-## Tips and Tricks
-Release archive contains `.dof` files with correct Delphi IDE settings, especially paths. If you want to use latest [hot version](https://github.com/vapaamies/KolibriOS) of SDK from the `master` branch on GitHub, download the latest release archive before, unpack it. Then unpack the archive of hot version to same directory with file overwriting. It gives you correctly prepared environment to compile hot versions of programs.
-
-If particular program not yet exist in SDK release, copy existing `.dof` file from the directory of other program was included to the release, for example `GUI\ColorButtons.dof`.
 
 ## See also
 * **Programs not included to SDK**

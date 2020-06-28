@@ -1,0 +1,5 @@
+[Directories]
+OutputDir=..\..\Bin
+UnitOutputDir=..\..\Bin\DCU
+SearchPath=..\..\Lib;..\..\Bin\DCU
+UsePackages=0

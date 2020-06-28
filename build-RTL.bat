@@ -1,1 +1,0 @@
-@dcc32 -m -y -z "%~dp0RTL\System" -n"%~dp0\RTL" %*
