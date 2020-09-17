@@ -28,13 +28,13 @@ begin
     if Boolean(ControlKeyState and (RIGHT_CTRL_PRESSED or LEFT_CTRL_PRESSED)) then
       case Key.ScanCode of
         KS_UP:
-          Dec(Bottom, MOVE_STEP);
+          Dec(Height, MOVE_STEP);
         KS_DOWN:
-          Inc(Bottom, MOVE_STEP);
+          Inc(Height, MOVE_STEP);
         KS_LEFT:
-          Dec(Right, MOVE_STEP);
+          Dec(Width, MOVE_STEP);
         KS_RIGHT:
-          Inc(Right, MOVE_STEP);
+          Inc(Width, MOVE_STEP);
       end
     else
       case Key.ScanCode of
@@ -47,7 +47,7 @@ begin
         KS_RIGHT:
           Inc(Left, MOVE_STEP);
       end;
-    SetWindowPos(Left, Top, Right, Bottom);
+    SetWindowPos(Left, Top, Width, Height);
   end;  
 end;
 

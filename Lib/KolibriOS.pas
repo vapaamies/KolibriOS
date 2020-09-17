@@ -56,10 +56,10 @@ type
     MemAddress:   LongWord;
     MemUsage:     LongWord;
     Identifier:   LongWord;
-    Window:       TRect;
+    Window:       TBox;
     ThreadState:  Word;
     Reserved2:    Word;
-    Client:       TRect;
+    Client:       TBox;
     WindowState:  Byte;
     EventMask:    LongWord;
     KeyboardMode: Byte;
