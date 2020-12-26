@@ -7,12 +7,7 @@ unit System;
 interface
 
 const
-{$IF CompilerVersion < 15}
-  RTLVersion = 14.2006;  // <---,
-{$ELSE}                  //      June, 2020
-  RTLVersion = 15.2006;  // <---'
-{$IFEND}
-
+  RTLVersion = CompilerVersion;
   UnicodeCompiler = CompilerVersion >= 20;
   
 type
