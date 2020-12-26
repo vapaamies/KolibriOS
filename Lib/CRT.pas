@@ -6,15 +6,12 @@ unit CRT;
 
 interface
 
-uses
-  KolibriOS;
-
 type
   TCursorXY = record
     X, Y: Integer;
   end;
 
-  TKey = record
+  TKey = packed record
     CharCode, ScanCode: KolibriChar;
   end;
 
@@ -57,21 +54,6 @@ function TextColor(Color: Byte): LongWord; overload;
 
 procedure ClrScr;
 
-procedure WriteEx(Str: PKolibriChar); overload;
-procedure WriteEx(Str: PKolibriChar; Length: LongWord); overload;
-procedure WriteEx(const Str: ShortString); overload;
-function WriteEx(Format: PKolibriChar; const Args: array of const): Integer; overload;
-
-procedure WriteLnEx(LineBreaks: Integer = 1); overload;
-procedure WriteLnEx(Str: PKolibriChar; LineBreaks: Integer = 1); overload;
-procedure WriteLnEx(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer = 1); overload;
-procedure WriteLnEx(const Str: ShortString; LineBreaks: Integer = 1); overload;
-function WriteLnEx(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer; overload;
-
-procedure Read(var Result: KolibriChar); overload;
-procedure Read(var Result: TKey); overload;
-procedure ReadLn(var Result: ShortString);
-
 function CursorBig: Integer;
 function CursorHeight: Integer; overload;
 function CursorHeight(Height: Integer): Integer; overload;
@@ -80,6 +62,7 @@ function CursorOn: Integer;
 
 function KeyPressed: Boolean;
 function ReadKey: KolibriChar;
+function ReadKeyEx: TKey;
 
 function FontHeight: Integer;
 
@@ -88,7 +71,7 @@ procedure Delay(Milliseconds: LongWord);
 implementation
 
 uses
-  SysUtils;
+  KolibriOS;
 
 var
   CloseWindow: Boolean;
@@ -96,229 +79,132 @@ var
 procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean;
   WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
 begin
-  ConsoleInterface.ConsoleInit(WndWidth, WndHeight, ScrWidth, ScrHeight, Title);
+  con_init(WndWidth, WndHeight, ScrWidth, ScrHeight, Title);
   CloseWindow := CloseWindowOnExit;
 end;
 
 procedure SetTitle(Title: PKolibriChar);
 begin
-  ConsoleInterface.SetTitle(Title);
+  con_set_title(Title);
 end;
 
 function NormVideo: LongWord;
 begin
-  with ConsoleInterface do
-    Result := SetFlags(GetFlags and $300 or $07);
+  Result := con_set_flags(con_get_flags and $300 or $07);
 end;
 
 function TextAttr: Byte;
 begin
-  Result := ConsoleInterface.GetFlags and $FF;
+  Result := con_get_flags and $FF;
 end;
 
 function TextAttr(Attr: Byte): LongWord;
 begin
-  with ConsoleInterface do
-    Result := SetFlags(GetFlags and $300 or Attr);
+  Result := con_set_flags(con_get_flags and $300 or Attr);
 end;
 
 function TextAttr(Color, Background: Byte): LongWord;
 begin
-  with ConsoleInterface do
-    Result := SetFlags(GetFlags and $300 or Color and $0F or Background and $0F shl 4);
+  Result := con_set_flags(con_get_flags and $300 or Color and $0F or Background and $0F shl 4);
 end;
 
 function TextBackground: Byte;
 begin
-  Result := ConsoleInterface.GetFlags and $F0 shr 4;
+  Result := con_get_flags and $F0 shr 4;
 end;
 
 function TextBackground(Color: Byte): LongWord;
 begin
-  with ConsoleInterface do
-    Result := SetFlags(GetFlags and $30F or Color and $0F shl 4);
+  Result := con_set_flags(con_get_flags and $30F or Color and $0F shl 4);
 end;
 
 function TextColor: Byte;
 begin
-  Result := ConsoleInterface.GetFlags and $0F;
+  Result := con_get_flags and $0F;
 end;
 
 function TextColor(Color: Byte): LongWord;
 begin
-  with ConsoleInterface do
-    Result := SetFlags(GetFlags and $3F0 or Color and $0F);
+  Result := con_set_flags(con_get_flags and $3F0 or Color and $0F);
 end;
 
 procedure GotoXY(X, Y: Integer);
 begin
-  ConsoleInterface.SetCursorPos(X, Y);
+  con_set_cursor_pos(X, Y);
 end;
 
 procedure GotoXY(const Point: TCursorXY);
 begin
-  with Point do
-    ConsoleInterface.SetCursorPos(X, Y);
+  con_set_cursor_pos(Point.X, Point.Y);
 end;
 
 function WhereX: Integer;
 var
   Y: Integer;
 begin
-  ConsoleInterface.GetCursorPos(Result, Y);
+  con_get_cursor_pos(Result, Y);
 end;
 
 function WhereY: Integer;
 var
   X: Integer;
 begin
-  ConsoleInterface.GetCursorPos(X, Result);
+  con_get_cursor_pos(X, Result);
 end;
 
 function WhereXY: TCursorXY;
 begin
-  ConsoleInterface.GetCursorPos(Result.X, Result.Y);
+  con_get_cursor_pos(Result.X, Result.Y);
 end;
 
 function CursorBig: Integer;
 begin
-  Result := ConsoleInterface.SetCursorHeight(15);
+  Result := con_set_cursor_height(15);
 end;
 
 function CursorHeight: Integer;
 begin
-  Result := ConsoleInterface.GetCursorHeight;
+  Result := con_get_cursor_height;
 end;
 
 function CursorHeight(Height: Integer): Integer;
 begin
-  Result := ConsoleInterface.SetCursorHeight(Height);
+  Result := con_set_cursor_height(Height);
 end;
 
 function CursorOff: Integer;
 begin
-  Result := ConsoleInterface.SetCursorHeight(0);
+  Result := con_set_cursor_height(0);
 end;
 
 function CursorOn: Integer;
 begin
-  Result := ConsoleInterface.SetCursorHeight(2);
+  Result := con_set_cursor_height(2);
 end;
 
 procedure ClrScr;
 begin
-  ConsoleInterface.Cls;
-end;
-
-procedure WriteEx(Str: PKolibriChar);
-begin
-  ConsoleInterface.WriteASCIIZ(Str);
-end;
-
-procedure WriteEx(Str: PKolibriChar; Length: LongWord);
-begin
-  ConsoleInterface.WriteString(Str, Length);
-end;
-
-procedure WriteEx(const Str: ShortString);
-begin
-  ConsoleInterface.WriteString(@Str[1], Length(Str));
-end;
-
-function WriteEx(Format: PKolibriChar; const Args: array of const): Integer;
-const
-  VarArgSize = SizeOf(TVarRec);
-asm
-        PUSH EBX
-        MOV EBX, ESP
-
-        INC ECX
-        JZ @@call
-@@arg:
-        PUSH dword [EDX + ECX * VarArgSize - VarArgSize]
-        LOOP @@arg
-@@call:
-        PUSH EAX
-        CALL ConsoleInterface.PrintF
-
-        MOV ESP, EBX
-        POP EBX
-end;
-
-procedure WriteLnEx(LineBreaks: Integer);
-var
-  I: Integer;
-begin
-  for I := 0 to LineBreaks - 1 do
-    ConsoleInterface.WriteString(#10, 1);
-end;
-
-procedure WriteLnEx(Str: PKolibriChar; LineBreaks: Integer);
-begin
-  ConsoleInterface.WriteASCIIZ(Str);
-  WriteLnEx(LineBreaks);
-end;
-
-procedure WriteLnEx(Str: PKolibriChar; Length: LongWord; LineBreaks: Integer);
-begin
-  ConsoleInterface.WriteString(Str, Length);
-  WriteLnEx(LineBreaks);
-end;
-
-procedure WriteLnEx(const Str: ShortString; LineBreaks: Integer);
-begin
-  ConsoleInterface.WriteString(@Str[1], Length(Str));
-  WriteLnEx(LineBreaks);
-end;
-
-function WriteLnEx(Format: PKolibriChar; const Args: array of const; LineBreaks: Integer = 1): Integer;
-begin
-  Result := WriteEx(Format, Args);
-  WriteLnEx(LineBreaks);
-end;
-
-procedure Read(var Result: KolibriChar);
-begin
-  Result := Chr(ConsoleInterface.GetCh);
-end;
-
-procedure Read(var Result: TKey);
-var
-  K: Word;
-begin
-  K := ConsoleInterface.GetCh2;
-  with WordRec(K), Result do
-  begin
-    CharCode := Chr(Lo);
-    ScanCode := Chr(Hi);
-  end;
-end;
-
-procedure ReadLn(var Result: ShortString);
-var
-  P, Limit: PKolibriChar;
-begin
-  P := PKolibriChar(@Result[1]);
-  ConsoleInterface.GetS(P, High(Byte));
-  Limit := P + High(Byte);
-  while (P < Limit) and not (P^ in [#0, #10]) do
-    Inc(P);
-  PByte(@Result)^ := P - PKolibriChar(@Result[1]);
+  con_cls;
 end;
 
 function KeyPressed: Boolean;
 begin
-  Result := ConsoleInterface.KbdHit;
+  Result := con_kbhit;
 end;
 
 function ReadKey: KolibriChar;
 begin
-  Result := Chr(ConsoleInterface.GetCh);
+  Result := Chr(con_getch);
+end;
+
+function ReadKeyEx: TKey;
+begin
+  Word(Result) := con_getch2;
 end;
 
 function FontHeight: Integer;
 begin
-  Result := ConsoleInterface.GetFontHeight;
+  Result := con_get_font_height;
 end;
 
 procedure Delay(Milliseconds: LongWord);
@@ -331,31 +217,28 @@ var
 
 initialization
   hConsole := LoadLibrary('/sys/lib/console.obj');
-  with ConsoleInterface do
-  begin
-    Cls := GetProcAddress(hConsole, 'con_cls');
-    ConsoleExit := GetProcAddress(hConsole, 'con_exit');
-    ConsoleInit := GetProcAddress(hConsole, 'con_init');
-    GetCh := GetProcAddress(hConsole, 'con_getch');
-    GetCh2 := GetProcAddress(hConsole, 'con_getch2');
-    GetCursorPos := GetProcAddress(hConsole, 'con_get_cursor_pos');
-    GetCursorHeight := GetProcAddress(hConsole, 'con_get_cursor_height');
-    GetFlags := GetProcAddress(hConsole, 'con_get_flags');
-    GetFontHeight := GetProcAddress(hConsole, 'con_get_font_height');
-    GetS := GetProcAddress(hConsole, 'con_gets');
-    KbdHit := GetProcAddress(hConsole, 'con_kbhit');
-    PrintF := GetProcAddress(hConsole, 'con_printf');
-    SetCursorHeight := GetProcAddress(hConsole, 'con_set_cursor_height');
-    SetCursorPos := GetProcAddress(hConsole, 'con_set_cursor_pos');
-    SetFlags := GetProcAddress(hConsole, 'con_set_flags');
-    SetTitle := GetProcAddress(hConsole, 'con_set_title');
-    WriteASCIIZ := GetProcAddress(hConsole, 'con_write_asciiz');
-    WriteString := GetProcAddress(hConsole, 'con_write_string');
-  end;
+
+  Pointer(@con_cls) := GetProcAddress(hConsole, 'con_cls');
+  Pointer(@con_exit) := GetProcAddress(hConsole, 'con_exit');
+  Pointer(@con_getch) := GetProcAddress(hConsole, 'con_getch');
+  Pointer(@con_getch2) := GetProcAddress(hConsole, 'con_getch2');
+  Pointer(@con_get_cursor_pos) := GetProcAddress(hConsole, 'con_get_cursor_pos');
+  Pointer(@con_get_cursor_height) := GetProcAddress(hConsole, 'con_get_cursor_height');
+  Pointer(@con_get_flags) := GetProcAddress(hConsole, 'con_get_flags');
+  Pointer(@con_get_font_height) := GetProcAddress(hConsole, 'con_get_font_height');
+  Pointer(@con_gets) := GetProcAddress(hConsole, 'con_gets');
+  Pointer(@con_init) := GetProcAddress(hConsole, 'con_init');
+  Pointer(@con_kbhit) := GetProcAddress(hConsole, 'con_kbhit');
+  Pointer(@con_printf) := GetProcAddress(hConsole, 'con_printf');
+  Pointer(@con_set_cursor_height) := GetProcAddress(hConsole, 'con_set_cursor_height');
+  Pointer(@con_set_cursor_pos) := GetProcAddress(hConsole, 'con_set_cursor_pos');
+  Pointer(@con_set_flags) := GetProcAddress(hConsole, 'con_set_flags');
+  Pointer(@con_set_title) := GetProcAddress(hConsole, 'con_set_title');
+  Pointer(@con_write_asciiz) := GetProcAddress(hConsole, 'con_write_asciiz');
+  Pointer(@con_write_string) := GetProcAddress(hConsole, 'con_write_string');
 
 finalization
-  with ConsoleInterface do
-    if Assigned(ConsoleExit) then
-      ConsoleExit(CloseWindow);
+  if Assigned(con_exit) then
+    con_exit(CloseWindow);
 
 end.

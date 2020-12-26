@@ -10,5 +10,5 @@ var
 begin
   InitConsole('Load File');
   Buffer := LoadFile('/sys/example.asm', FileSize);
-  WriteLnEx(Buffer, FileSize);
+  con_write_string(Buffer, FileSize);
 end.

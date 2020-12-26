@@ -121,33 +121,11 @@ type
     {$ENDIF}    
   end;
 
-  PConsoleInterface = ^TConsoleInterface;
-  TConsoleInterface = record
-    Cls: procedure; stdcall;
-    ConsoleExit: procedure(CloseWindow: Boolean); stdcall;
-    ConsoleInit: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Title: PKolibriChar); stdcall;
-    GetCh: function: Integer; stdcall;
-    GetCh2: function: Word; stdcall;
-    GetCursorPos: procedure(var X, Y: Integer); stdcall;
-    GetCursorHeight: function: Integer; stdcall;
-    GetFlags: function: LongWord; stdcall;
-    GetFontHeight: function: Integer; stdcall;
-    GetS: function(Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall;
-    KbdHit: function: Boolean; stdcall;
-    PrintF: function(Str: PKolibriChar): Integer; cdecl varargs;
-    SetFlags: function(Flags: LongWord): LongWord; stdcall;
-    SetCursorHeight: function(Height: Integer): Integer; stdcall;
-    SetCursorPos: procedure(X, Y: Integer); stdcall;
-    SetTitle: procedure(Title: PKolibriChar); stdcall;
-    WriteASCIIZ: procedure(Str: PKolibriChar); stdcall;
-    WriteString: procedure(Str: PKolibriChar; Length: LongWord); stdcall;
-  end;
-
   PTextBuf = ^TTextBuf;
   TTextBuf = array[0..127] of KolibriChar;
 
   TTextRec = packed record
-    Handle: THandle;       
+    Handle: THandle;
     Mode, Flags: Word;
     BufSize, BufPos, BufEnd: Cardinal;
     BufPtr: PKolibriChar;
@@ -181,12 +159,16 @@ function _LStrLen(const S: KolibriString): LongInt;
 function _LStrToPChar(const S: KolibriString): PKolibriChar;
 
 var
-  ConsoleInterface: TConsoleInterface;
   IOResult: Integer;
-  Output: Text;
+  Input, Output: Text;
 
 function _Flush(var T: TTextRec): Integer;
 procedure __IOTest;
+
+function _ReadChar(var T: TTextRec): KolibriChar;
+procedure _ReadCString(var T: TTextRec; Str: PKolibriChar; MaxLength: LongInt);
+procedure _ReadString(var T: TTextRec; Str: PShortString; MaxLength: LongInt);
+procedure _ReadLn(var T: TTextRec);
 
 procedure _Write0Bool(var T: TTextRec; Value: Boolean);
 procedure _Write0Char(var T: TTextRec; Ch: KolibriChar);
@@ -201,6 +183,47 @@ procedure _WriteLong(var T: TTextRec; Value, Width: LongInt);
 procedure _WriteString(var T: TTextRec; const S: ShortString; Width: LongInt);
 procedure _WriteLString(var T: TTextRec; const S: KolibriString; Width: LongInt);
 procedure _WriteLn(var T: TTextRec);
+
+{ Console Library API }
+
+type
+  con_gets2_callback = function(KeyCode: Integer; var Str: PKolibriChar; var Count, Pos: Integer): Integer; stdcall;
+
+const
+  CON_COLOR_BLUE      = $01;
+  CON_COLOR_GREEN     = $02;
+  CON_COLOR_RED       = $04;
+  CON_COLOR_BRIGHT    = $08;
+
+  CON_BGR_BLUE        = $10;
+  CON_BGR_GREEN       = $20;
+  CON_BGR_RED         = $40;
+  CON_BGR_BRIGHT      = $80;
+
+  CON_IGNORE_SPECIALS = $100;
+  CON_WINDOW_CLOSED   = $200;
+
+  // TODO: con_gets2_callback constants
+
+  con_cls: procedure; stdcall = nil;
+  con_exit: procedure(CloseWindow: Boolean); stdcall = nil;
+  con_getch: function: Integer; stdcall = nil;
+  con_getch2: function: Word; stdcall = nil;
+  con_get_cursor_pos: procedure(var X, Y: Integer); stdcall = nil;
+  con_get_cursor_height: function: Integer; stdcall = nil;
+  con_get_flags: function: LongWord; stdcall = nil;
+  con_get_font_height: function: Integer; stdcall = nil;
+  con_gets: function(Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall = nil;
+  con_gets2: function(Callback: con_gets2_callback; Str: PKolibriChar; Count: Integer): PKolibriChar; stdcall = nil;
+  con_init: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Title: PKolibriChar); stdcall = nil;
+  con_kbhit: function: Boolean; stdcall = nil;
+  con_printf: function(Str: PKolibriChar): Integer; cdecl varargs = nil;
+  con_set_flags: function(Flags: LongWord): LongWord; stdcall = nil;
+  con_set_cursor_height: function(Height: Integer): Integer; stdcall = nil;
+  con_set_cursor_pos: procedure(X, Y: Integer); stdcall = nil;
+  con_set_title: procedure(Title: PKolibriChar); stdcall = nil;
+  con_write_asciiz: procedure(Str: PKolibriChar); stdcall = nil;
+  con_write_string: procedure(Str: PKolibriChar; Length: LongWord); stdcall = nil;
 
 implementation
 
@@ -370,69 +393,102 @@ end;
 const
   Booleans: array[Boolean] of PKolibriChar = ('False', 'True');
 
+function _ReadChar(var T: TTextRec): KolibriChar;
+begin
+  Result := Chr(con_getch);
+end;
+
+procedure _ReadCString(var T: TTextRec; Str: PKolibriChar; MaxLength: LongInt);
+var
+  P, Limit: PKolibriChar;
+begin
+  con_gets(Str, MaxLength);
+  P := Str;
+  Limit := P + MaxLength;
+  while (P < Limit) and not (P^ in [#0, #10]) do
+    Inc(P);
+  P^ := #0;
+end;
+
+procedure _ReadString(var T: TTextRec; Str: PShortString; MaxLength: LongInt);
+var
+  P, Limit: PKolibriChar;
+begin
+  P := PKolibriChar(Str) + 1;
+  con_gets(P, MaxLength);
+  Limit := P + MaxLength;
+  while (P < Limit) and not (P^ in [#0, #10]) do
+    Inc(P);
+  PByte(Str)^ := P - PKolibriChar(Str) - 1;
+end;
+
+procedure _ReadLn(var T: TTextRec);
+asm
+end;
+
 procedure _Write0Bool(var T: TTextRec; Value: Boolean);
 begin
-  ConsoleInterface.WriteASCIIZ(Booleans[Value]);
+  con_write_asciiz(Booleans[Value]);
 end;
 
 procedure _Write0Char(var T: TTextRec; Ch: KolibriChar);
 begin
-  ConsoleInterface.WriteString(@Ch, 1);
+  con_write_string(@Ch, 1);
 end;
 
 procedure _Write0Long(var T: TTextRec; Value: LongInt);
 begin
-  ConsoleInterface.PrintF('%d', Value);
+  con_printf('%d', Value);
 end;
 
 procedure _Write0String(var T: TTextRec; const S: ShortString);
 begin
-  ConsoleInterface.WriteString(@S[1], Length(S));
+  con_write_string(@S[1], Length(S));
 end;
 
 procedure _Write0CString(var T: TTextRec; S: PKolibriChar);
 begin
-  ConsoleInterface.WriteASCIIZ(S);
+  con_write_asciiz(S);
 end;
 
 procedure _Write0LString(var T: TTextRec; const S: KolibriString);
 begin
-  ConsoleInterface.WriteString(Pointer(S), Length(S));
+  con_write_string(Pointer(S), Length(S));
 end;
 
 procedure _WriteBool(var T: TTextRec; Value: Boolean; Width: LongInt);
 begin
-  ConsoleInterface.PrintF('%*s', Width, Booleans[Value]);
+  con_printf('%*s', Width, Booleans[Value]);
 end;
 
 procedure _WriteChar(var T: TTextRec; Ch: KolibriChar; Width: LongInt);
 begin
-  ConsoleInterface.PrintF('%*c', Width, Ch);
+  con_printf('%*c', Width, Ch);
 end;
 
 procedure _WriteCString(var T: TTextRec; S: PKolibriChar; Width: LongInt);
 begin
-  ConsoleInterface.PrintF('%*s', Width, S);
+  con_printf('%*s', Width, S);
 end;
 
 procedure _WriteLong(var T: TTextRec; Value, Width: LongInt);
 begin
-  ConsoleInterface.PrintF('%*d', Width, Value);
+  con_printf('%*d', Width, Value);
 end;
 
 procedure _WriteString(var T: TTextRec; const S: ShortString; Width: LongInt);
 begin
-  ConsoleInterface.PrintF('%*s', Width, @S[1]);
+  con_printf('%*s', Width, @S[1]);
 end;
 
 procedure _WriteLString(var T: TTextRec; const S: KolibriString; Width: LongInt);
 begin
-  ConsoleInterface.PrintF('%*s', Width, Pointer(S));
+  con_printf('%*s', Width, Pointer(S));
 end;
 
 procedure _WriteLn(var T: TTextRec);
 begin
-  ConsoleInterface.WriteString(#10, 1);
+  con_write_string(#10, 1);
 end;
 
 initialization

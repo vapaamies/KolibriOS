@@ -17,7 +17,7 @@ begin
 
   GetCurrentDirectory(Buffer, BUFFER_SIZE);
 
-  WriteLnEx('AppPath is "%s"', [AppPath^]);
-  WriteLnEx('CmdLine is "%s"', [CmdLine^]);
-  WriteLnEx('Current Directory is "%s"', [Buffer]);
+  con_printf('AppPath is "%s"'#10, AppPath^);
+  con_printf('CmdLine is "%s"'#10, CmdLine^);
+  con_printf('Current Directory is "%s"'#10, Buffer);
 end.
