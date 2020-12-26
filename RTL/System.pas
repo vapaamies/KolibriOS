@@ -149,7 +149,7 @@ var
   RandSeed: LongWord;
   RandCounter: LongWord;
 
-function _RandInt(Range: LongWord): LongWord;
+function _RandInt(Range: LongInt): LongInt;
 function _RandExt: Extended;
 procedure Randomize;
 
@@ -338,14 +338,14 @@ asm
         ADD EAX, MinValue
 end;
 
-function _RandInt(Range: LongWord): LongWord;
+function _RandInt(Range: LongInt): LongInt;
 begin
   Result := RandInt(0, Range - 1);
 end;
 
 function _RandExt: Extended;
 begin
-  Result := 1 / RandInt(2, $FFFFFFFF);
+  Result := RandInt(0, $FFFFFFFE) / $FFFFFFFF;
 end;
 
 procedure Randomize;
