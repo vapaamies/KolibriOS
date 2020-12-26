@@ -245,15 +245,18 @@ type
 const
   INVALID_HANDLE = 0;
 
+  WINDOW_BORDER_SIZE = 5; // defined by kernel
+
   // Window styles 
-  WS_SKINNED_FIXED     =  $4000000;
-  WS_SKINNED_SIZABLE   =  $3000000;
-  WS_FIXED             =  $0000000;
-  WS_SIZABLE           =  $2000000;
+  WS_FIXED             = $00000000;
+  WS_NO_DRAW           = $01000000;
+  WS_SIZABLE           = $02000000;
+  WS_SKINNED_SIZABLE   = $03000000;
+  WS_SKINNED_FIXED     = $04000000;
+  WS_CAPTION           = $10000000;
+  WS_CLIENT_COORDS     = $20000000;
   WS_TRANSPARENT_FILL  = $40000000;
   WS_GRADIENT_FILL     = $80000000;
-  WS_CLIENT_COORDS     = $20000000;
-  WS_CAPTION           = $10000000;
 
   // Caption styles 
   CAPTION_MOVABLE      = $00000000;

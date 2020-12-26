@@ -3,9 +3,6 @@ program Screenshot;
 uses
   KolibriOS;
 
-const
-  BORDER_SIZE = 5;
-
 type
   TRGBTriple = packed record
     Blue:  Byte;
@@ -63,8 +60,8 @@ begin
 
   with ScreenSize do
   begin
-    WndWidth := BORDER_SIZE * 2 + Width  div 2 - 1;
-    WndHeight := BORDER_SIZE + GetSkinHeight + Height div 2 - 1;
+    WndWidth := WINDOW_BORDER_SIZE * 2 + Width  div 2 - 1;
+    WndHeight := WINDOW_BORDER_SIZE + GetSkinHeight + Height div 2 - 1;
     WndLeft := (Width  - WndWidth) div 2;
     WndTop  := (Height - WndHeight) div 2;
 
