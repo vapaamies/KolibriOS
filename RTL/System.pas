@@ -161,6 +161,7 @@ function _LStrToPChar(const S: KolibriString): PKolibriChar;
 var
   IOResult: Integer;
   Input, Output: Text;
+  IsConsole: Boolean;
 
 function _Flush(var T: TTextRec): Integer;
 procedure __IOTest;
@@ -183,6 +184,9 @@ procedure _WriteLong(var T: TTextRec; Value, Width: LongInt);
 procedure _WriteString(var T: TTextRec; const S: ShortString; Width: LongInt);
 procedure _WriteLString(var T: TTextRec; const S: KolibriString; Width: LongInt);
 procedure _WriteLn(var T: TTextRec);
+
+var
+  AppPath, CmdLine: PKolibriChar;
 
 { Console Library API }
 
@@ -493,10 +497,13 @@ end;
 
 initialization
 
-asm // InitFPU
-  FNINIT
-  FWAIT
-  FLDCW Default8087CW
-end;
+  asm // InitFPU
+    FNINIT
+    FWAIT
+    FLDCW Default8087CW
+  end;
+
+  AppPath := PPKolibriChar(32)^;
+  CmdLine := PPKolibriChar(28)^;
 
 end.

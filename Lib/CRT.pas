@@ -237,6 +237,9 @@ initialization
   Pointer(@con_write_asciiz) := GetProcAddress(hConsole, 'con_write_asciiz');
   Pointer(@con_write_string) := GetProcAddress(hConsole, 'con_write_string');
 
+  if IsConsole then
+    InitConsole(AppPath);
+
 finalization
   if Assigned(con_exit) then
     con_exit(CloseWindow);

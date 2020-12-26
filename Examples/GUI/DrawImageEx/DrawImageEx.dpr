@@ -4,8 +4,6 @@ uses
   KolibriOS;
 
 const
-  AppPath = PPKolibriChar(32);
-
   Picture1 = 'Flower(4bpp).bmp';
   Picture2 = 'Mario(1bpp).bmp';
   Picture3 = 'House(24bpp).bmp';
@@ -81,8 +79,8 @@ var
 begin
   HeapInit;
 
-  ExtractFileDirectory(AppPath^, AppPath^);
-  SetCurrentDirectory(AppPath^);
+  ExtractFileDirectory(AppPath, AppPath);
+  SetCurrentDirectory(AppPath);
 
   GetFileAttributes(Picture1, FileAttributes);
   BitmapFile1 := HeapAllocate(FileAttributes.Size);

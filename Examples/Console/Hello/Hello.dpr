@@ -1,9 +1,10 @@
 program Hello;
 
+{$APPTYPE CONSOLE}
+
 uses
   CRT;
 
 begin
-  InitConsole('Hello');
   WriteLn('Hello, world!');
 end.

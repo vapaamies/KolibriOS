@@ -4,8 +4,6 @@ uses
   KolibriOS;
 
 const
-  AppPath = PPKolibriChar(32);
-
   ARROW_BUTTON = 2;
   POINT_BUTTON = 3;
   WAIT_BUTTON  = 4;
@@ -74,8 +72,8 @@ var
 begin
   HeapInit;
 
-  ExtractFileDirectory(AppPath^, AppPath^);
-  SetCurrentDirectory(AppPath^);
+  ExtractFileDirectory(AppPath, AppPath);
+  SetCurrentDirectory(AppPath);
 
   ArrowBitmapFile := LoadFile('arrow.bmp', FileSize);
   PointBitmapFile := LoadFile('point.bmp', FileSize);

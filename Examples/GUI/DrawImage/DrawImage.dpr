@@ -3,9 +3,6 @@ program DrawImageApp;
 uses
   KolibriOS;
 
-const
-  AppPath = PPKolibriChar(32);
-
 type
   THeader = packed record
     IDLength:        Byte;
@@ -59,8 +56,8 @@ var
 begin
   HeapInit;
 
-  ExtractFileDirectory(AppPath^, AppPath^);
-  SetCurrentDirectory(AppPath^);
+  ExtractFileDirectory(AppPath, AppPath);
+  SetCurrentDirectory(AppPath);
 
   TargaFile := LoadFile('Lena.tga', FileSize);
 
