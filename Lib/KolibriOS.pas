@@ -245,6 +245,24 @@ type
 const
   INVALID_HANDLE = 0;
 
+  // File system error codes
+  ERROR_SUCCESS                     = 0;
+  ERROR_FUNCTION_IS_NOT_SUPPORTED   = 2;
+  ERROR_UNKNOWN_FILE_SYSTEM         = 3;
+  ERROR_FILE_NOT_FOUND              = 5;
+  ERROR_END_OF_FILE                 = 6;
+  ERROR_INVALID_POINTER             = 7;
+  ERROR_DISK_FULL                   = 8;
+  ERROR_FILE_SYSTEM_ERROR           = 9;
+  ERROR_ACCESS_DENIED               = 10;
+  ERROR_DEVICE_ERROR                = 11;
+  ERROR_NO_MEMORY_FOR_FILE_SYSTEM   = 12;
+
+  // Application start functions error codes
+  ERROR_NOT_ENOUGH_MEMORY           = 30;
+  ERROR_FILE_IS_NOT_EXECUTABLE      = 31;
+  ERROR_TOO_MANY_PROCESSES          = 32;
+
   WINDOW_BORDER_SIZE = 5; // defined by kernel
 
   // Window styles 
