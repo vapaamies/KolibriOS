@@ -309,25 +309,25 @@ const
   BS_TRANSPARENT_FILL  = $40000000;
   BS_NO_FRAME          = $20000000;
 
-  // OpenSharedMemory open\access flags
+  // Blit flags
+  BLIT_CLIENT_RELATIVE = $20000000;
+
+  // OpenSharedMemory open/access flags
   SHM_OPEN             = $00;
   SHM_OPEN_ALWAYS      = $04;
   SHM_CREATE           = $08;
   SHM_READ             = $00;
   SHM_WRITE            = $01;
 
-  // KeyboardLayout flags 
+  // KeyboardLayout flags
   KBL_NORMAL           = 1;
   KBL_SHIFT            = 2;
   KBL_ALT              = 3;
 
-  // SystemShutdown parameters 
+  // SystemShutdown parameters
   SHUTDOWN_TURNOFF     = 2;
   SHUTDOWN_REBOOT      = 3;
   SHUTDOWN_RESTART     = 4;
-
-  // Blit flags 
-  BLIT_CLIENT_RELATIVE = $20000000;
 
 {-1}      procedure TerminateThread; stdcall;
 {0}       procedure DrawWindow(Left, Top, Width, Height: LongInt; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); stdcall;

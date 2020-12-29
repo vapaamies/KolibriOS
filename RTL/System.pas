@@ -239,6 +239,7 @@ var
 
 procedure _HandleFinally;
 asm
+        MOV EAX, 1
 end;
 
 procedure InitUnits;
@@ -287,12 +288,10 @@ begin
 end;
 
 procedure _Halt0;
-begin
-  FinalizeUnits;
-  asm
-    OR EAX, -1
-    INT $40
-  end;
+asm
+        CALL FinalizeUnits
+        OR EAX, -1
+        INT $40
 end;
 
 function Get8087CW: Word;
@@ -303,12 +302,10 @@ asm
 end;
 
 procedure Set8087CW(Value: Word);
-begin
-  Default8087CW := Value;
-  asm
-    FNCLEX
-    FLDCW Default8087CW
-  end;
+asm
+        MOV Default8087CW, AX
+        FNCLEX
+        FLDCW Default8087CW
 end;
 
 // Produce random values in a given range [MinValue..MaxValue]
