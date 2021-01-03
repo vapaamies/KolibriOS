@@ -347,7 +347,7 @@ const
   SHUTDOWN_REBOOT      = 3;
   SHUTDOWN_RESTART     = 4;
 
-{-1}      procedure TerminateThread; stdcall;
+{-1}      procedure ExitThread; stdcall;
 {0}       procedure DrawWindow(Left, Top, Width, Height: LongInt; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); stdcall;
 {1}       procedure SetPixel(X, Y: LongInt; Color: LongWord); stdcall;
 {2}       function GetKey: TKeyboardInput; stdcall;
@@ -656,9 +656,9 @@ const
 
 implementation
 
-procedure TerminateThread; stdcall;
+procedure ExitThread; stdcall;
 asm
-        mov    eax, $FFFFFFFF
+        or     eax, -1
         int    $40
 end;
 
