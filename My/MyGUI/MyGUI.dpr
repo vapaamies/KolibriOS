@@ -1,4 +1,4 @@
-program Program2;
+program MyGUI;
 
 uses
   KolibriOS;

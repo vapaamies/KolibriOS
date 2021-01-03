@@ -1,4 +1,4 @@
-program Program1;
+program MyConsole;
 
 uses
   CRT;
