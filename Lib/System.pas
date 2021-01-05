@@ -137,7 +137,11 @@ type
 
 procedure _Halt0;
 procedure _HandleFinally;
+procedure _Run0Error;
+procedure _RunError(ErrorCode: Byte);
 procedure _StartExe(InitTable: PPackageInfo);
+
+procedure ErrorMessage(Msg: PKolibriChar; Count: Integer);
 
 var
   Default8087CW: Word = $1332; // for Extended type
@@ -185,6 +189,8 @@ procedure _WriteString(var T: TTextRec; const S: ShortString; Width: LongInt);
 procedure _WriteLString(var T: TTextRec; const S: KolibriString; Width: LongInt);
 procedure _WriteLn(var T: TTextRec);
 
+const
+  HexDigits: array[$0..$F] of KolibriChar = '0123456789ABCDEF';
 var
   AppPath, CmdLine: PKolibriChar;
 
@@ -237,11 +243,6 @@ uses
 var
   InitContext: TInitContext;
 
-procedure _HandleFinally;
-asm
-        MOV EAX, 1
-end;
-
 procedure InitUnits;
 var
   Idx: Integer;
@@ -292,6 +293,99 @@ asm
         CALL FinalizeUnits
         OR EAX, -1
         INT $40
+end;
+
+procedure _HandleFinally;
+asm
+        MOV EAX, 1
+end;
+
+procedure _Run0Error;
+asm
+        XOR EAX, EAX
+        JMP _RunError
+end;
+
+procedure _RunError(ErrorCode: Byte);
+const
+  Msg: array[0..28] of KolibriChar = 'Runtime error 000 at 00000000';
+asm
+        MOV EDX, $20202020
+        MOV CL, 10
+        XOR CH, CH
+@@next10:
+        XOR AH, AH
+        DIV CL
+        SHL EDX, 8
+        MOV DL, AH
+        ADD DL, '0'
+        INC CH
+        OR AL, AL
+        JNZ @@next10
+        MOV EAX, offset Msg[14]
+        MOV [EAX], EDX
+
+        MOVZX ECX, CH
+        MOV EDX, [EAX+3] // ' at '
+        ADD EAX, ECX
+        MOV [EAX], EDX
+        MOV EBX, EAX // volatile
+        MOV CL, 4
+        ADD EBX, ECX
+
+@@next16:
+        MOV CH, CL
+        DEC CL
+        SHL CL, 3
+
+        MOV EAX, [ESP]
+        ROR EAX, CL
+        AND EAX, $0F
+        MOV DH, [EAX+HexDigits]
+
+        MOV EAX, [ESP]
+        ROR EAX, CL
+        MOVZX EAX, AL
+        SHR EAX, 4
+        MOV DL, [EAX+HexDigits]
+
+        MOV [EBX], DX
+        INC EBX
+        INC EBX
+        MOVZX ECX, CH
+        LOOP @@next16
+
+        MOV EAX, offset Msg
+        MOV EDX, EBX
+        SUB EDX, EAX
+        CALL ErrorMessage
+
+        JMP _Halt0
+end;
+
+procedure ErrorMessage(Msg: PKolibriChar; Count: Integer);
+asm
+        PUSH EBX
+        PUSH ESI
+
+        MOV ESI, EAX
+        ADD EDX, EAX
+        MOV EAX, 63
+        MOV EBX, 1
+@@loop:
+        CMP ESI, EDX
+        JE @@exit
+        MOV CL, [ESI]
+        INT $40
+        INC ESI
+        JMP @@loop
+
+@@exit:
+        MOV CL, 10
+        INT $40
+
+        POP ESI
+        POP EBX
 end;
 
 function Get8087CW: Word;

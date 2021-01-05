@@ -3,9 +3,6 @@ program CharMap;
 uses
   CRT;
 
-const
-  HexDigits: array[$0..$F] of KolibriChar = '0123456789ABCDEF';
-
 var
   CharLine: array[$0..$F] of KolibriChar;
   Line, Ch: Byte;

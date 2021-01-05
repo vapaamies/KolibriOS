@@ -1,6 +1,6 @@
 Copyright © 2017-2019 0CodErr
 
-Copyright © 2020 0CodErr, Nikolay Burshtyn (aka amber8706), Vladislav Javadov (aka Freeman)
+Copyright © 2020-2021 0CodErr, Nikolay Burshtyn (aka amber8706), Vladislav Javadov (aka Freeman)
 
 All rights reserved.
 
