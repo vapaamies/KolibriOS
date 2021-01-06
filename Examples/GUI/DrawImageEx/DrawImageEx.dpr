@@ -77,39 +77,37 @@ var
   FileAttributes: TFileAttributes;
 
 begin
-  HeapInit;
-
   ExtractFileDirectory(AppPath, AppPath);
   SetCurrentDirectory(AppPath);
 
   GetFileAttributes(Picture1, FileAttributes);
-  BitmapFile1 := HeapAllocate(FileAttributes.Size);
+  GetMem(BitmapFile1, FileAttributes.Size);
   ReadFile(Picture1, BitmapFile1^, FileAttributes.Size, 0, BytesRead);
 
   with BitmapFile1^, BitmapFileHeader, BitmapInfoHeader do
   begin
     Padding1 := (32 - biWidth * biBitCount mod 32) and not 32 div 8;
-    Image1 := Pointer(LongWord(BitmapFile1) + bfOffBits);
+    Image1 := PKolibriChar(BitmapFile1) + bfOffBits;
   end;
 
   GetFileAttributes(Picture2, FileAttributes);
-  BitmapFile2 := HeapAllocate(FileAttributes.Size);
+  GetMem(BitmapFile2, FileAttributes.Size);
   ReadFile(Picture2, BitmapFile2^, FileAttributes.Size, 0, BytesRead);
 
   with BitmapFile2^, BitmapFileHeader, BitmapInfoHeader do
   begin
     Padding2 := (32 - biWidth * biBitCount mod 32) and not 32 div 8;
-    Image2 := Pointer(LongWord(BitmapFile2) + bfOffBits);
+    Image2 := PKolibriChar(BitmapFile2) + bfOffBits;
   end;
 
   GetFileAttributes(Picture3, FileAttributes);
-  BitmapFile3 := HeapAllocate(FileAttributes.Size);
+  GetMem(BitmapFile3, FileAttributes.Size);
   ReadFile(Picture3, BitmapFile3^, FileAttributes.Size, 0, BytesRead);
 
   with BitmapFile3^, BitmapFileHeader, BitmapInfoHeader do
   begin
     Padding3 := (32 - biWidth * biBitCount mod 32) and not 32 div 8;
-    Image3 := Pointer(LongWord(BitmapFile3) + bfOffBits);
+    Image3 := PKolibriChar(BitmapFile3) + bfOffBits;
   end;
 
   with GetScreenSize do

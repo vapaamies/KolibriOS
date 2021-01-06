@@ -559,7 +559,7 @@ const
 {68.10}   {UNDEFINED}
 {68.11}   function HeapInit: LongWord; stdcall;
 {68.12}   function HeapAllocate(Bytes: LongWord): Pointer; stdcall;
-{68.13}   function HeapFree(MemPtr: Pointer): LongWord; stdcall;
+{68.13}   function HeapFree(MemPtr: Pointer): Boolean; stdcall;
 {68.14}   procedure WaitSignal(var Buffer: TSignalBuffer); stdcall;
 {68.15}   {UNDEFINED}
 {68.16}   function LoadDriver(Name: PKolibriChar): THandle; stdcall;
@@ -2540,7 +2540,7 @@ asm
         pop    ebx
 end;
 
-function HeapFree(MemPtr: Pointer): LongWord; stdcall;
+function HeapFree(MemPtr: Pointer): Boolean; stdcall;
 asm
         push   ebx
         mov    eax, 68

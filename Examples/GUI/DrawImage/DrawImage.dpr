@@ -54,8 +54,6 @@ var
   FileSize: LongWord;
 
 begin
-  HeapInit;
-
   ExtractFileDirectory(AppPath, AppPath);
   SetCurrentDirectory(AppPath);
 

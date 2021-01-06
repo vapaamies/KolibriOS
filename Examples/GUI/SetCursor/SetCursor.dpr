@@ -70,22 +70,20 @@ var
   FileSize: LongWord;
 
 begin
-  HeapInit;
-
   ExtractFileDirectory(AppPath, AppPath);
   SetCurrentDirectory(AppPath);
 
   ArrowBitmapFile := LoadFile('arrow.bmp', FileSize);
   PointBitmapFile := LoadFile('point.bmp', FileSize);
-  WaitBitmapFile  := LoadFile('wait.bmp', FileSize);
+  WaitBitmapFile := LoadFile('wait.bmp', FileSize);
 
-  ArrowBitmap    := Pointer(LongWord(ArrowBitmapFile) + ArrowBitmapFile.BitmapFileHeader.bfOffBits);
-  PointBitmap    := Pointer(LongWord(PointBitmapFile) + PointBitmapFile.BitmapFileHeader.bfOffBits);
-  WaitBitmap     := Pointer(LongWord(WaitBitmapFile)  + WaitBitmapFile.BitmapFileHeader.bfOffBits);
+  ArrowBitmap := PKolibriChar(ArrowBitmapFile) + ArrowBitmapFile.BitmapFileHeader.bfOffBits;
+  PointBitmap := PKolibriChar(PointBitmapFile) + PointBitmapFile.BitmapFileHeader.bfOffBits;
+  WaitBitmap := PKolibriChar(WaitBitmapFile) + WaitBitmapFile.BitmapFileHeader.bfOffBits;
 
   hArrowCursor := LoadCursorIndirect(ArrowBitmap^, 0, 0);
   hPointCursor := LoadCursorIndirect(PointBitmap^, 12, 0);
-  hWaitCursor  := LoadCursorIndirect(WaitBitmap^, 0, 0);
+  hWaitCursor := LoadCursorIndirect(WaitBitmap^, 0, 0);
 
   with GetScreenSize do
   begin

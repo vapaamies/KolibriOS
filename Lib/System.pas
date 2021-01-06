@@ -121,6 +121,13 @@ type
     {$ENDIF}    
   end;
 
+  PMemoryManager = ^TMemoryManager;
+  TMemoryManager = record
+    GetMem: function(Size: Integer): Pointer;
+    FreeMem: function(P: Pointer): Integer;
+    ReallocMem: function(P: Pointer; Size: Integer): Pointer;
+  end;
+
   PTextBuf = ^TTextBuf;
   TTextBuf = array[0..127] of KolibriChar;
 
@@ -142,6 +149,21 @@ procedure _RunError(ErrorCode: Byte);
 procedure _StartExe(InitTable: PPackageInfo);
 
 procedure ErrorMessage(Msg: PKolibriChar; Count: Integer);
+
+function _FreeMem(P: Pointer): Integer;
+function _GetMem(Size: Integer): Pointer;
+function _ReallocMem(var P: Pointer; NewSize: Integer): Pointer;
+
+procedure _FillChar(var Dest; Count: Cardinal; Value: Byte);
+procedure Move(const Src; var Dst; Count: Integer);
+
+procedure GetMemoryManager(var Value: TMemoryManager);
+procedure SetMemoryManager(const Value: TMemoryManager);
+function IsMemoryManagerSet: Boolean;
+
+function SysFreeMem(P: Pointer): Integer;
+function SysGetMem(Size: Integer): Pointer;
+function SysReallocMem(P: Pointer; Size: Integer): Pointer;
 
 var
   Default8087CW: Word = $1332; // for Extended type
@@ -249,6 +271,10 @@ implementation
 
 uses
   SysInit;
+
+const
+  ERROR_OUT_OF_MEMORY   = 203;
+  ERROR_INVALID_POINTER = 204;
 
 var
   InitContext: TInitContext;
@@ -396,6 +422,142 @@ asm
 
         POP ESI
         POP EBX
+end;
+
+var
+  MemoryManager: TMemoryManager = (
+    GetMem: SysGetMem;
+    FreeMem: SysFreeMem;
+    ReallocMem: SysReallocMem
+  );
+
+function _FreeMem(P: Pointer): Integer;
+asm
+        TEST EAX, EAX
+        JZ @@exit
+        CALL MemoryManager.FreeMem
+        TEST EAX, EAX
+        JZ @@exit
+        MOV AL, ERROR_INVALID_POINTER
+        JMP _RunError
+@@exit:
+end;
+
+function _GetMem(Size: Integer): Pointer;
+asm
+        TEST EAX, EAX
+        JZ @@exit
+        CALL MemoryManager.GetMem
+        TEST EAX, EAX
+        JNZ @@exit
+        MOV AL, ERROR_OUT_OF_MEMORY
+        JMP _RunError
+@@exit:
+end;
+
+function _ReallocMem(var P: Pointer; NewSize: Integer): Pointer;
+begin
+  if P <> nil then
+    if NewSize <> 0 then
+    begin
+      Result := MemoryManager.ReallocMem(P, NewSize);
+      if Result = nil then
+        RunError(ERROR_OUT_OF_MEMORY);
+    end
+    else
+    begin
+      if MemoryManager.FreeMem(P) <> 0 then
+        RunError(ERROR_INVALID_POINTER);
+      Result := nil;
+    end
+  else
+    Result := MemoryManager.GetMem(NewSize);
+  P := Result;
+end;
+
+procedure GetMemoryManager(var Value: TMemoryManager);
+begin
+  Value := MemoryManager;
+end;
+
+procedure SetMemoryManager(const Value: TMemoryManager);
+begin
+  MemoryManager := Value;
+end;
+
+function IsMemoryManagerSet: Boolean;
+begin
+  with MemoryManager do
+    Result := (@GetMem <> @SysGetMem) or (@FreeMem <> @SysFreeMem) or (@ReallocMem <> @SysReallocMem);
+end;
+
+function SysFreeMem(P: Pointer): Integer;
+asm
+        PUSH EBX
+        MOV ECX, EAX
+        MOV EAX, 68
+        MOV EBX, 13
+        INT $40
+        POP EBX
+        DEC EAX
+end;
+
+function SysGetMem(Size: Integer): Pointer;
+asm
+        PUSH EBX
+        MOV ECX, EAX
+        MOV EAX, 68
+        MOV EBX, 12
+        INT $40
+        POP EBX
+end;
+
+function SysReallocMem(P: Pointer; Size: Integer): Pointer;
+asm
+        PUSH EBX
+        MOV ECX, EAX
+        MOV EAX, 68
+        MOV EBX, 20
+        INT $40
+        POP EBX
+end;
+
+procedure _FillChar(var Dest; Count: Cardinal; Value: Byte);
+asm
+        TEST EDX, EDX
+        JZ @@exit
+
+        PUSH EDI
+
+        MOV EDI, EAX
+        MOV CH, CL
+        MOV EAX, ECX
+        SHL EAX, 16
+        MOV AX, CX
+
+        MOV ECX, EDX
+        SHR ECX, 2
+        REPNZ STOSD
+
+        MOVZX ECX, DL
+        AND CL, 3
+        REPNZ STOSB
+
+        POP EDI
+@@exit:
+end;
+
+procedure Move(const Src; var Dst; Count: Integer);
+var
+  I: Integer;
+begin
+  if @Src <> @Dst then
+    if (PKolibriChar(@Src) > PKolibriChar(@Dst)) or (PKolibriChar(@Dst) > PKolibriChar(@Src) + Count) then
+      for I := 0 to Count - 1 do
+        PKolibriChar(@Dst)[I] := PKolibriChar(@Src)[I]
+    else
+      for I := Count - 1 downto 0 do
+        PKolibriChar(@Dst)[I] := PKolibriChar(@Src)[I];
 end;
 
 function Get8087CW: Word;
@@ -671,9 +833,17 @@ end;
 
 initialization
 
-  asm // InitFPU
+  asm
+    // InitFPU
     FNINIT
     FLDCW Default8087CW
+
+    // HeapInit
+    PUSH EBX
+    MOV EAX, 68
+    MOV EBX, 11
+    INT $40
+    POP EBX
   end;
 
   AppPath := PPKolibriChar(32)^;

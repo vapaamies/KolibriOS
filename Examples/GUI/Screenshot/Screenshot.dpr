@@ -54,8 +54,6 @@ begin
 end;
 
 begin
-  HeapInit;
-
   ScreenSize := GetScreenSize;
 
   with ScreenSize do
@@ -65,8 +63,8 @@ begin
     WndLeft := (Width  - WndWidth) div 2;
     WndTop  := (Height - WndHeight) div 2;
 
-    Image := HeapAllocate(Width * Height * 3);
-    Preview := HeapAllocate(Width * Height * 3 div 4);
+    GetMem(Image, Width * Height * 3);
+    GetMem(Preview, Width * Height * 3 div 4);
 
     GetScreenImage(Image^, 0, 0, Width, Height);
     ResizeImage;
