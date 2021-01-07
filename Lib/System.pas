@@ -149,6 +149,16 @@ var
 function Get8087CW: Word;
 procedure Set8087CW(Value: Word);
 
+procedure _Frac;
+procedure _Int;
+procedure _Round;
+procedure _Trunc;
+
+procedure _Exp;
+
+procedure _Cos;
+procedure _Sin;
+
 var
   RandSeed: LongWord;
   RandCounter: LongWord;
@@ -402,6 +412,79 @@ asm
         FLDCW Default8087CW
 end;
 
+procedure _Frac;
+asm
+        FLD ST(0)
+        SUB ESP, 4
+        FNSTCW [ESP].Word
+        FNSTCW [ESP+2].Word
+        OR [ESP+2].Word, $0F00
+        FLDCW [ESP+2].Word
+        FRNDINT
+        FLDCW [ESP].Word
+        ADD ESP, 4
+        FSUB
+end;
+
+procedure _Int;
+asm
+        SUB ESP, 4
+        FNSTCW [ESP].Word
+        FNSTCW [ESP+2].Word
+        OR [ESP+2].Word, $0F00
+        FLDCW [ESP+2].Word
+        FRNDINT
+        FLDCW [ESP].Word
+        ADD ESP, 4
+end;
+
+procedure _Round;
+asm
+        SUB ESP, 8
+        FISTP [ESP].LongWord
+        POP EAX
+        POP EDX
+end;
+
+procedure _Trunc;
+asm
+        SUB ESP, 12
+        FNSTCW [ESP].Word
+        FNSTCW [ESP+2].Word
+        OR [ESP+2].Word, $0F00
+        FLDCW [ESP+2].Word
+        FISTP [ESP+4].LongWord
+        FLDCW [ESP].Word
+        POP ECX
+        POP EAX
+        POP EDX
+end;
+
+procedure _Exp;
+asm
+        FLDL2E
+        FMUL
+        FLD ST(0)
+        FRNDINT
+        FSUB ST(1), ST
+        FXCH ST(1)
+        F2XM1
+        FLD1
+        FADD
+        FSCALE
+        FSTP ST(1)
+end;
+
+procedure _Cos;
+asm
+        FCOS
+end;
+
+procedure _Sin;
+asm
+        FSIN
+end;
+
 // Produce random values in a given range [MinValue..MaxValue]
 // Note: Always return 0 if range = [0..$FFFFFFFF]
 // cause (MaxValue - MinValue + 1) * eax + MinValue = 0
@@ -590,7 +673,6 @@ initialization
 
   asm // InitFPU
     FNINIT
-    FWAIT
     FLDCW Default8087CW
   end;
 
