@@ -38,23 +38,26 @@ const
   EOL: array[0..1] of KolibriChar = #13#10;
 var
   Buf: array[Low(Byte)..High(Byte) + 1] of KolibriChar;
-  BytesWritten, Flags: Cardinal;
+{$IFNDEF Debug}
+  BytesWritten: LongWord;
+{$ENDIF}
+  Flags: LongWord;
 begin
+{$IFNDEF Debug}
   if TTextRec(Output).Handle <> 0 then
   begin
     WriteFile(TTextRec(Output).Handle, Msg^, Count, BytesWritten, nil);
     WriteFile(TTextRec(Output).Handle, EOL, SizeOf(EOL), BytesWritten, nil);
-  end
-  else
-  begin
-    if MainWindow <> 0 then
-      Flags := MB_ICONERROR
-    else
-      Flags := MB_ICONERROR or MB_TASKMODAL;
-    Move(Msg^, Buf, Count);
-    Msg[Count] := #0;  
-    MessageBox(MainWindow, Msg, nil, Flags);
+    Exit;
   end;
+{$ENDIF}
+  if MainWindow <> 0 then
+    Flags := MB_ICONERROR
+  else
+    Flags := MB_ICONERROR or MB_TASKMODAL;
+  Move(Msg^, Buf, Count);
+  Msg[Count] := #0;
+  MessageBox(MainWindow, Msg, nil, Flags);
 end;
 
 function SysFreeMem(P: Pointer): Integer;

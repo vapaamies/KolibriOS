@@ -73,16 +73,21 @@ begin
 end;
 
 procedure con_init(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Title: PKolibriChar); stdcall;
+{$IFDEF Debug}
 var
   Font: TConsoleFontInfo;
   R: TSmallRect;
+{$ENDIF}
 begin
+{$IFDEF Debug}
   if not IsConsole then
     AllocConsole;
+{$ENDIF}
 
   TTextRec(Input).Handle := System.GetStdHandle(STD_INPUT_HANDLE);
   TTextRec(Output).Handle := System.GetStdHandle(STD_OUTPUT_HANDLE);
 
+{$IFDEF Debug}
   SaveInputCP := GetConsoleCP;
   SetConsoleCP(CP_KOLIBRIOS);
   SaveOutputCP := GetConsoleOutputCP;
@@ -95,8 +100,9 @@ begin
   if WndHeight <> LongWord(-1) then
     WndSize.Y := WndHeight;
 
+  MainWindow := GetConsoleWindow;
   GetCurrentConsoleFont(TTextRec(Output).Handle, False, Font);
-  SetWindowPos(GetConsoleWindow, 0, WndPos.X, WndPos.Y,
+  SetWindowPos(MainWindow, 0, WndPos.X, WndPos.Y,
     Font.Size.X * WndSize.X + GetSystemMetrics(SM_CXVSCROLL), Font.Size.Y * WndSize.Y + GetSystemMetrics(SM_CYHSCROLL), 0);
 
   if ScrWidth <> LongWord(-1) then
@@ -113,6 +119,7 @@ begin
     Bottom := ScrSize.Y - 1;
   end;
   SetConsoleWindowInfo(TTextRec(Output).Handle, True, R);
+{$ENDIF}
 end;
 
 function con_get_cursor_height: Integer; stdcall;

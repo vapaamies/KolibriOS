@@ -4,7 +4,7 @@ set DCU=%~dp0Bin\DCU
 set KoW=%~dp0Bin\KoW\DCU
 
 if #%1#==## (
-  call "%~dp0Tools\init.bat"
+  call "%~dp0Tools\init.bat" -dDebug
   if errorlevel 1 goto exit
 
   if not exist "%KoW%" mkdir "%KoW%"

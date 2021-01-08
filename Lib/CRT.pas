@@ -87,8 +87,8 @@ var
 procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean;
   WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord);
 begin
-  con_init(WndWidth, WndHeight, ScrWidth, ScrHeight, Title);
   CloseWindow := CloseWindowOnExit;
+  con_init(WndWidth, WndHeight, ScrWidth, ScrHeight, Title);
   if ScrWidth <> LongWord(-1) then
     ClrEOLWidth := ScrWidth;
 end;
@@ -278,11 +278,13 @@ initialization
   InitKoW;
 {$ENDIF}
 
+{$IF defined(KolibriOS) or defined(Debug)}
   if IsConsole then
     InitConsole(AppPath);
 
 finalization
   if Assigned(System.con_exit) then
     con_exit(CloseWindow);
+{$IFEND}
 
 end.
