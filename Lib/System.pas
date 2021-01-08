@@ -7,7 +7,6 @@ unit System;
 interface
 
 const
-  RTLVersion = CompilerVersion;
   UnicodeCompiler = CompilerVersion >= 20;
   
 type
