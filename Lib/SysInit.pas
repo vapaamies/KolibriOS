@@ -1,5 +1,7 @@
 (*
-    KolibriOS RTL System unit
+    KolibriOS RTL SysInit unit
+
+    Copyright (c) 2020 Delphi SDK for KolibriOS team
 *)
 
 unit SysInit;

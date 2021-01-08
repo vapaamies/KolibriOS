@@ -1,5 +1,7 @@
 (*
     KolibriOS CRT unit
+
+    Copyright (c) 2020-2021 Delphi SDK for KolibriOS team
 *)
 
 unit CRT;
@@ -72,7 +74,11 @@ procedure Delay(Milliseconds: LongWord);
 implementation
 
 uses
+{$IFDEF KolibriOS}
   KolibriOS;
+{$ELSE}
+  Windows;
+{$ENDIF}
 
 var
   ClrEOLWidth: Integer = 80;
@@ -234,6 +240,7 @@ begin
   Result := con_get_font_height;
 end;
 
+{$IFDEF KolibriOS}
 procedure Delay(Milliseconds: LongWord);
 begin
   Sleep((Milliseconds + 10 div 2) div 10);
@@ -241,8 +248,12 @@ end;
 
 var
   hConsole: Pointer;
+{$ELSE}
+  {$I KoW\CRT.inc}
+{$ENDIF}
 
 initialization
+{$IFDEF KolibriOS}
   hConsole := LoadLibrary('/sys/lib/console.obj');
 
   Pointer(@con_cls) := GetProcAddress(hConsole, 'con_cls');
@@ -263,12 +274,15 @@ initialization
   Pointer(@con_set_title) := GetProcAddress(hConsole, 'con_set_title');
   Pointer(@con_write_asciiz) := GetProcAddress(hConsole, 'con_write_asciiz');
   Pointer(@con_write_string) := GetProcAddress(hConsole, 'con_write_string');
+{$ELSE}
+  InitKoW;
+{$ENDIF}
 
   if IsConsole then
     InitConsole(AppPath);
 
 finalization
-  if Assigned(con_exit) then
+  if Assigned(System.con_exit) then
     con_exit(CloseWindow);
 
 end.

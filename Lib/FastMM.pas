@@ -106,8 +106,6 @@ Change log:
   the main application's MM.
 }
 
-{$define KolibriOS} 
-
 unit FastMM;
 
 interface
@@ -1904,12 +1902,11 @@ end;
 {$endif}
 
 initialization
-{$ifndef KolibriOS}
   {Has another MM been set, or has the Borland MM been used? If so, this file
    is not the first unit in the uses clause of the project's .dpr file.}
-  if IsMemoryManagerSet or (GetHeapStatus.TotalAllocated <> 0) then
-    System.Error(reInvalidPtr);
-{$endif KolibriOS}
+  if IsMemoryManagerSet {or (GetHeapStatus.TotalAllocated <> 0)} then
+    RunError(ERROR_INVALID_POINTER){System.Error(reInvalidPtr)};
+
   {Install the memory manager}
   InstallMemoryManager;
 

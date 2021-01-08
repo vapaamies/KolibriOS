@@ -13,7 +13,7 @@ var
   Color: Byte;
 
 begin
-  InitConsole('Console Colors');
+  InitConsole('Console Colors', False, 30, 33, 30, 33);
 
   for Color := Low(ColorName) to High(ColorName) do
   begin

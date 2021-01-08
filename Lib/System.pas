@@ -1,5 +1,7 @@
 (*
     KolibriOS RTL System unit
+
+    Copyright (c) 2020-2021 Delphi SDK for KolibriOS team
 *)
 
 unit System;
@@ -8,15 +10,22 @@ interface
 
 const
   UnicodeCompiler = CompilerVersion >= 20;
-  
-type
-  PPAnsiChar    = ^PAnsiChar;
 
-  KolibriChar   = AnsiChar;
-  PKolibriChar  = PAnsiChar;
+  ERROR_OUT_OF_MEMORY   = 203;
+  ERROR_INVALID_POINTER = 204;
+
+type
+  PPAnsiChar = ^PAnsiChar;
+  PPWideChar = ^PWideChar;
+
+  KolibriChar = AnsiChar;
+  PKolibriChar = PAnsiChar;
   PPKolibriChar = PPAnsiChar;
 
   KolibriString = AnsiString;
+{$IFNDEF UnicodeCompiler}
+  UnicodeString = WideString;
+{$ENDIF}
 
 {$IF CompilerVersion < 15}
   UInt64 = Int64;
@@ -24,30 +33,47 @@ type
 
   THandle = LongWord;
 
+  PShortInt = ^ShortInt;
+  PSmallInt = ^SmallInt;
+  PLongInt = ^LongInt;
+  PInt64 = ^Int64;
+
   PByte = ^Byte;
   PWord = ^Word;
   PLongWord = ^LongWord;
-  PLongInt = ^LongInt;
-  PInt64 = ^Int64;
-{$IF CompilerVersion >= 15}
+{$IF CompilerVersion < 15}
+  PUInt64 = PInt64;
+{$ELSE}
   PUInt64 = ^UInt64;
 {$IFEND}
 
   PCardinal = ^Cardinal;
   PInteger = ^Integer;
 
+  PSingle = ^Single;
+  PDouble = ^Double;
   PExtended = ^Extended;
   PCurrency = ^Currency;
 
   PShortString = ^ShortString;
+  PAnsiString = ^AnsiString;
+  PWideString = ^WideString;
+{$IFDEF UnicodeCompiler}
+  PUnicodeString = ^UnicodeString;
+  PString = PUnicodeString;
+{$ELSE}
+  PUnicodeString = PWideString;
+  PString = PAnsiString;
+{$ENDIF}
 
   PVariant = ^Variant;
 
+  PGUID = ^TGUID;
   TGUID = record
     D1: LongWord;
     D2: Word;
     D3: Word;
-    D4: array [0..7] of Byte;
+    D4: array[0..7] of Byte;
   end;
 
   PProcedure = procedure;
@@ -147,7 +173,7 @@ procedure _Run0Error;
 procedure _RunError(ErrorCode: Byte);
 procedure _StartExe(InitTable: PPackageInfo);
 
-procedure ErrorMessage(Msg: PKolibriChar; Count: Integer);
+procedure ErrorMessage(Msg: PKolibriChar; Count: Byte);
 
 function _FreeMem(P: Pointer): Integer;
 function _GetMem(Size: Integer): Pointer;
@@ -188,9 +214,12 @@ function _RandInt(Range: LongInt): LongInt;
 function _RandExt: Extended;
 procedure Randomize;
 
+const
+  CP_KOLIBRIOS = 866;
+
 function UpCase(Ch: KolibriChar): KolibriChar;
 
-function _LStrLen(const S: KolibriString): LongInt;
+function _LStrLen(const S: KolibriString): Cardinal;
 function _LStrToPChar(const S: KolibriString): PKolibriChar;
 
 var
@@ -222,7 +251,8 @@ procedure _WriteLn(var T: TTextRec);
 
 const
   HexDigits: array[$0..$F] of KolibriChar = '0123456789ABCDEF';
-var
+
+var  
   AppPath, CmdLine: PKolibriChar;
 
 { Console Library API }
@@ -248,17 +278,17 @@ const
 
   con_cls: procedure; stdcall = nil;
   con_exit: procedure(CloseWindow: Boolean); stdcall = nil;
-  con_getch: function: Integer; stdcall = nil;
-  con_getch2: function: Word; stdcall = nil;
   con_get_cursor_pos: procedure(var X, Y: Integer); stdcall = nil;
   con_get_cursor_height: function: Integer; stdcall = nil;
   con_get_flags: function: LongWord; stdcall = nil;
   con_get_font_height: function: Integer; stdcall = nil;
+  con_getch: function: Integer; stdcall = nil;
+  con_getch2: function: Word; stdcall = nil;
   con_gets: function(Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall = nil;
-  con_gets2: function(Callback: con_gets2_callback; Str: PKolibriChar; Count: Integer): PKolibriChar; stdcall = nil;
+  con_gets2: function(Callback: con_gets2_callback; Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall = nil;
   con_init: procedure(WndWidth, WndHeight, ScrWidth, ScrHeight: LongWord; Title: PKolibriChar); stdcall = nil;
   con_kbhit: function: Boolean; stdcall = nil;
-  con_printf: function(Str: PKolibriChar): Integer; cdecl varargs = nil;
+  con_printf: function(Fmt: PKolibriChar): Integer; cdecl varargs = nil;
   con_set_flags: function(Flags: LongWord): LongWord; stdcall = nil;
   con_set_cursor_height: function(Height: Integer): Integer; stdcall = nil;
   con_set_cursor_pos: procedure(X, Y: Integer); stdcall = nil;
@@ -266,14 +296,14 @@ const
   con_write_asciiz: procedure(Str: PKolibriChar); stdcall = nil;
   con_write_string: procedure(Str: PKolibriChar; Length: LongWord); stdcall = nil;
 
+{$IFNDEF KolibriOS}
+  {$I KoW\SysAPI.inc}
+{$ENDIF}
+
 implementation
 
 uses
   SysInit;
-
-const
-  ERROR_OUT_OF_MEMORY   = 203;
-  ERROR_INVALID_POINTER = 204;
 
 var
   InitContext: TInitContext;
@@ -323,12 +353,14 @@ begin
   InitUnits;
 end;
 
+{$IFDEF KolibriOS}
 procedure _Halt0;
 asm
         CALL FinalizeUnits
         OR EAX, -1
         INT $40
 end;
+{$ENDIF}
 
 procedure _HandleFinally;
 asm
@@ -345,6 +377,10 @@ procedure _RunError(ErrorCode: Byte);
 const
   Msg: array[0..28] of KolibriChar = 'Runtime error 000 at 00000000';
 asm
+{$IFNDEF KolibriOS}
+        PUSH EAX
+{$ENDIF}
+
         MOV EDX, $20202020
         MOV CL, 10
         XOR CH, CH
@@ -364,7 +400,12 @@ asm
         MOV EDX, [EAX+3] // ' at '
         ADD EAX, ECX
         MOV [EAX], EDX
-        MOV EBX, EAX // volatile
+{$IFDEF KolibriOS}
+        // volatile
+{$ELSE}
+        PUSH EBX
+{$ENDIF}
+        MOV EBX, EAX
         MOV CL, 4
         ADD EBX, ECX
 
@@ -373,12 +414,20 @@ asm
         DEC CL
         SHL CL, 3
 
+{$IFDEF KolibriOS}
         MOV EAX, [ESP]
+{$ELSE}
+        MOV EAX, [ESP+8]
+{$ENDIF}
         ROR EAX, CL
         AND EAX, $0F
         MOV DH, [EAX+HexDigits]
 
+{$IFDEF KolibriOS}
         MOV EAX, [ESP]
+{$ELSE}
+        MOV EAX, [ESP+8]
+{$ENDIF}
         ROR EAX, CL
         MOVZX EAX, AL
         SHR EAX, 4
@@ -392,13 +441,20 @@ asm
 
         MOV EAX, offset Msg
         MOV EDX, EBX
+{$IFNDEF KolibriOS}
+        POP EBX
+{$ENDIF}
         SUB EDX, EAX
         CALL ErrorMessage
 
+{$IFNDEF KolibriOS}
+        POP EAX
+{$ENDIF}
         JMP _Halt0
 end;
 
-procedure ErrorMessage(Msg: PKolibriChar; Count: Integer);
+{$IFDEF KolibriOS}
+procedure ErrorMessage(Msg: PKolibriChar; Count: Byte);
 asm
         PUSH EBX
         PUSH ESI
@@ -422,6 +478,7 @@ asm
         POP ESI
         POP EBX
 end;
+{$ENDIF}
 
 var
   MemoryManager: TMemoryManager = (
@@ -490,6 +547,7 @@ begin
     Result := (@GetMem <> @SysGetMem) or (@FreeMem <> @SysFreeMem) or (@ReallocMem <> @SysReallocMem);
 end;
 
+{$IFDEF KolibriOS}
 function SysFreeMem(P: Pointer): Integer;
 asm
         PUSH EBX
@@ -520,6 +578,7 @@ asm
         INT $40
         POP EBX
 end;
+{$ENDIF}
 
 procedure _FillChar(var Dest; Count: Cardinal; Value: Byte);
 asm
@@ -702,12 +761,16 @@ type
   {$IFDEF UnicodeCompiler}
     CodePage, CharSize: Word;
   {$ENDIF}
-    RefCount, Length: LongInt;
+    RefCount: Integer;
+    Length: Cardinal;
   end;
 
-function _LStrLen(const S: KolibriString): LongInt;
-begin
-  Result := PStrRec(PKolibriChar(Pointer(S)) - SizeOf(TStrRec)).Length;
+function _LStrLen(const S: KolibriString): Cardinal;
+asm
+       TEST EAX, EAX
+       JZ @@exit
+       MOV EAX, [EAX-4]
+@@exit:
 end;
 
 function _LStrToPChar(const S: KolibriString): PKolibriChar;
@@ -830,6 +893,11 @@ begin
   con_write_string(#10, 1);
 end;
 
+{$IFNDEF KolibriOS}
+  {$I KoW\__lldiv.inc}
+  {$I KoW\System.inc}
+{$ENDIF}
+
 initialization
 
   asm
@@ -837,15 +905,21 @@ initialization
     FNINIT
     FLDCW Default8087CW
 
+{$IFDEF KolibriOS}
     // HeapInit
     PUSH EBX
     MOV EAX, 68
     MOV EBX, 11
     INT $40
     POP EBX
+{$ENDIF}
   end;
 
+{$IFDEF KolibriOS}
   AppPath := PPKolibriChar(32)^;
   CmdLine := PPKolibriChar(28)^;
+{$ELSE}
+  InitKoW;
+{$ENDIF}
 
 end.

@@ -3,12 +3,19 @@ program LoadFileApp;
 uses
   KolibriOS, CRT;
 
+const
+{$IFDEF KolibriOS}
+  FileName = '/sys/example.asm';
+{$ELSE}
+  FileName = '..\..\Lib\KoW\CRT.inc';
+{$ENDIF}
+
 var
   FileSize: LongWord;
-  Buffer: Pointer;
+  Buffer: PKolibriChar;
 
 begin
   InitConsole('Load File');
-  Buffer := LoadFile('/sys/example.asm', FileSize);
+  Buffer := LoadFile(FileName, FileSize);
   con_write_string(Buffer, FileSize);
 end.

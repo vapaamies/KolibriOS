@@ -1,5 +1,6 @@
 [Directories]
-OutputDir=..\..\Bin
-UnitOutputDir=..\..\Bin\DCU
-SearchPath=..\..\Lib;..\..\Bin\DCU
+OutputDir=..\..\Bin\KoW
+UnitOutputDir=..\..\Bin\KoW\DCU
+SearchPath=..\..\Lib;..\..\Bin\KoW\DCU
+UnitAliases=
 UsePackages=0

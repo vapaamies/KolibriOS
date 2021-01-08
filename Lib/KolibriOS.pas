@@ -1,8 +1,9 @@
-(************************************************************
+(*
+    KolibriOS system functions and definitions
 
-          KolibriOS system functions and definitions
-
-*************************************************************)
+    Copyright (c) 2017-2019 0CodErr
+    Copyright (c) 2020-2021 Delphi SDK for KolibriOS team
+*)
 
 unit KolibriOS;
 
@@ -348,13 +349,18 @@ const
   SHUTDOWN_RESTART     = 4;
 
 {-1}      procedure ExitThread; stdcall;
+{$IFDEF KolibriOS}
 {0}       procedure DrawWindow(Left, Top, Width, Height: LongInt; Caption: PKolibriChar; BackColor, Style, CapStyle: LongWord); stdcall;
 {1}       procedure SetPixel(X, Y: LongInt; Color: LongWord); stdcall;
 {2}       function GetKey: TKeyboardInput; stdcall;
+{$ENDIF}
 {3}       function GetSystemTime: TSystemTime; stdcall;
+{$IFDEF KolibriOS}
 {4}       procedure DrawText(X, Y: LongInt; Text: PKolibriChar; ForeColor, BackColor, Flags, Count: LongWord); stdcall;
+{$ENDIF}
 {5}       procedure Sleep(Time: LongWord); stdcall;
 {6}       {UNDEFINED}
+{$IFDEF KolibriOS}
 {7}       procedure DrawImage(const Image; X, Y: LongInt; Width, Height: LongWord); stdcall;
 {8}       procedure DrawButton(Left, Top, Width, Height: LongInt; BackColor, Style, ID: LongWord); stdcall;
 {8}       procedure DeleteButton(ID: LongWord); stdcall;
@@ -389,7 +395,9 @@ const
 {18.10}   procedure MinimizeActiveWindow; stdcall;
 {18.11}   procedure GetDiskSystemInfo(var Buffer); stdcall;
 {18.12}   {UNDEFINED}
+{$ENDIF}
 {18.13}   procedure GetKernelVersion(var Buffer: TKernelVersion); stdcall;
+{$IFDEF KolibriOS}
 {18.14}   function WaitRetrace: LongInt; stdcall;
 {18.15}   function CenterMousePointer: LongInt; stdcall;
 {18.16}   function GetFreeMemory: LongWord; stdcall;
@@ -443,13 +451,16 @@ const
 {26.3}    {UNDEFINED}
 {26.4}    {UNDEFINED}
 {26.5}    function GetSystemLanguage: LongWord; stdcall;
+{$ENDIF}
 {26.6}    {UNDEFINED}
 {26.7}    {UNDEFINED}
 {26.8}    {UNDEFINED}
 {26.9}    function GetTickCount: LongWord; stdcall;
 {26.10}   function GetTickCount64: UInt64; stdcall;
+{$IFDEF KolibriOS}
 {26.11}   function IsHDAccessAllowed: LongWord; stdcall;
 {26.12}   function IsPCIAccessAllowed: LongWord; stdcall;
+{$ENDIF}
 {27}      {UNDEFINED}
 {28}      {UNDEFINED}
 {29}      function GetSystemDate: TSystemDate; stdcall;
@@ -458,6 +469,7 @@ const
 {31}      {UNDEFINED}
 {32}      {UNDEFINED}
 {33}      {UNDEFINED}
+{$IFDEF KolibriOS}
 {34}      function GetPointOwner(X, Y: LongInt): LongWord; stdcall;
 {35}      function GetPixel(X, Y: LongInt): LongWord; stdcall;
 {36}      procedure GetScreenImage(var Buffer; X, Y: LongInt; Width, Height: LongWord); stdcall;
@@ -573,7 +585,9 @@ const
 {68.24}   function SetExceptionHandler(Handler: Pointer; Mask: LongWord; var OldMask: LongWord): Pointer; stdcall;
 {68.25}   function SetExceptionActivity(Signal, Activity: LongWord): LongInt; stdcall;
 {68.26}   procedure ReleaseMemoryPages(MemPtr: Pointer; Offset, Size: LongWord); stdcall;
+{$ENDIF}
 {68.27}   function LoadFile(FileName: PKolibriChar; var Size: LongWord): Pointer; stdcall;
+{$IFDEF KolibriOS}
 {69.0}    procedure SetDebugBuffer(const Buffer: TDebugBuffer); stdcall;
 {69.1}    procedure GetThreadContext(ID: LongWord; var Context: TThreadContext); stdcall;
 {69.2}    procedure SetThreadContext(ID: LongWord; const Context: TThreadContext); stdcall;
@@ -653,8 +667,16 @@ const
 {77.2}    function WaitFutex(Handle: THandle; Value, Time: LongWord): LongInt; stdcall;
 {77.3}    function WakeFutex(Handle: THandle; Waiters: LongWord): LongWord; stdcall;
           function GetProcAddress(hLib: Pointer; ProcName: PKolibriChar): Pointer; stdcall;
+{$ENDIF}
 
 implementation
+
+{$IFNDEF KolibriOS}
+uses
+  Windows;
+{$ENDIF}
+
+{$IFDEF KolibriOS}
 
 procedure ExitThread; stdcall;
 asm
@@ -1602,10 +1624,6 @@ asm
         pop    ebx
 end;
 
-{UNDEFINED}
-
-{UNDEFINED}
-
 function GetSystemDate: TSystemDate; stdcall;
 asm
         mov    eax, 29
@@ -1632,12 +1650,6 @@ asm
         int    $40
         pop    ebx
 end;
-
-{UNDEFINED}
-
-{UNDEFINED}
-
-{UNDEFINED}
 
 function GetPointOwner(X, Y: LongInt): LongWord; stdcall;
 asm
@@ -3719,5 +3731,9 @@ asm
         pop    edi
         pop    esi
 end;
+
+{$ELSE}
+  {$I KoW\KolibriOS.inc}
+{$ENDIF}
 
 end.

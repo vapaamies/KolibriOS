@@ -1,5 +1,7 @@
 (*
-    KolibriOS SysUtils unit
+    KolibriOS RTL SysUtils unit
+
+    Copyright (c) 2020-2021 Delphi SDK for KolibriOS team
 *)
 
 unit SysUtils;

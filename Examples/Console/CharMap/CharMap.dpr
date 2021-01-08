@@ -7,14 +7,16 @@ var
   CharLine: array[$0..$F] of KolibriChar;
   Line, Ch: Byte;
 begin
-  InitConsole('Character map');
+  InitConsole('CharMap', False, 20, 19, 20, 19);
 
-  con_write_asciiz('  ');
+  con_write_asciiz(#10);
+  con_write_asciiz('   ');
   con_write_string(HexDigits, Length(HexDigits));
   con_write_asciiz(#10);
 
   for Line := Low(HexDigits) to High(HexDigits) do
   begin
+    con_write_asciiz(' ');
     con_write_string(@HexDigits[Line], 1);
     con_write_asciiz(' ');
     for Ch := Low(CharLine) to High(CharLine) do
