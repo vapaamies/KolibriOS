@@ -24,7 +24,7 @@ const
   Magenta       = 5;
   Brown         = 6;
   LightGray     = 7;
-  DarkGray      = 8; 
+  DarkGray      = 8;
   LightBlue     = 9;
   LightGreen    = 10;
   LightCyan     = 11;
@@ -52,6 +52,7 @@ function TextBackground(Color: Byte): LongWord; overload;
 function TextColor: Byte; overload;
 function TextColor(Color: Byte): LongWord; overload;
 
+procedure ClrEOL;
 procedure ClrScr;
 
 function CursorBig: Integer;
@@ -74,6 +75,7 @@ uses
   KolibriOS;
 
 var
+  ClrEOLWidth: Integer = 80;
   CloseWindow: Boolean;
 
 procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean;
@@ -81,6 +83,8 @@ procedure InitConsole(Title: PKolibriChar; CloseWindowOnExit: Boolean;
 begin
   con_init(WndWidth, WndHeight, ScrWidth, ScrHeight, Title);
   CloseWindow := CloseWindowOnExit;
+  if ScrWidth <> LongWord(-1) then
+    ClrEOLWidth := ScrWidth;
 end;
 
 procedure SetTitle(Title: PKolibriChar);
@@ -130,12 +134,12 @@ end;
 
 procedure GotoXY(X, Y: Integer);
 begin
-  con_set_cursor_pos(X, Y);
+  con_set_cursor_pos(X - 1, Y - 1);
 end;
 
 procedure GotoXY(const Point: TCursorXY);
 begin
-  con_set_cursor_pos(Point.X, Point.Y);
+  con_set_cursor_pos(Point.X - 1, Point.Y - 1);
 end;
 
 function WhereX: Integer;
@@ -143,6 +147,7 @@ var
   Y: Integer;
 begin
   con_get_cursor_pos(Result, Y);
+  Inc(Result);
 end;
 
 function WhereY: Integer;
@@ -150,11 +155,17 @@ var
   X: Integer;
 begin
   con_get_cursor_pos(X, Result);
+  Inc(Result);
 end;
 
 function WhereXY: TCursorXY;
 begin
-  con_get_cursor_pos(Result.X, Result.Y);
+  with Result do
+  begin
+    con_get_cursor_pos(X, Y);
+    Inc(X);
+    Inc(Y);
+  end;
 end;
 
 function CursorBig: Integer;
@@ -180,6 +191,22 @@ end;
 function CursorOn: Integer;
 begin
   Result := con_set_cursor_height(2);
+end;
+
+procedure ClrEOL;
+var
+  I, X, Y, Count: Integer;
+  Buf: array[0..127] of KolibriChar;
+begin
+  con_get_cursor_pos(X, Y);
+  Count := ClrEOLWidth - X - 1;
+  if Count <> 0 then
+  begin
+    FillChar(Buf, SizeOf(Buf), ' ');
+    for I := 0 to Count div Length(Buf) - 1 do
+      con_write_string(Buf, Length(Buf));
+    con_write_string(Buf, Count mod Length(Buf));
+  end;
 end;
 
 procedure ClrScr;
@@ -220,12 +247,12 @@ initialization
 
   Pointer(@con_cls) := GetProcAddress(hConsole, 'con_cls');
   Pointer(@con_exit) := GetProcAddress(hConsole, 'con_exit');
-  Pointer(@con_getch) := GetProcAddress(hConsole, 'con_getch');
-  Pointer(@con_getch2) := GetProcAddress(hConsole, 'con_getch2');
   Pointer(@con_get_cursor_pos) := GetProcAddress(hConsole, 'con_get_cursor_pos');
   Pointer(@con_get_cursor_height) := GetProcAddress(hConsole, 'con_get_cursor_height');
   Pointer(@con_get_flags) := GetProcAddress(hConsole, 'con_get_flags');
   Pointer(@con_get_font_height) := GetProcAddress(hConsole, 'con_get_font_height');
+  Pointer(@con_getch) := GetProcAddress(hConsole, 'con_getch');
+  Pointer(@con_getch2) := GetProcAddress(hConsole, 'con_getch2');
   Pointer(@con_gets) := GetProcAddress(hConsole, 'con_gets');
   Pointer(@con_init) := GetProcAddress(hConsole, 'con_init');
   Pointer(@con_kbhit) := GetProcAddress(hConsole, 'con_kbhit');
