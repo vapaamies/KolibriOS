@@ -916,7 +916,7 @@ initialization
   end;
 
 {$IFDEF KolibriOS}
-  AppPath := PPKolibriChar(32)^;
+  AppPath := PPKolibriChar(32)^ + 1;
   CmdLine := PPKolibriChar(28)^;
 {$ELSE}
   InitKoW;
