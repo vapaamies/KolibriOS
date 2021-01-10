@@ -12,11 +12,14 @@ type
   HRSRC = THandle;
 
 var
+  ExitCode: Integer;
   MainWindow: THandle;
 
 const
   kernel32 = 'kernel32.dll';
   user32 = 'user32.dll';
+
+procedure _Halt(ExitCode: Integer);  
 
 procedure ExitProcess(ExitCode: Cardinal); stdcall;
   external kernel32 name 'ExitProcess';

@@ -24,11 +24,17 @@ begin
   HeapHandle := GetProcessHeap;
 end;
 
+procedure _Halt(ExitCode: Integer);
+asm
+        CALL FinalizeUnits
+        PUSH ExitCode
+        CALL ExitProcess
+end;
+
 procedure _Halt0;
 asm
-        PUSH EAX
-        CALL FinalizeUnits
-        CALL ExitProcess
+        MOV EAX, ExitCode
+        JMP _Halt
 end;
 
 procedure ErrorMessage(Msg: PKolibriChar; Count: Byte);

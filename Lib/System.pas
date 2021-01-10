@@ -447,10 +447,12 @@ asm
         SUB EDX, EAX
         CALL ErrorMessage
 
-{$IFNDEF KolibriOS}
-        POP EAX
-{$ENDIF}
+{$IFDEF KolibriOS}
         JMP _Halt0
+{$ELSE}
+        POP EAX
+        JMP _Halt
+{$ENDIF}
 end;
 
 {$IFDEF KolibriOS}
