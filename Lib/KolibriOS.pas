@@ -543,8 +543,10 @@ const
 {62.8}    function WritePCIByte(Bus, Device, Func, Reg: Byte; Data: Byte): LongWord; stdcall;
 {62.9}    function WritePCIWord(Bus, Device, Func, Reg: Byte; Data: Word): LongWord; stdcall;
 {62.10}   function WritePCILongWord(Bus, Device, Func, Reg: Byte; Data: LongWord): LongWord; stdcall;
+{$ENDIF}
 {63.1}    procedure DebugWrite(Data: KolibriChar); stdcall;
 {63.2}    function DebugRead(var Data: KolibriChar): Boolean; stdcall;
+{$IFDEF KolibriOS}
 {64}      function ReallocAppMemory(Count: LongWord): LongInt; stdcall;
 {65}      procedure DrawImageEx(const Image; Left, Top: LongInt; Width, Height, BPP: LongWord; Palette: Pointer; Padding: LongWord); stdcall;
 {66.1}    procedure SetKeyboardInputMode(Mode: LongWord); stdcall;

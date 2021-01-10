@@ -14,10 +14,50 @@ type
     szCSDVersion: array[0..127] of KolibriChar;
   end;
 
+const
+  BoardLog = 'BOARDLOG.TXT';
+
+var
+  hBoard: THandle;
+  DebugReadPos: UInt64;
+
 function GetFileSizeEx(hFile: THandle; var FileSize: UInt64): LongBool; stdcall;
   external kernel32 name 'GetFileSizeEx';
 function GetVersionExA(var Info: TOSVersionInfoA): LongBool; stdcall;
   external kernel32 name 'GetVersionExA';
+function SetFilePointerEx(hFile: THandle; Distance: Int64; NewFilePtr: PUInt64; Method: LongWord): LongBool; stdcall;
+  external kernel32 name 'SetFilePointerEx';
+
+function InitBoard: Boolean;
+begin
+  if hBoard = 0 then
+  begin
+    hBoard := CreateFileA(BoardLog, GENERIC_READ or GENERIC_WRITE,
+      FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_ALWAYS, 0, 0);
+    Result := hBoard <> INVALID_HANDLE_VALUE;
+  end
+  else
+    Result := True;
+end;
+
+function DebugRead(var Data: KolibriChar): Boolean; stdcall;
+var
+  BytesRead: LongWord;
+begin
+  Result := InitBoard and SetFilePointerEx(hBoard, DebugReadPos, @DebugReadPos, FILE_BEGIN) and
+    ReadFile(hBoard, Data, SizeOf(Data), BytesRead, nil) and (BytesRead <> 0);
+  Inc(DebugReadPos, BytesRead);
+end;
+
+procedure DebugWrite(Data: KolibriChar); stdcall;
+var
+  BytesWritten: LongWord;
+begin
+  if not InitBoard or not SetFilePointerEx(hBoard, 0, nil, FILE_END) or
+    not System.WriteFile(hBoard, Data, SizeOf(Data), BytesWritten, nil) or (BytesWritten = 0)
+  then
+    RunError(ERROR_ACCESS_DENIED);
+end;
 
 procedure ExitThread; stdcall;
 begin
