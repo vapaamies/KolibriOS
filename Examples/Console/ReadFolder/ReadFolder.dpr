@@ -1,7 +1,7 @@
 program ReadFolderApp;
 
 uses
-  KolibriOS, CRT, SysUtils;
+  KolibriOS, CRT;
 
 const
   Path = '/sys';
