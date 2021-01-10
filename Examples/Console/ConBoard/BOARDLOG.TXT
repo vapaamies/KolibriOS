@@ -1,0 +1,83 @@
+K : HPET caps 8086AF01
+K : kernel SVN r8493
+K : 1 CPU detected
+K : Attach Interrupt 6 Handler 800253E1
+K : Set IDE IRQ6 return code 80068680
+K : IDE controller programming interface 0001018A
+K : BAR0 IDE base addr 01F0
+K : BAR1 IDE base addr 03F4
+K : BAR2 IDE base addr 0170
+K : BAR3 IDE base addr 0374
+K : BAR4 IDE controller register base addr 10C0
+K : IDE Interrupt FF
+K : Channel 1 Disk 0
+K : Dev: VMware Virtual IDE Hard Drive
+K : PIO possible modes 03
+K : PIO set mode 01
+K : Multiword DMA possible modes 07
+K : Multiword DMA set mode 00
+K : Ultra DMA possible modes 07
+K : Ultra DMA set mode 02
+K : Channel 1 Disk 1
+K : Device not found
+K : Channel 2 Disk 0
+K : Dev: VMware Virtual IDE CDROM Drive
+K : PIO possible modes 03
+K : PIO set mode 01
+K : Multiword DMA possible modes 07
+K : Multiword DMA set mode 00
+K : Ultra DMA possible modes 07
+K : Ultra DMA set mode 02
+K : Channel 2 Disk 1
+K : Device not found
+K : IDE CH1 DMA enabled
+K : IDE CH2 PIO, because ATAPI drive present
+K : Attach Interrupt 14 Handler 80026C2C
+K : Set IDE IRQ14 return code 80068694
+K : Attach Interrupt 15 Handler 80026C2C
+K : Set IDE IRQ15 return code 800686A8
+K : driver /sys/drivers/vidintel.sys mapped to 80B9F000
+K : cpu frequency 3300056000 Hz
+K : Attach Interrupt 1 Handler 800228B8
+K : IRQ1 return code 800686BC
+K : driver /sys/drivers/PS2MOUSE.SYS mapped to 80CAE000
+K : Attach Interrupt 12 Handler 80CAE567
+L: /SYS/SETUP Param: BOOT
+L: /SYS/LOADDRV Param: RDC
+K : driver /sys/drivers/RDC.sys mapped to 80CB2000
+LoadDrv: Error loading driver
+Driver must be in /sys/drivers/ folder.
+Its name must be w/o extension and it is case-sensitive
+L: /SYS/@TASKBAR Param:
+L: /SYS/ESKIN Param:
+L: /SYS/@ICON Param:
+L: /SYS/NETWORK/NETCFG Param: A
+L: /SYS/NETWORK/@ZEROCONF Param:
+K : driver /sys/drivers/PCNET32.sys mapped to 80CF8000
+PCNET32: Loading driver
+K : Attach Interrupt 10 Handler 80CF8B3C
+PCNET32: link status=0x00C0
+Zero-config service loaded
+Trying to contact DHCP server
+L: /SYS/@VOLUME Param:
+K : driver /sys/drivers/SOUND.sys mapped to 80CF6000
+Detecting hardware...
+No compatible PCI soundcard found!
+Loading SB16
+K : driver /sys/drivers/SB16.sys mapped to 80CC7000
+detecting hardware...
+exiting... May be some problems found?
+K : destroy app object
+L: /SYS/@SS Param: ASSM
+L: /SYS/@DOCKY Param:
+L: /SYS/TMPDISK Param: A0
+K : driver /sys/drivers/tmpdisk.sys mapped to 80D0D000
+Trying to add virtual disk /tmp0, the size of 48 MB
+TmpDisk operation completed successfully
+L: /SYS/SEARCHAP Param:
+Searchap: compare files - success!
+Searchap: mount directory: /cd2/1
+L: /SYS/@HOTANGLES Param:
+L: AUTORUN.DAT processed
+DHCP failed
+IP address 169.254.237.81 assigned to network interface 1 through Link-Local
