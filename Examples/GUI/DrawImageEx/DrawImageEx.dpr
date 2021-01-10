@@ -8,43 +8,6 @@ const
   Picture2 = 'Mario(1bpp).bmp';
   Picture3 = 'House(24bpp).bmp';
 
-type
-  TBitmapFileHeader = packed record
-    bfType:      Word;
-    bfSize:      LongWord;
-    bfReserved1: Word;
-    bfReserved2: Word;
-    bfOffBits:   LongWord;
-  end;
-
-  TBitmapInfoHeader = packed record
-    biSize:          LongWord;
-    biWidth:         LongInt;
-    biHeight:        LongInt;
-    biPlanes:        Word;
-    biBitCount:      Word;
-    biCompression:   LongWord;
-    biSizeImage:     LongWord;
-    biXPelsPerMeter: LongInt;
-    biYPelsPerMeter: LongInt;
-    biClrUsed:       LongWord;
-    biClrImportant:  LongWord;
-  end;
-
-  TRGBQuad = packed record
-    Blue:     Byte;
-    Green:    Byte;
-    Red:      Byte;
-    Reserved: Byte;
-  end;
-
-  PBitmapFile = ^TBitmapFile;
-  TBitmapFile = packed record
-    BitmapFileHeader: TBitmapFileHeader;
-    BitmapInfoHeader: TBitmapInfoHeader;
-    Palette: array[0..0] of TRGBQuad;
-  end;
-
 procedure ExtractFileDirectory(Src, Dst: PKolibriChar); stdcall;
 asm
         PUSH   ESI

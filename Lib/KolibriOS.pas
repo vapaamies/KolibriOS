@@ -9,6 +9,8 @@ unit KolibriOS;
 
 interface
 
+{$I ImageFormats.inc}
+
 type
   TSize = packed record
     Height: Word;

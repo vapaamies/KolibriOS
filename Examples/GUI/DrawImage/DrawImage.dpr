@@ -3,27 +3,6 @@ program DrawImageApp;
 uses
   KolibriOS;
 
-type
-  THeader = packed record
-    IDLength:        Byte;
-    ColorMapType:    Byte;
-    ImageType:       Byte;
-    CMapStart:       Word;
-    CMapLength:      Word;
-    CMapDepth:       Byte;
-    XOffset:         Word;
-    YOffset:         Word;
-    Width:           Word;
-    Height:          Word;
-    PixelDepth:      Byte;
-    ImageDescriptor: Byte;
-  end;
-
-  PTargaFile = ^TTargaFile;
-  TTargaFile = packed record
-    Header: THeader;
-  end;
-
 procedure ExtractFileDirectory(Source, Dest: PKolibriChar); stdcall;
 asm
         PUSH   ESI
@@ -49,7 +28,7 @@ end;
 
 var
   WndLeft, WndTop, WndWidth, WndHeight: Integer;
-  TargaFile: PTargaFile;
+  TargaFile: Pointer;
   Image: Pointer;
   FileSize: LongWord;
 
@@ -59,8 +38,7 @@ begin
 
   TargaFile := LoadFile('Lena.tga', FileSize);
 
-  with TargaFile^ do
-    Image := Pointer(PKolibriChar(TargaFile) + SizeOf(Header) + Header.IDLength);
+  Image := PKolibriChar(TargaFile) + SizeOf(TTargaFileHeader) + PTargaFileHeader(TargaFile).IDLength;
 
   with GetScreenSize do
   begin
@@ -77,7 +55,7 @@ begin
           BeginDraw;
           DrawWindow(WndLeft, WndTop, WndWidth, WndHeight, 'Draw Image', $00FFFFFF,
             WS_SKINNED_FIXED + WS_CLIENT_COORDS + WS_CAPTION, CAPTION_MOVABLE);
-          with TargaFile.Header do
+          with PTargaFileHeader(TargaFile)^ do
             DrawImage(Image^, 30, 20, Width, Height);
           EndDraw;
         end;

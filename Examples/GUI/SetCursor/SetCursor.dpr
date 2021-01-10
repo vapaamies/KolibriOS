@@ -8,35 +8,6 @@ const
   POINT_BUTTON = 3;
   WAIT_BUTTON  = 4;
 
-type
-  TBitmapFileHeader = packed record
-    bfType:      Word;
-    bfSize:      LongWord;
-    bfReserved1: Word;
-    bfReserved2: Word;
-    bfOffBits:   LongWord;
-  end;
-
-  TBitmapInfoHeader = packed record
-    biSize:          LongWord;
-    biWidth:         LongInt;
-    biHeight:        LongInt;
-    biPlanes:        Word;
-    biBitCount:      Word;
-    biCompression:   LongWord;
-    biSizeImage:     LongWord;
-    biXPelsPerMeter: LongInt;
-    biYPelsPerMeter: LongInt;
-    biClrUsed:       LongWord;
-    biClrImportant:  LongWord;
-  end;
-
-  PBitmapFile = ^TBitmapFile;
-  TBitmapFile = packed record
-    BitmapFileHeader: TBitmapFileHeader;
-    BitmapInfoHeader: TBitmapInfoHeader;
-  end;
-
 procedure ExtractFileDirectory(Src, Dst: PKolibriChar); stdcall;
 asm
         PUSH   ESI
