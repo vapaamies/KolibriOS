@@ -671,6 +671,10 @@ const
           function GetProcAddress(hLib: Pointer; ProcName: PKolibriChar): Pointer; stdcall;
 {$ENDIF}
 
+{$IFNDEF KolibriOS}
+  {$I KoW\Unpack.inc}
+{$ENDIF}
+
 implementation
 
 {$IFNDEF KolibriOS}

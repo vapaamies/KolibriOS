@@ -126,6 +126,7 @@ function LoadFile(FileName: PKolibriChar; var Size: LongWord): Pointer;
 var
   hFile: THandle;
   QSize: UInt64;
+  Unpacked: Pointer;
 begin
   hFile := CreateFileA(FileName, GENERIC_READ, FILE_SHARE_READ, nil, OPEN_EXISTING, 0, 0);
   if (hFile <> INVALID_HANDLE_VALUE) and GetFileSizeEx(hFile, QSize) then
@@ -133,6 +134,14 @@ begin
     Size := QSize;
     GetMem(Result, Size);
     Windows.ReadFile(hFile, Result^, Size, Size, nil);
+    if PPackedFileHeader(Result).Signature = KPCK then
+    begin
+      Size := PPackedFileHeader(Result).UnpackedSize;
+      GetMem(Unpacked, Size);
+      Unpack(PPackedFile(Result)^, Unpacked^);
+      FreeMem(Result);
+      Result := Unpacked;
+    end;
     Exit;
   end;
   Size := 0;
