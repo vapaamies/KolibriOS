@@ -18,6 +18,9 @@ if #%1#==## (
   if errorlevel 1 goto exit
 
   call %0 My My
+  if errorlevel 1 goto exit
+
+  call %0 Tools Tools
   goto exit
 )
 

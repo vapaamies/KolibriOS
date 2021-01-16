@@ -10,6 +10,7 @@ unit KolibriOS;
 interface
 
 {$I ImageFormats.inc}
+{$I StrippedPE.inc}
 
 type
   TSize = packed record

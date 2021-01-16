@@ -1,0 +1,7 @@
+[Directories]
+OutputDir=..\..\Bin\KoW
+UnitOutputDir=..\..\Bin\KoW\DCU
+SearchPath=..\..\Lib;..\..\Bin\KoW\DCU
+Conditionals=Debug
+UnitAliases=
+UsePackages=0
