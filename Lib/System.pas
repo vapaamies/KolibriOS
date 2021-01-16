@@ -221,7 +221,7 @@ function SysGetMem(Size: Integer): Pointer;
 function SysReallocMem(P: Pointer; Size: Integer): Pointer;
 
 var
-  Default8087CW: Word = $1332; // for Extended type
+  Default8087CW: Word;
 
 function Get8087CW: Word;
 procedure Set8087CW(Value: Word);
@@ -934,8 +934,8 @@ initialization
 
   asm
     // InitFPU
-    FNINIT
-    FLDCW Default8087CW
+    MOV AX, $1332
+    CALL Set8087CW
 
 {$IFDEF KolibriOS}
     // HeapInit

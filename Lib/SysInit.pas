@@ -1,7 +1,7 @@
 (*
     KolibriOS RTL SysInit unit
 
-    Copyright (c) 2020 Delphi SDK for KolibriOS team
+    Copyright (c) 2020-2021 Delphi SDK for KolibriOS team
 *)
 
 unit SysInit;
@@ -11,11 +11,10 @@ interface
 procedure _InitExe(InitTable: PPackageInfo);
 
 var
-  TLSIndex: Integer = -1;
-  TLSLast: Byte;
+  PtrToNil: Pointer;
 
-const
-  PtrToNil: Pointer = nil;
+  TLSIndex: Integer; // = -1;
+  TLSLast: Byte;
 
 implementation
 
