@@ -679,11 +679,6 @@ const
 
 implementation
 
-{$IFNDEF KolibriOS}
-uses
-  Windows;
-{$ENDIF}
-
 {$IFDEF KolibriOS}
 
 procedure ExitThread; stdcall;

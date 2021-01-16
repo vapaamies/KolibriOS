@@ -73,11 +73,9 @@ procedure Delay(Milliseconds: LongWord);
 
 implementation
 
-uses
 {$IFDEF KolibriOS}
+uses
   KolibriOS;
-{$ELSE}
-  Windows;
 {$ENDIF}
 
 var

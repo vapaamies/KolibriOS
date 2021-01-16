@@ -327,6 +327,7 @@ const
   con_write_string: procedure(Str: PKolibriChar; Length: LongWord); stdcall = nil;
 
 {$IFNDEF KolibriOS}
+  {$I KoW\WinAPI.inc}
   {$I KoW\SysAPI.inc}
 {$ENDIF}
 

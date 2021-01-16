@@ -4,9 +4,6 @@
     Copyright (c) 2021 Delphi SDK for KolibriOS team
 *)
 
-const
-  HEAP_NO_SERIALIZE = $00001;
-
 var
   ModuleFileName: array[0..1023] of KolibriChar;
   HeapHandle: THandle;
@@ -39,8 +36,6 @@ end;
 
 procedure ErrorMessage(Msg: PKolibriChar; Count: Byte);
 const
-  MB_ICONERROR = $0010;
-  MB_TASKMODAL = $2000;
   EOL: array[0..1] of KolibriChar = #13#10;
 var
   Buf: array[Low(Byte)..High(Byte) + 1] of KolibriChar;

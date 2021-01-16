@@ -4,16 +4,6 @@
     Copyright (c) 2021 Delphi SDK for KolibriOS team
 *)
 
-type
-  TOSVersionInfoA = packed record
-    dwOSVersionInfoSize: LongWord;
-    dwMajorVersion: LongWord;
-    dwMinorVersion: LongWord;
-    dwBuildNumber: LongWord;
-    dwPlatformId: LongWord;
-    szCSDVersion: array[0..127] of KolibriChar;
-  end;
-
 const
   BoardLog = 'BOARDLOG.TXT';
 
@@ -21,18 +11,11 @@ var
   hBoard: THandle;
   DebugReadPos: UInt64;
 
-function GetFileSizeEx(hFile: THandle; var FileSize: UInt64): LongBool; stdcall;
-  external kernel32 name 'GetFileSizeEx';
-function GetVersionExA(var Info: TOSVersionInfoA): LongBool; stdcall;
-  external kernel32 name 'GetVersionExA';
-function SetFilePointerEx(hFile: THandle; Distance: Int64; NewFilePtr: PUInt64; Method: LongWord): LongBool; stdcall;
-  external kernel32 name 'SetFilePointerEx';
-
 function InitBoard: Boolean;
 begin
   if hBoard = 0 then
   begin
-    hBoard := CreateFileA(BoardLog, GENERIC_READ or GENERIC_WRITE,
+    hBoard := CreateFile(BoardLog, GENERIC_READ or GENERIC_WRITE,
       FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_ALWAYS, 0, 0);
     Result := hBoard <> INVALID_HANDLE_VALUE;
   end
@@ -54,28 +37,28 @@ var
   BytesWritten: LongWord;
 begin
   if not InitBoard or not SetFilePointerEx(hBoard, 0, nil, FILE_END) or
-    not System.WriteFile(hBoard, Data, SizeOf(Data), BytesWritten, nil) or (BytesWritten = 0)
+    not WriteFile(hBoard, Data, SizeOf(Data), BytesWritten, nil) or (BytesWritten = 0)
   then
     RunError(ERROR_ACCESS_DENIED);
 end;
 
 procedure ExitThread; stdcall;
 begin
-  Windows.ExitProcess(0);
+  ExitProcess(0);
 end;
 
 function GetCurrentDirectory(Buffer: PKolibriChar; Count: LongWord): LongWord; 
 begin
-  Result := GetCurrentDirectoryA(Count, Buffer);
+  Result := System.GetCurrentDirectory(Count, Buffer);
 end;
 
 procedure GetKernelVersion(var Buffer: TKernelVersion);
 var
-  Info: TOSVersionInfoA;
+  Info: TOSVersionInfo;
 begin
   FillChar(Buffer, SizeOf(Buffer), 0);
   Info.dwOSVersionInfoSize := SizeOf(Info);
-  if GetVersionExA(Info) then
+  if GetVersionEx(Info) then
     with Buffer, Info do
     begin
       A := dwMajorVersion;
@@ -84,9 +67,9 @@ begin
     end;
 end;
 
-function GetSystemDate: KolibriOS.TSystemDate; 
+function GetSystemDate: TSystemDate;
 var
-  Date: Windows.TSystemTime;
+  Date: System.TSystemTime;
 begin
   GetLocalTime(Date);
   with Result, Date do
@@ -98,9 +81,9 @@ begin
   end;
 end;
 
-function GetSystemTime: KolibriOS.TSystemTime; 
+function GetSystemTime: TSystemTime;
 var
-  Time: Windows.TSystemTime;
+  Time: System.TSystemTime;
 begin
   GetLocalTime(Time);
   with Result, Time do
@@ -113,12 +96,12 @@ end;
 
 function GetTickCount: LongWord; stdcall;
 asm
-        JMP Windows.GetTickCount
+        JMP System.GetTickCount
 end;
 
 function GetTickCount64: UInt64; stdcall;
 asm
-        CALL Windows.GetTickCount
+        CALL System.GetTickCount
         XOR EDX, EDX
 end;
 
@@ -128,12 +111,12 @@ var
   QSize: UInt64;
   Unpacked: Pointer;
 begin
-  hFile := CreateFileA(FileName, GENERIC_READ, FILE_SHARE_READ, nil, OPEN_EXISTING, 0, 0);
+  hFile := CreateFile(FileName, GENERIC_READ, FILE_SHARE_READ, nil, OPEN_EXISTING, 0, 0);
   if (hFile <> INVALID_HANDLE_VALUE) and GetFileSizeEx(hFile, QSize) then
   begin
     Size := QSize;
     GetMem(Result, Size);
-    Windows.ReadFile(hFile, Result^, Size, Size, nil);
+    System.ReadFile(hFile, Result^, Size, Size, nil);
     if PPackedFileHeader(Result).Signature = KPCK then
     begin
       Size := PPackedFileHeader(Result).UnpackedSize;
@@ -149,11 +132,11 @@ begin
 end;
 
 procedure SetCurrentDirectory(Path: PKolibriChar);
-begin
-  SetCurrentDirectoryA(Path);
+asm
+        JMP System.SetCurrentDirectory
 end;
 
-procedure Sleep(Time: LongWord); 
+procedure Sleep(Time: LongWord);
 begin
-  Windows.Sleep(Time * 10);
+  System.Sleep(Time * 10);
 end;

@@ -4,12 +4,6 @@
     Copyright (c) 2021 Delphi SDK for KolibriOS team
 *)
 
-type
-  TConsoleFontInfo = packed record
-    Number: LongWord;
-    Size: TCoord;
-  end;
-
 var
   // Console.obj defaults
   ScrSize: TCoord = (X: 80; Y: 300);
@@ -17,27 +11,6 @@ var
   WndSize: TPoint = (X: 80; Y: 25);
 
   SaveInputCP, SaveOutputCP: Word;
-
-const
-  msvcrt = 'msvcrt.dll';
-
-function GetCurrentConsoleFont(hConsole: THandle; MaximumWindow: LongBool; var Info: TConsoleFontInfo): LongBool; stdcall;
-  external kernel32 name 'GetCurrentConsoleFont';
-function GetConsoleWindow: THandle; stdcall;
-  external kernel32 name 'GetConsoleWindow';
-
-function _cgets_s(Buffer: PKolibriChar; Count: Cardinal; var Read: Cardinal): PKolibriChar; cdecl;
-  external msvcrt name '_cgets_s';
-function _cputs(Str: PKolibriChar): Integer; cdecl;
-  external msvcrt name '_cputs';
-function _getch: KolibriChar; cdecl;
-  external msvcrt name '_getch';
-function gets: PKolibriChar; cdecl;
-  external msvcrt name 'gets';
-function _kbhit: Integer; cdecl;
-  external msvcrt name '_kbhit';
-function _cprintf(Fmt: PKolibriChar): Integer; cdecl varargs;
-  external msvcrt name '_cprintf';
 
 procedure con_set_cursor_pos(X, Y: Integer); stdcall; forward; // call local proc from con_cls
 
@@ -62,7 +35,7 @@ begin
   if not CloseWindow then
   begin
     CursorOff;
-    _getch;
+    getch;
   end;
 
   SetConsoleCP(SaveInputCP);
@@ -84,8 +57,8 @@ begin
     AllocConsole;
 {$ENDIF}
 
-  TTextRec(Input).Handle := System.GetStdHandle(STD_INPUT_HANDLE);
-  TTextRec(Output).Handle := System.GetStdHandle(STD_OUTPUT_HANDLE);
+  TTextRec(Input).Handle := GetStdHandle(STD_INPUT_HANDLE);
+  TTextRec(Output).Handle := GetStdHandle(STD_OUTPUT_HANDLE);
 
 {$IFDEF Debug}
   SaveInputCP := GetConsoleCP;
@@ -93,7 +66,7 @@ begin
   SaveOutputCP := GetConsoleOutputCP;
   SetConsoleOutputCP(CP_KOLIBRIOS);
 
-  SetConsoleTitleA(Title);
+  SetConsoleTitle(Title);
 
   if WndWidth <> LongWord(-1) then
     WndSize.X := WndWidth;
@@ -102,8 +75,8 @@ begin
 
   MainWindow := GetConsoleWindow;
   GetCurrentConsoleFont(TTextRec(Output).Handle, False, Font);
-  SetWindowPos(MainWindow, 0, WndPos.X, WndPos.Y,
-    Font.Size.X * WndSize.X + GetSystemMetrics(SM_CXVSCROLL), Font.Size.Y * WndSize.Y + GetSystemMetrics(SM_CYHSCROLL), 0);
+{  SetWindowPos(MainWindow, 0, WndPos.X, WndPos.Y,
+    Font.Size.X * WndSize.X + GetSystemMetrics(SM_CXVSCROLL), Font.Size.Y * WndSize.Y + GetSystemMetrics(SM_CYHSCROLL), 0);}
 
   if ScrWidth <> LongWord(-1) then
     ScrSize.X := ScrWidth;
@@ -155,12 +128,12 @@ var
   Font: TConsoleFontInfo;
 begin
   GetCurrentConsoleFont(TTextRec(Output).Handle, False, Font);
-  Result := Font.Size.Y;
+  Result := Font.dwFontSize.Y;
 end;
 
 function con_getch: KolibriChar; stdcall;
 begin
-  Result := _getch;
+  Result := getch;
 end;
 
 function con_gets(Str: PKolibriChar; Length: Integer): PKolibriChar; stdcall;
@@ -168,8 +141,8 @@ var
   LF: KolibriChar;
   Read: Cardinal;
 begin
-  _cgets_s(Str, Length, Read);
-  _cgets_s(@LF, SizeOf(LF), Read);
+  cgets_s(Str, Length, Read);
+  cgets_s(@LF, SizeOf(LF), Read);
   Result := Str;
 end;
 
@@ -180,7 +153,7 @@ end;
 
 function con_kbhit: Boolean; stdcall;
 begin
-  Result := _kbhit <> 0;
+  Result := kbhit <> 0;
 end;
 
 function con_set_cursor_height(Height: Integer): Integer; stdcall;
@@ -212,14 +185,14 @@ end;
 
 procedure con_write_string(Str: PKolibriChar; Length: LongWord); stdcall;
 var
-  Written: Cardinal;
+  Written: LongWord;
 begin
-  System.WriteFile(TTextRec(Output).Handle, Str^, Length, Written, nil);
+  WriteFile(TTextRec(Output).Handle, Str^, Length, Written, nil);
 end;
 
 procedure con_write_asciiz(Str: PKolibriChar); stdcall;
 begin
-  _cputs(Str);
+  cputs(Str);
 end;
 
 procedure Delay(Milliseconds: LongWord);
@@ -240,11 +213,11 @@ begin
   Pointer(@System.con_gets) := @con_gets;
   Pointer(@System.con_gets2) := @con_gets2;
   Pointer(@System.con_kbhit) := @con_kbhit;
-  Pointer(@System.con_printf) := @_cprintf;
+  Pointer(@System.con_printf) := @cprintf;
   Pointer(@System.con_set_cursor_height) := @con_set_cursor_height;
   Pointer(@System.con_set_cursor_pos) := @con_set_cursor_pos;
   Pointer(@System.con_set_flags) := @con_set_flags;
-  Pointer(@System.con_set_title) := @Windows.SetConsoleTitleA;
+  Pointer(@System.con_set_title) := @SetConsoleTitle;
   Pointer(@System.con_write_asciiz) := @con_write_asciiz;
   Pointer(@System.con_write_string) := @con_write_string;
 end;
